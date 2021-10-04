@@ -1,6 +1,8 @@
 package eu.alkismavridis.codescape.ui.swing
 
 import eu.alkismavridis.codescape.layout.CodeScapeNode
+import eu.alkismavridis.codescape.layout.CodeScapeNodeLoadingState
+import eu.alkismavridis.codescape.layout.LayoutService
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
@@ -8,7 +10,8 @@ import javax.swing.JPanel
 import kotlin.math.roundToInt
 
 class CodeScapeView(
-  private val project: CodeScapeNode
+  private val rootNode: CodeScapeNode,
+  private val layoutService: LayoutService,
 ): JPanel() {
   private var uiState = CodeScapeViewState(0.0, 0.0, 1.0, null, null)
 
@@ -21,7 +24,7 @@ class CodeScapeView(
     g.clearRect(0, 0, this.width, this.height)
 
     this.translateAndScale(g)
-    project.children.forEach{ this.renderObject(it, g) }
+    this.renderObject(this.rootNode, g)
 
     g.transform = originalTransform
     this.debugState(g)
@@ -35,11 +38,18 @@ class CodeScapeView(
     val shouldRenderChildren = widthPx > CHILDREN_THRESHOLD || heightPx > CHILDREN_THRESHOLD
 
     if (shouldRenderChildren) {
-      g.color = Color.red
+      g.color = Color.RED
       g.drawRect(obj.x.toPixelSpace(scale), obj.y.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
-    } else {
-      g.color = Color.red
+    } else if (obj.loadingState == CodeScapeNodeLoadingState.LOADING) {
+      g.color = Color.GRAY
       g.fillRect(obj.x.toPixelSpace(scale), obj.y.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
+    } else {
+      g.color = Color.RED
+      g.fillRect(obj.x.toPixelSpace(scale), obj.y.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
+    }
+
+    if (shouldRenderChildren && obj.loadingState == CodeScapeNodeLoadingState.UNCHECKED) {
+      this.layoutService.loadChildren(obj, this::repaint)
     }
 
     if (shouldRenderChildren && obj.children.isNotEmpty()) {
@@ -50,6 +60,10 @@ class CodeScapeView(
       obj.children.forEach { this.renderObject(it, g) }
       g.translate(-translateX, -translateY)
     }
+
+
+    g.color = Color.BLUE
+    g.drawString(obj.file.name, obj.x.toPixelSpace(scale), obj.y.toPixelSpace(scale))
   }
 
   private fun setState(state: CodeScapeViewState) {
