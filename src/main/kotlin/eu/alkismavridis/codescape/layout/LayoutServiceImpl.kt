@@ -2,7 +2,6 @@ package eu.alkismavridis.codescape.layout
 
 import eu.alkismavridis.codescape.project.FileNode
 import eu.alkismavridis.codescape.project.FsService
-import org.jetbrains.rpc.LOG
 import kotlin.math.floor
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -21,10 +20,14 @@ class LayoutServiceImpl(
     onPresent()
 
     val childFiles = this.fsService.getChildrenOf(parent.file.path).toList()
-
-    parent.children = this.layout(parent, childFiles)
-    parent.loadingState = CodeScapeNodeLoadingState.LOADED
-    onPresent()
+    if (childFiles.size > SIZE_LIMIT) {
+      parent.loadingState = CodeScapeNodeLoadingState.SIZE_TOO_LARGE
+      onPresent()
+    } else {
+      parent.children = this.layout(parent, childFiles)
+      parent.loadingState = CodeScapeNodeLoadingState.LOADED
+      onPresent()
+    }
   }
 
   private fun layout(parent: CodeScapeNode, childFiles: List<FileNode>): List<CodeScapeNode> {
@@ -38,8 +41,6 @@ class LayoutServiceImpl(
       (parent.width - spacing) / colCount - spacing,
       (parent.height - spacing) / rowCount - spacing,
     )
-
-    LOG.info("\n\n\nparentAspectRatio $parentAspectRatio\nspacing: $spacing\n, rowCount: $rowCount\n colCount: $colCount\nchildSize: $childSize\n\n\n")
 
     return childFiles.mapIndexed { index, file ->
       this.createChild(file, index, colCount, spacing, childSize)
@@ -57,6 +58,7 @@ class LayoutServiceImpl(
 
   companion object {
     private const val SPACING_RATIO = 0.05
+    private const val SIZE_LIMIT = 100
   }
 }
 

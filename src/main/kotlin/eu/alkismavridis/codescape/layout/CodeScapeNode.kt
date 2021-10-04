@@ -13,5 +13,5 @@ class CodeScapeNode(
 )
 
 enum class CodeScapeNodeLoadingState {
-  UNCHECKED, LOADING, LOADED
+  UNCHECKED, LOADING, LOADED, SIZE_TOO_LARGE
 }

@@ -35,24 +35,21 @@ class CodeScapeView(
     val scale = this.uiState.scale
     val widthPx = obj.width * scale
     val heightPx = obj.height * scale
-    val shouldRenderChildren = widthPx > CHILDREN_THRESHOLD || heightPx > CHILDREN_THRESHOLD
+    val isOpen = widthPx > CHILDREN_THRESHOLD || heightPx > CHILDREN_THRESHOLD
 
-    if (shouldRenderChildren) {
+    if (isOpen) {
       g.color = Color.RED
       g.drawRect(obj.x.toPixelSpace(scale), obj.y.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
-    } else if (obj.loadingState == CodeScapeNodeLoadingState.LOADING) {
-      g.color = Color.GRAY
-      g.fillRect(obj.x.toPixelSpace(scale), obj.y.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
     } else {
-      g.color = Color.RED
+      g.color = this.getColorForState(obj.loadingState)
       g.fillRect(obj.x.toPixelSpace(scale), obj.y.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
     }
 
-    if (shouldRenderChildren && obj.loadingState == CodeScapeNodeLoadingState.UNCHECKED) {
-      this.layoutService.loadChildren(obj, this::repaint)
+    if (isOpen && obj.loadingState == CodeScapeNodeLoadingState.UNCHECKED) {
+      this.layoutService.loadChildren(obj, this::repaint) //TODO move to other thread and out of paint()
     }
 
-    if (shouldRenderChildren && obj.children.isNotEmpty()) {
+    if (isOpen && obj.children.isNotEmpty()) {
       val translateX = obj.x.toPixelSpace(scale)
       val translateY = obj.y.toPixelSpace(scale)
 
@@ -64,6 +61,15 @@ class CodeScapeView(
 
     g.color = Color.BLUE
     g.drawString(obj.file.name, obj.x.toPixelSpace(scale), obj.y.toPixelSpace(scale))
+  }
+
+  private fun getColorForState(loadingState: CodeScapeNodeLoadingState): Color {
+    return when(loadingState) {
+      CodeScapeNodeLoadingState.LOADING -> Color.GREEN
+      CodeScapeNodeLoadingState.SIZE_TOO_LARGE -> Color.GRAY
+      CodeScapeNodeLoadingState.LOADED -> Color.RED
+      CodeScapeNodeLoadingState.UNCHECKED -> Color.RED
+    }
   }
 
   private fun setState(state: CodeScapeViewState) {
