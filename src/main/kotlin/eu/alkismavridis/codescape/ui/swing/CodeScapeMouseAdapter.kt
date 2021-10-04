@@ -39,13 +39,7 @@ class CodeScapeMouseAdapter(
   override fun mouseReleased(e: MouseEvent) = this.update { it.withDragStart(null) }
   override fun mouseExited(e: MouseEvent) = this.update { it.withDragStart(null) }
 
-  override fun mouseClicked(e: MouseEvent) = this.update {
-    val scrollMapX = it.x + e.point.x / it.scale
-    val scrollMapY = it.y + e.point.y / it.scale
-    LOG.info("OLD: ${it.x}, ${it.y}, scale: ${it.scale}")
-    LOG.info("STABLE: $scrollMapX, $scrollMapY")
-    it
-  }
+  override fun mouseClicked(e: MouseEvent) {}
   override fun mouseEntered(e: MouseEvent) {}
   override fun mouseMoved(e: MouseEvent) {}
 

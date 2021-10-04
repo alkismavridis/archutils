@@ -10,9 +10,9 @@ import eu.alkismavridis.codescape.ui.swing.CodeScapeView
 class FooToolbarWindowFactory : ToolWindowFactory {
 
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-
     val contentFactory = ContentFactory.SERVICE.getInstance()
     val rootObject = createDummyProject()
+
     val view = CodeScapeView(rootObject)
     val content = contentFactory.createContent(view, "Codescape", false)
     toolWindow.contentManager.addContent(content)
@@ -20,17 +20,17 @@ class FooToolbarWindowFactory : ToolWindowFactory {
 }
 
 
-fun createDummyProject() = CodeScapeObject(0, 0, 0, 0, listOf(
-  CodeScapeObject(0, 0, 100, 100, listOf(
-    CodeScapeObject(10, 10, 20, 20),
-    CodeScapeObject(40, 10, 20, 20),
-    CodeScapeObject(70, 10, 20, 20),
+fun createDummyProject() = CodeScapeObject(0.0, 0.0, 0.0, 0.0, listOf(
+  CodeScapeObject(0.0, 0.0, 100.0, 100.0, listOf(
+    CodeScapeObject(10.0, 10.0, 20.0, 20.0),
+    CodeScapeObject(40.0, 10.0, 20.0, 20.0),
+    CodeScapeObject(70.0, 10.0, 20.0, 20.0),
   )),
-  CodeScapeObject(200, 200, 100, 100, listOf(
-    CodeScapeObject(10, 10, 20, 20),
-    CodeScapeObject(70, 10, 20, 20),
+  CodeScapeObject(200.0, 200.0, 100.0, 100.0, listOf(
+    CodeScapeObject(10.0, 10.0, 20.0, 20.0),
+    CodeScapeObject(70.0, 10.0, 20.0, 20.0),
   )),
-  CodeScapeObject(600, 600, 100, 100, listOf(
-    CodeScapeObject(10, 10, 20, 20),
+  CodeScapeObject(600.0, 600.0, 100.0, 100.0, listOf(
+    CodeScapeObject(10.0, 10.0, 20.0, 20.0),
   )),
 ))

@@ -1,9 +1,9 @@
 package eu.alkismavridis.codescape.project
 
 class CodeScapeObject(
-  val left: Int,
-  val top: Int,
-  val width: Int,
-  val height: Int,
+  val left: Double,
+  val top: Double,
+  val width: Double,
+  val height: Double,
   val children: List<CodeScapeObject> = emptyList()
 )

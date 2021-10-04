@@ -29,22 +29,26 @@ class CodeScapeView(
 
   private fun renderObject(obj: CodeScapeObject, g: Graphics2D) {
     // TODO optimize rendering: skip objects that are out of view
-    val widthPx = obj.width * this.uiState.scale
-    val heightPx = obj.height * this.uiState.scale
+    val scale = this.uiState.scale
+    val widthPx = obj.width * scale
+    val heightPx = obj.height * scale
     val shouldRenderChildren = widthPx > CHILDREN_THRESHOLD || heightPx > CHILDREN_THRESHOLD
 
     if (shouldRenderChildren) {
       g.color = Color.red
-      g.drawRect(obj.left, obj.top, obj.width, obj.height)
+      g.drawRect(obj.left.toPixelSpace(scale), obj.top.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
     } else {
       g.color = Color.red
-      g.fillRect(obj.left, obj.top, obj.width, obj.height)
+      g.fillRect(obj.left.toPixelSpace(scale), obj.top.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
     }
 
     if (shouldRenderChildren && obj.children.isNotEmpty()) {
-      g.translate(obj.left, obj.top)
+      val translateX = obj.left.toPixelSpace(scale)
+      val translateY = obj.top.toPixelSpace(scale)
+
+      g.translate(translateX, translateY)
       obj.children.forEach { this.renderObject(it, g) }
-      g.translate(-obj.left, -obj.top)
+      g.translate(-translateX, -translateY)
     }
   }
 
@@ -54,8 +58,7 @@ class CodeScapeView(
   }
 
   private fun translateAndScale(g: Graphics2D) {
-    g.scale(this.uiState.scale, this.uiState.scale)
-    g.translate(-this.uiState.x, -this.uiState.y)
+    g.translate(-this.uiState.x.toPixelSpace(this.uiState.scale), -this.uiState.y.toPixelSpace(this.uiState.scale))
   }
 
   private fun debugState(g: Graphics2D) {
@@ -68,6 +71,10 @@ class CodeScapeView(
     this.addMouseListener(mouseAdapter)
     this.addMouseMotionListener(mouseAdapter)
     this.addMouseWheelListener(mouseAdapter)
+  }
+
+  private fun Double.toPixelSpace(scale: Double): Int {
+    return (this * scale).roundToInt()
   }
 
   companion object {
