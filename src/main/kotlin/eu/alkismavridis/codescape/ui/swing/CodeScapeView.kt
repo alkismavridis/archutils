@@ -1,6 +1,6 @@
 package eu.alkismavridis.codescape.ui.swing
 
-import eu.alkismavridis.codescape.project.CodeScapeObject
+import eu.alkismavridis.codescape.layout.CodeScapeNode
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
@@ -8,7 +8,7 @@ import javax.swing.JPanel
 import kotlin.math.roundToInt
 
 class CodeScapeView(
-  private val project: CodeScapeObject
+  private val project: CodeScapeNode
 ): JPanel() {
   private var uiState = CodeScapeViewState(0.0, 0.0, 1.0, null, null)
 
@@ -27,7 +27,7 @@ class CodeScapeView(
     this.debugState(g)
   }
 
-  private fun renderObject(obj: CodeScapeObject, g: Graphics2D) {
+  private fun renderObject(obj: CodeScapeNode, g: Graphics2D) {
     // TODO optimize rendering: skip objects that are out of view
     val scale = this.uiState.scale
     val widthPx = obj.width * scale
@@ -36,15 +36,15 @@ class CodeScapeView(
 
     if (shouldRenderChildren) {
       g.color = Color.red
-      g.drawRect(obj.left.toPixelSpace(scale), obj.top.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
+      g.drawRect(obj.x.toPixelSpace(scale), obj.y.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
     } else {
       g.color = Color.red
-      g.fillRect(obj.left.toPixelSpace(scale), obj.top.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
+      g.fillRect(obj.x.toPixelSpace(scale), obj.y.toPixelSpace(scale), obj.width.toPixelSpace(scale), obj.height.toPixelSpace(scale))
     }
 
     if (shouldRenderChildren && obj.children.isNotEmpty()) {
-      val translateX = obj.left.toPixelSpace(scale)
-      val translateY = obj.top.toPixelSpace(scale)
+      val translateX = obj.x.toPixelSpace(scale)
+      val translateY = obj.y.toPixelSpace(scale)
 
       g.translate(translateX, translateY)
       obj.children.forEach { this.renderObject(it, g) }
