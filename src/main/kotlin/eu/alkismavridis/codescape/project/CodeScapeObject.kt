@@ -1,9 +1,9 @@
 package eu.alkismavridis.codescape.project
 
-interface CodeScapeObject {
-  fun getX()
-  fun getY()
-  fun getWidth()
-  fun getHeight()
-  fun getChildren(): List<CodeScapeObject>
-}
+class CodeScapeObject(
+  val left: Int,
+  val top: Int,
+  val width: Int,
+  val height: Int,
+  val children: List<CodeScapeObject> = emptyList()
+)
