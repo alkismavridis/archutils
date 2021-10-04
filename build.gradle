@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.31'
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/

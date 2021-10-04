@@ -1,8 +1,21 @@
 package eu.alkismavridis.codescape.layout
 
-class LayoutServiceImpl(private val conf: CodeScapeConfiguration): LayoutService {
+import eu.alkismavridis.codescape.project.FsService
+import java.util.stream.Collectors.toList
 
-  override fun loadChildren(obj: CodeScapeNode, presenter: () -> Unit) {
-    obj.children
+class LayoutServiceImpl(
+  private val conf: CodeScapeConfiguration,
+  private val fsService: FsService
+): LayoutService {
+
+  override fun loadChildren(obj: CodeScapeNode, onPresent: () -> Unit) {
+    if (obj.loadingState != CodeScapeNodeLoadingState.UNCHECKED) {
+      return
+    }
+
+    obj.loadingState = CodeScapeNodeLoadingState.LOADING
+    onPresent()
+
+    val childFiles = this.fsService.getChildrenOf(obj.file.path).toList()
   }
 }
