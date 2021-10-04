@@ -9,7 +9,8 @@ class NioFsService: FsService {
   override fun getChildrenOf(path: String): Sequence<FileNode> {
     val dirPath = FileSystems.getDefault().getPath(path)
 
-    return Files.walk(dirPath)
+    return Files.walk(dirPath, 1)
+      .filter{ it != dirPath }
       .map(this::toFileNode)
       .iterator()
       .asSequence()
