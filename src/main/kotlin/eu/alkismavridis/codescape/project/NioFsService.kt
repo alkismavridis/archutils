@@ -1,23 +1,30 @@
 package eu.alkismavridis.codescape.project
 
 import com.intellij.util.io.isDirectory
+import eu.alkismavridis.codescape.config.CodeScapeConfigurationService
+import eu.alkismavridis.codescape.config.NodeVisibility
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
 
-class NioFsService: FsService {
+class NioFsService(
+  private val configService: CodeScapeConfigurationService,
+): FsService {
 
   override fun getChildrenOf(path: String): Sequence<FileNode> {
     val dirPath = FileSystems.getDefault().getPath(path)
 
     return Files.walk(dirPath, 1)
-      .filter{ it != dirPath }
+      .filter { it != dirPath }
       .map(this::toFileNode)
+      .filter { it.options.visibility != NodeVisibility.HIDDEN }
       .iterator()
       .asSequence()
   }
 
   private fun toFileNode(path: Path): FileNode {
-    return FileNode(path.fileName.toString(), path.toAbsolutePath().toString(), path.isDirectory())
+    val absPath = path.toAbsolutePath().toString()
+    val nodeOptions = this.configService.getOptionsFor(absPath)
+    return FileNode(path.fileName.toString(), absPath, path.isDirectory(), nodeOptions)
   }
 }

@@ -1,5 +1,7 @@
 package eu.alkismavridis.codescape.layout
 
+import eu.alkismavridis.codescape.config.CodeScapeConfiguration
+import eu.alkismavridis.codescape.config.CodeScapeConfigurationService
 import eu.alkismavridis.codescape.project.FileNode
 import eu.alkismavridis.codescape.project.FsService
 import kotlin.math.floor
@@ -7,7 +9,7 @@ import kotlin.math.min
 import kotlin.math.sqrt
 
 class LayoutServiceImpl(
-  private val conf: CodeScapeConfiguration,
+  private val configurationService: CodeScapeConfigurationService,
   private val fsService: FsService
 ): LayoutService {
 
