@@ -5,10 +5,11 @@ import eu.alkismavridis.codescape.map.CodeScapeNode
 import eu.alkismavridis.codescape.map.LayoutService
 import eu.alkismavridis.codescape.map.MapArea
 import org.jetbrains.rpc.LOG
-import java.awt.Color
-import java.awt.Font
-import java.awt.Graphics
-import java.awt.Graphics2D
+import java.awt.*
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.concurrent.ConcurrentHashMap
+import javax.imageio.ImageIO
 import javax.swing.JPanel
 import kotlin.math.roundToInt
 
@@ -18,6 +19,7 @@ class CodeScapeView(
   private val actionHandler: CodeScapeActionHandler,
 ): JPanel() {
   private var uiState = CodeScapeViewState(0.0, 0.0, 1.0, null, null)
+  private val imageCache = ImageCache()
 
   init { this.setupMouseListeners() }
 
@@ -28,9 +30,13 @@ class CodeScapeView(
     val originalTransform = g.transform
     this.translateAndScale(g)
     val mapArea = this.calculateMapArea()
-    val ctx = RenderContext(this.uiState.scale, mapArea, g) {
-      this.layoutService.loadChildren(it, this::repaint)
-    }
+    val ctx = RenderContext(
+      this.uiState.scale,
+      mapArea,
+      g,
+      { this.layoutService.loadChildren(it, this::repaint) },
+      { this.imageCache.getImage(it) }
+    )
 
     renderNode(this.rootNode, ctx)
 
@@ -87,5 +93,18 @@ class CodeScapeView(
 
   companion object {
     private val DEBUG_FONT = Font("Serif", Font.PLAIN, 14)
+  }
+}
+
+
+
+class ImageCache {
+  private val map = ConcurrentHashMap<String, Image>()
+
+  fun getImage(path: String): Image {
+    return map.computeIfAbsent(path) {
+      LOG.info("Loading image \"$path\"")
+      ImageIO.read(Files.newInputStream(Paths.get(path)))
+    }
   }
 }

@@ -16,7 +16,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow
-                id="CodescapeToolbar"
+                id="Codescape"
                 icon="AllIcons.General.Locate"
                 anchor="right"
                 factoryClass="eu.alkismavridis.codescape.integration.CodeScapeToolbarFactory"/>

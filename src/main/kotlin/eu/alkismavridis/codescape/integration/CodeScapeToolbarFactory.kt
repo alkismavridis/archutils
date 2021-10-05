@@ -38,7 +38,7 @@ class CodeScapeToolbarFactory : ToolWindowFactory {
   }
 
   private fun createRootNode(project: Project) : CodeScapeNode {
-    val rootFile = FileNode(project.name, project.basePath ?: "", true, NodeOptions(NodeVisibility.VISIBLE))
+    val rootFile = FileNode(project.name, project.basePath ?: "", true, NodeOptions(NodeVisibility.VISIBLE, null))
     return CodeScapeNode(rootFile, 0.0, 0.0, 1000.0, 1000.0, null)
   }
 }

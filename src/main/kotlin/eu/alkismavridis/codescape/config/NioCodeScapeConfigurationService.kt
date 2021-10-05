@@ -17,24 +17,24 @@ class NioCodeScapeConfigurationService(private val projectRoot: Path) : CodeScap
       it.compiledRegex.matches(projectRelativePath)
     }
 
-    LOG.info("absoluteRootPath: $absoluteRootPath\n absolutePath: $absolutePath\n rel: ${absolutePath.removePrefix(absoluteRootPath)}\n rule found: ${rule != null}")
-
-
     return NodeOptions(
-      rule?.visibility ?: NodeVisibility.VISIBLE
+      rule?.visibility ?: NodeVisibility.VISIBLE,
+      rule?.image
     )
   }
 
   private fun loadConfiguration(): CodeScapeConfiguration {
     val configStream = this.projectRoot
-      .resolve("codescape-config.json")
+      .resolve(".codescape/config.json")
       .takeIf { Files.exists(it) }
       ?.let { Files.newInputStream(it) }
       ?: this::class.java.classLoader.getResourceAsStream("codescape-config.json")
       ?: throw IllegalStateException("No config file found")
 
-    val config = ObjectMapper().registerKotlinModule().readValue<CodeScapeConfiguration>(configStream)
-    LOG.info("Loaded config " + config.rules.size)
+    val config = ObjectMapper()
+      .registerKotlinModule()
+      .readValue<CodeScapeConfiguration>(configStream)
+    LOG.info("Loaded config with ${config.rules.size} rules")
     return config
   }
 }
