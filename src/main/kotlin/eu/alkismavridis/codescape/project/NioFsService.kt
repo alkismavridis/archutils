@@ -1,6 +1,5 @@
 package eu.alkismavridis.codescape.project
 
-import com.intellij.util.io.isDirectory
 import eu.alkismavridis.codescape.config.CodeScapeConfigurationService
 import eu.alkismavridis.codescape.config.NodeVisibility
 import java.nio.file.FileSystems
@@ -25,6 +24,6 @@ class NioFsService(
   private fun toFileNode(path: Path): FileNode {
     val absPath = path.toAbsolutePath().toString()
     val nodeOptions = this.configService.getOptionsFor(absPath)
-    return FileNode(path.fileName.toString(), absPath, path.isDirectory(), nodeOptions)
+    return FileNode(path.fileName.toString(), absPath, Files.isDirectory(path), nodeOptions)
   }
 }
