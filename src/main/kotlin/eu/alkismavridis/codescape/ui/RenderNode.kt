@@ -5,6 +5,7 @@ import eu.alkismavridis.codescape.layout.CodeScapeNode
 import java.awt.Color
 import java.awt.Font
 import java.awt.Rectangle
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 
@@ -97,13 +98,14 @@ private fun renderNodeLabel(node: CodeScapeNode, ctx: RenderContext) {
   if (widthPx > SHOW_LABEL_THRESHOLD) {
     val nodeXPixel = node.x.toPixelSpace(ctx.scale)
     val nodeYPixel = node.y.toPixelSpace(ctx.scale)
+    val fontSize = min(widthPx / 10, 20.0).roundToInt()
 
     val originalClip = ctx.g.clip
     ctx.g.clip = Rectangle(nodeXPixel, nodeYPixel - 30, node.width.toPixelSpace(ctx.scale), 30)
 
-    ctx.g.color = Color(200,200, 255)
-    ctx.g.font = LABEL_FONT
-    ctx.g.drawString(node.file.name, nodeXPixel, nodeYPixel - 8)
+    ctx.g.color = LABEL_COLOR
+    ctx.g.font = Font("serif", Font.PLAIN, fontSize)
+    ctx.g.drawString(node.file.name, nodeXPixel, nodeYPixel - 4)
 
     ctx.g.clip = originalClip
   }
@@ -113,7 +115,6 @@ private fun Double.toPixelSpace(scale: Double): Int {
   return (this * scale).roundToInt()
 }
 
-
 private const val OPEN_DIR_THRESHOLD = 200
-private const val SHOW_LABEL_THRESHOLD = 80
-private val LABEL_FONT = Font("serif", Font.PLAIN, 14)
+private const val SHOW_LABEL_THRESHOLD = 60
+private val LABEL_COLOR = Color(200,200, 255)

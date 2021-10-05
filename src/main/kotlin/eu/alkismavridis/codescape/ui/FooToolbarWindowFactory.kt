@@ -18,7 +18,7 @@ class FooToolbarWindowFactory : ToolWindowFactory {
     val fsService = NioFsService()
     val conf = CodeScapeConfiguration() // TODO alkis read real configuration
     val layoutService = LayoutServiceImpl(conf, fsService)
-    val rootObject = CodeScapeNode(FileNode("", project.basePath ?: "", true), 0.0, 0.0, 1000.0, 1000.0, null)
+    val rootObject = CodeScapeNode(FileNode(project.name, project.basePath ?: "", true), 0.0, 0.0, 1000.0, 1000.0, null)
 
     val view = CodeScapeView(rootObject, layoutService)
     val content = contentFactory.createContent(view, "Codescape", false)

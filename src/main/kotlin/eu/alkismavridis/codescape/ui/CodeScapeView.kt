@@ -4,6 +4,7 @@ import eu.alkismavridis.codescape.layout.CodeScapeNode
 import eu.alkismavridis.codescape.layout.LayoutService
 import eu.alkismavridis.codescape.layout.MapArea
 import java.awt.Color
+import java.awt.Font
 import java.awt.Graphics
 import java.awt.Graphics2D
 import javax.swing.JPanel
@@ -46,9 +47,10 @@ class CodeScapeView(
 
   private fun debugState(mapArea: MapArea, g: Graphics2D) {
     g.color = Color.green
-    g.drawString("X: ${mapArea.left.roundToInt()}, ${mapArea.right.roundToInt()}", 10.0f, 10.0f)
-    g.drawString("Y: ${mapArea.top.roundToInt()}, ${mapArea.bottom.roundToInt()}", 10.0f, 30.0f)
-    g.drawString("Scale: ${this.uiState.scale}", 10.0f, 50.0f)
+    g.font = DEBUG_FONT
+    g.drawString("X: ${mapArea.left.roundToInt()}, ${mapArea.right.roundToInt()}", 10.0f, 15.0f)
+    g.drawString("Y: ${mapArea.top.roundToInt()}, ${mapArea.bottom.roundToInt()}", 10.0f, 35.0f)
+    g.drawString("Scale: ${this.uiState.scale}", 10.0f, 55.0f)
   }
 
   private fun setupMouseListeners() {
@@ -68,4 +70,8 @@ class CodeScapeView(
     this.uiState.y,
     this.uiState.y + this.height / this.uiState.scale,
   )
+
+  companion object {
+    private val DEBUG_FONT = Font("Serif", Font.PLAIN, 14)
+  }
 }
