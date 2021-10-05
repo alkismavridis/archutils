@@ -6,20 +6,16 @@ import eu.alkismavridis.codescape.map.LayoutService
 import eu.alkismavridis.codescape.map.MapArea
 import org.jetbrains.rpc.LOG
 import java.awt.*
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.concurrent.ConcurrentHashMap
-import javax.imageio.ImageIO
 import javax.swing.JPanel
 import kotlin.math.roundToInt
 
 class CodeScapeView(
   private val rootNode: CodeScapeNode,
   private val layoutService: LayoutService,
+  private val imageCache: ImageCache,
   private val actionHandler: CodeScapeActionHandler,
 ): JPanel() {
   private var uiState = CodeScapeViewState(0.0, 0.0, 1.0, null, null)
-  private val imageCache = ImageCache()
 
   init { this.setupMouseListeners() }
 
@@ -98,13 +94,3 @@ class CodeScapeView(
 
 
 
-class ImageCache {
-  private val map = ConcurrentHashMap<String, Image>()
-
-  fun getImage(path: String): Image {
-    return map.computeIfAbsent(path) {
-      LOG.info("Loading image \"$path\"")
-      ImageIO.read(Files.newInputStream(Paths.get(path)))
-    }
-  }
-}

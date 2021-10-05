@@ -2,5 +2,5 @@ package eu.alkismavridis.codescape.config
 
 
 interface CodeScapeConfigurationService {
-  fun getOptionsFor(absolutePath: String): NodeOptions
+  fun getOptionsFor(projectPath: String): NodeOptions
 }

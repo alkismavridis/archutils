@@ -9,12 +9,10 @@ import java.nio.file.Path
 
 class NioCodeScapeConfigurationService(private val projectRoot: Path) : CodeScapeConfigurationService {
   private val config by lazy { this.loadConfiguration() }
-  private val absoluteRootPath = projectRoot.toAbsolutePath().toString()
 
-  override fun getOptionsFor(absolutePath: String): NodeOptions {
+  override fun getOptionsFor(projectPath: String): NodeOptions {
     val rule = this.config.rules.find {
-      val projectRelativePath = absolutePath.removePrefix(absoluteRootPath)
-      it.compiledRegex.matches(projectRelativePath)
+      it.compiledRegex.matches(projectPath)
     }
 
     return NodeOptions(
@@ -34,6 +32,7 @@ class NioCodeScapeConfigurationService(private val projectRoot: Path) : CodeScap
     val config = ObjectMapper()
       .registerKotlinModule()
       .readValue<CodeScapeConfiguration>(configStream)
+
     LOG.info("Loaded config with ${config.rules.size} rules")
     return config
   }

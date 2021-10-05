@@ -11,6 +11,7 @@ import eu.alkismavridis.codescape.map.LayoutServiceImpl
 import eu.alkismavridis.codescape.project.FileNode
 import eu.alkismavridis.codescape.project.NioFsService
 import eu.alkismavridis.codescape.ui.CodeScapeView
+import eu.alkismavridis.codescape.ui.ImageCache
 import org.jetbrains.rpc.LOG
 import java.nio.file.Path
 
@@ -21,12 +22,13 @@ class CodeScapeToolbarFactory : ToolWindowFactory {
     LOG.info("Project root detected: $projectRoot")
 
     val configurationService = NioCodeScapeConfigurationService(projectRoot)
-    val fsService = NioFsService(configurationService)
+    val fsService = NioFsService(configurationService, projectRoot)
     val layoutService = LayoutServiceImpl(configurationService, fsService)
 
     val rootObject = this.createRootNode(project)
-    val actionHandler = IdeaCodeScapeActionHandler(project)
-    val view = CodeScapeView(rootObject, layoutService, actionHandler)
+    val actionHandler = IdeaCodeScapeActionHandler(project, projectRoot)
+    val imageCache = ImageCache(projectRoot)
+    val view = CodeScapeView(rootObject, layoutService, imageCache, actionHandler)
     val content = ContentFactory.SERVICE.getInstance().createContent(view, "Codescape", false)
     toolWindow.contentManager.addContent(content)
   }

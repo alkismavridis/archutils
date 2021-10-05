@@ -8,13 +8,14 @@ import java.nio.file.Path
 
 class NioFsService(
   private val configService: CodeScapeConfigurationService,
+  private val projectRoot: Path,
 ): FsService {
 
   override fun getChildrenOf(path: String): Sequence<FileNode> {
     val dirPath = FileSystems.getDefault().getPath(path)
 
-    return Files.walk(dirPath, 1)
-      .filter { it != dirPath }
+    return Files.walk(projectRoot.resolve(dirPath), 1)
+      .skip(1)
       .map(this::toFileNode)
       .filter { it.options.visibility != NodeVisibility.HIDDEN }
       .iterator()
@@ -22,8 +23,8 @@ class NioFsService(
   }
 
   private fun toFileNode(path: Path): FileNode {
-    val absPath = path.toAbsolutePath().toString()
-    val nodeOptions = this.configService.getOptionsFor(absPath)
-    return FileNode(path.fileName.toString(), absPath, Files.isDirectory(path), nodeOptions)
+    val projectPath = projectRoot.relativize(path).toString()
+    val nodeOptions = this.configService.getOptionsFor(projectPath)
+    return FileNode(path.fileName.toString(), projectPath, Files.isDirectory(path), nodeOptions)
   }
 }
