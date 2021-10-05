@@ -1,6 +1,7 @@
 package eu.alkismavridis.codescape.layout
 
 import eu.alkismavridis.codescape.project.FileNode
+import org.jetbrains.rpc.LOG
 
 class CodeScapeNode(
   val file: FileNode,
@@ -8,7 +9,7 @@ class CodeScapeNode(
   val y: Double,
   val width: Double,
   val height: Double,
-  val parent: CodeScapeNode?,
+  private val parent: CodeScapeNode?,
   var children: List<CodeScapeNode> = emptyList(),
   var loadingState: ChildrenLoadState = ChildrenLoadState.UNCHECKED
 ) {
@@ -34,6 +35,22 @@ class CodeScapeNode(
       this.y + this.parent.getAbsoluteY()
     }
   }
+
+  fun getNodeAt(x: Double, y: Double, prioritiseChild: Boolean): CodeScapeNode? {
+    val absX = this.getAbsoluteX()
+    val absY = this.getAbsoluteY()
+
+    if (x < absX || x > absX + this.width) return null
+    if (y < absY || y > absY + this.height) return null
+    if (!prioritiseChild || this.loadingState != ChildrenLoadState.LOADED) {
+      return this
+    }
+
+    return this.children
+      .asSequence()
+      .mapNotNull { it.getNodeAt(x, y, prioritiseChild) }
+      .firstOrNull()
+  }
 }
 
 enum class ChildrenLoadState {
@@ -42,5 +59,6 @@ enum class ChildrenLoadState {
   UNCHECKED,
   LOADING,
   LOADED,
-  SIZE_TOO_LARGE
+  SIZE_TOO_LARGE,
+  CLOSED
 }

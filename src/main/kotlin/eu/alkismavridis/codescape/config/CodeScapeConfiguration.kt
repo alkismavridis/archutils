@@ -5,6 +5,8 @@ class CodeScapeConfiguration(
 )
 
 class CodeScapeConfigurationRule(
-  val regex: String,
+  private val regex: String,
   val visibility: NodeVisibility,
-)
+) {
+  val compiledRegex by lazy { Regex(regex) }
+}

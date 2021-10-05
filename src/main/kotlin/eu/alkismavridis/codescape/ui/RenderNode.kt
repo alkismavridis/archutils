@@ -49,8 +49,7 @@ private fun renderOpenDirectory(node: CodeScapeNode, ctx: RenderContext) {
 
     ChildrenLoadState.LOADING -> renderLoadingDirectory(node, ctx)
     ChildrenLoadState.LOADED -> renderOpenLoadedDirectory(node, ctx)
-    ChildrenLoadState.SIZE_TOO_LARGE -> renderOpenDirectoryWithManyChildren(node, ctx)
-    else -> {}
+    else -> renderExplicitlyClosedDirectory(node, ctx)
   }
 }
 
@@ -60,7 +59,7 @@ private fun renderClosedDirectory(node: CodeScapeNode, ctx: RenderContext) {
   ctx.g.fillRect(node.x.toPixelSpace(scale), node.y.toPixelSpace(scale), node.width.toPixelSpace(scale), node.height.toPixelSpace(scale))
 }
 
-private fun renderOpenDirectoryWithManyChildren(node: CodeScapeNode, ctx: RenderContext) {
+private fun renderExplicitlyClosedDirectory(node: CodeScapeNode, ctx: RenderContext) {
   val scale = ctx.scale
   ctx.g.color = Color.MAGENTA
   ctx.g.fillRect(node.x.toPixelSpace(scale), node.y.toPixelSpace(scale), node.width.toPixelSpace(scale), node.height.toPixelSpace(scale))

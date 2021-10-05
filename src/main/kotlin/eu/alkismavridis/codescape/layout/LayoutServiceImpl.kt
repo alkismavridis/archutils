@@ -2,6 +2,7 @@ package eu.alkismavridis.codescape.layout
 
 import eu.alkismavridis.codescape.config.CodeScapeConfiguration
 import eu.alkismavridis.codescape.config.CodeScapeConfigurationService
+import eu.alkismavridis.codescape.config.NodeVisibility
 import eu.alkismavridis.codescape.project.FileNode
 import eu.alkismavridis.codescape.project.FsService
 import kotlin.math.floor
@@ -14,7 +15,13 @@ class LayoutServiceImpl(
 ): LayoutService {
 
   override fun loadChildren(parent: CodeScapeNode, onPresent: () -> Unit) {
-    if (!parent.file.isDirectory || parent.loadingState != ChildrenLoadState.UNCHECKED) {
+    if (parent.loadingState != ChildrenLoadState.UNCHECKED) {
+      return
+    } else if (!parent.file.isDirectory) {
+      parent.loadingState = ChildrenLoadState.NO_CHILDREN
+      return
+    } else if (parent.file.options.visibility == NodeVisibility.CLOSED) {
+      parent.loadingState = ChildrenLoadState.CLOSED
       return
     }
 

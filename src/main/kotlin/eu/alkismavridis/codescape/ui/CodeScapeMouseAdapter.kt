@@ -1,10 +1,14 @@
 package eu.alkismavridis.codescape.ui
 
+import eu.alkismavridis.codescape.layout.CodeScapeNode
+import org.jetbrains.rpc.LOG
 import java.awt.event.*
 
 class CodeScapeMouseAdapter(
   private val getState: () -> CodeScapeViewState,
-  private val onChange: (state: CodeScapeViewState) -> Unit
+  private val getRootNode: () -> CodeScapeNode,
+  private val onChange: (state: CodeScapeViewState) -> Unit,
+  private val onNodeClicked: (node: CodeScapeNode, mouseButton: Int) -> Unit
 ): MouseListener, MouseMotionListener, MouseWheelListener {
 
   override fun mouseDragged(e: MouseEvent){
@@ -31,7 +35,17 @@ class CodeScapeMouseAdapter(
   override fun mouseReleased(e: MouseEvent) = this.update { it.withDragStart(null) }
   override fun mouseExited(e: MouseEvent) = this.update { it.withDragStart(null) }
 
-  override fun mouseClicked(e: MouseEvent) {}
+  override fun mouseClicked(e: MouseEvent) {
+    val state = this.getState()
+    val rootNode = this.getRootNode()
+    val mapX = state.x + e.x / state.scale
+    val mapY = state.y + e.y / state.scale
+    val clickedNode = rootNode.getNodeAt(mapX, mapY, true)
+    if (clickedNode != null) {
+      this.onNodeClicked(clickedNode, e.button)
+    }
+  }
+
   override fun mouseEntered(e: MouseEvent) {}
   override fun mouseMoved(e: MouseEvent) {}
 

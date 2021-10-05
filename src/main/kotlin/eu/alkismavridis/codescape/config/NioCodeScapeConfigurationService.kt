@@ -10,13 +10,20 @@ import java.nio.file.Path
 
 class NioCodeScapeConfigurationService(private val projectRoot: Path) : CodeScapeConfigurationService {
   private val config by lazy { this.loadConfiguration() }
+  private val absoluteRootPath = projectRoot.toAbsolutePath().toString()
 
   override fun getOptionsFor(absolutePath: String): NodeOptions {
-    return if (absolutePath.endsWith("node_modules")) {
-      NodeOptions(NodeVisibility.HIDDEN)
-    } else {
-      NodeOptions(NodeVisibility.VISIBLE)
+    val rule = this.config.rules.find {
+      val projectRelativePath = absolutePath.removePrefix(absoluteRootPath)
+      it.compiledRegex.matches(projectRelativePath)
     }
+
+    LOG.info("absoluteRootPath: $absoluteRootPath\n absolutePath: $absolutePath\n rel: ${absolutePath.removePrefix(absoluteRootPath)}\n rule found: ${rule != null}")
+
+
+    return NodeOptions(
+      rule?.visibility ?: NodeVisibility.VISIBLE
+    )
   }
 
   private fun loadConfiguration(): CodeScapeConfiguration {
