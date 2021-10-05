@@ -1,7 +1,6 @@
-package eu.alkismavridis.codescape.layout
+package eu.alkismavridis.codescape.map
 
 import eu.alkismavridis.codescape.project.FileNode
-import org.jetbrains.rpc.LOG
 
 class CodeScapeNode(
   val file: FileNode,

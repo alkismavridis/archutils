@@ -1,13 +1,8 @@
 package eu.alkismavridis.codescape.ui
 
-import eu.alkismavridis.codescape.layout.CodeScapeNode
-import eu.alkismavridis.codescape.layout.MapArea
-import org.jetbrains.rpc.LOG
-import java.awt.Font
+import eu.alkismavridis.codescape.map.CodeScapeNode
+import eu.alkismavridis.codescape.map.MapArea
 import java.awt.Graphics2D
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
 
 class RenderContext(
   val scale: Double,

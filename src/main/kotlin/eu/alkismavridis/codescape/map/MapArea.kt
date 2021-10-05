@@ -1,4 +1,4 @@
-package eu.alkismavridis.codescape.layout
+package eu.alkismavridis.codescape.map
 
 class MapArea(
   val left: Double,

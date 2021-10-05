@@ -19,7 +19,7 @@
                 id="CodescapeToolbar"
                 icon="AllIcons.General.Locate"
                 anchor="right"
-                factoryClass="eu.alkismavridis.codescape.ui.FooToolbarWindowFactory"/>
+                factoryClass="eu.alkismavridis.codescape.integration.CodeScapeToolbarFactory"/>
     </extensions>
 
     <actions>

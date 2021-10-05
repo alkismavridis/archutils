@@ -1,7 +1,7 @@
 package eu.alkismavridis.codescape.ui
 
-import eu.alkismavridis.codescape.layout.ChildrenLoadState
-import eu.alkismavridis.codescape.layout.CodeScapeNode
+import eu.alkismavridis.codescape.map.ChildrenLoadState
+import eu.alkismavridis.codescape.map.CodeScapeNode
 import java.awt.Color
 import java.awt.Font
 import java.awt.Rectangle

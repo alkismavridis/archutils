@@ -1,6 +1,5 @@
-package eu.alkismavridis.codescape.layout
+package eu.alkismavridis.codescape.map
 
-import eu.alkismavridis.codescape.config.CodeScapeConfiguration
 import eu.alkismavridis.codescape.config.CodeScapeConfigurationService
 import eu.alkismavridis.codescape.config.NodeVisibility
 import eu.alkismavridis.codescape.project.FileNode

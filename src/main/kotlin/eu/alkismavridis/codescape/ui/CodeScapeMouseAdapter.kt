@@ -1,7 +1,6 @@
 package eu.alkismavridis.codescape.ui
 
-import eu.alkismavridis.codescape.layout.CodeScapeNode
-import org.jetbrains.rpc.LOG
+import eu.alkismavridis.codescape.map.CodeScapeNode
 import java.awt.event.*
 
 class CodeScapeMouseAdapter(

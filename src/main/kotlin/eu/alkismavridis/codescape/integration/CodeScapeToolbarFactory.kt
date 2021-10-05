@@ -1,4 +1,4 @@
-package eu.alkismavridis.codescape.ui
+package eu.alkismavridis.codescape.integration
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.getExternalConfigurationDir
@@ -7,13 +7,13 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
 import eu.alkismavridis.codescape.config.*
-import eu.alkismavridis.codescape.layout.CodeScapeNode
-import eu.alkismavridis.codescape.layout.LayoutServiceImpl
+import eu.alkismavridis.codescape.map.CodeScapeNode
+import eu.alkismavridis.codescape.map.LayoutServiceImpl
 import eu.alkismavridis.codescape.project.FileNode
 import eu.alkismavridis.codescape.project.NioFsService
-import org.jetbrains.rpc.LOG
+import eu.alkismavridis.codescape.ui.CodeScapeView
 
-class FooToolbarWindowFactory : ToolWindowFactory {
+class CodeScapeToolbarFactory : ToolWindowFactory {
 
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
     val contentFactory = ContentFactory.SERVICE.getInstance()
@@ -31,7 +31,8 @@ class FooToolbarWindowFactory : ToolWindowFactory {
     val layoutService = LayoutServiceImpl(configurationService, fsService)
 
     val rootObject = this.createRootNode(project)
-    val view = CodeScapeView(rootObject, layoutService, project)
+    val actionHandler = IdeaCodeScapeActionHandler(project)
+    val view = CodeScapeView(rootObject, layoutService, actionHandler)
     val content = contentFactory.createContent(view, "Codescape", false)
     toolWindow.contentManager.addContent(content)
   }
