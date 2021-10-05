@@ -1,7 +1,6 @@
 package eu.alkismavridis.codescape.integration
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.getExternalConfigurationDir
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
@@ -12,33 +11,39 @@ import eu.alkismavridis.codescape.map.LayoutServiceImpl
 import eu.alkismavridis.codescape.project.FileNode
 import eu.alkismavridis.codescape.project.NioFsService
 import eu.alkismavridis.codescape.ui.CodeScapeView
+import org.jetbrains.rpc.LOG
+import java.nio.file.Path
 
 class CodeScapeToolbarFactory : ToolWindowFactory {
 
   override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-    val contentFactory = ContentFactory.SERVICE.getInstance()
-    project.getExternalConfigurationDir()
+    val projectRoot = this.getProjectRoot(project)
+    LOG.info("Project root detected: $projectRoot")
 
-    val basePath = ProjectRootManager
-      .getInstance(project)
-      .contentRoots
-      .firstOrNull()
-      ?.toNioPath()
-      ?: throw IllegalStateException("No project path found")
-
-    val configurationService = NioCodeScapeConfigurationService(basePath)
+    val configurationService = NioCodeScapeConfigurationService(projectRoot)
     val fsService = NioFsService(configurationService)
     val layoutService = LayoutServiceImpl(configurationService, fsService)
 
     val rootObject = this.createRootNode(project)
     val actionHandler = IdeaCodeScapeActionHandler(project)
     val view = CodeScapeView(rootObject, layoutService, actionHandler)
-    val content = contentFactory.createContent(view, "Codescape", false)
+    val content = ContentFactory.SERVICE.getInstance().createContent(view, "Codescape", false)
     toolWindow.contentManager.addContent(content)
   }
 
   private fun createRootNode(project: Project) : CodeScapeNode {
     val rootFile = FileNode(project.name, project.basePath ?: "", true, NodeOptions(NodeVisibility.VISIBLE, null))
     return CodeScapeNode(rootFile, 0.0, 0.0, 1000.0, 1000.0, null)
+  }
+
+  private fun getProjectRoot(project: Project): Path {
+    return ProjectRootManager
+      .getInstance(project)
+      .contentRoots
+      .firstOrNull()
+      ?.toNioPath()
+      ?.toAbsolutePath()
+      ?.normalize()
+      ?: throw IllegalStateException("No project path found")
   }
 }
