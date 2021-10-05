@@ -12,20 +12,20 @@ class LayoutServiceImpl(
 ): LayoutService {
 
   override fun loadChildren(parent: CodeScapeNode, onPresent: () -> Unit) {
-    if (parent.loadingState != CodeScapeNodeLoadingState.UNCHECKED) {
+    if (!parent.file.isDirectory || parent.loadingState != ChildrenLoadState.UNCHECKED) {
       return
     }
 
-    parent.loadingState = CodeScapeNodeLoadingState.LOADING
+    parent.loadingState = ChildrenLoadState.LOADING
     onPresent()
 
     val childFiles = this.fsService.getChildrenOf(parent.file.path).toList()
     if (childFiles.size > SIZE_LIMIT) {
-      parent.loadingState = CodeScapeNodeLoadingState.SIZE_TOO_LARGE
+      parent.loadingState = ChildrenLoadState.SIZE_TOO_LARGE
       onPresent()
     } else {
       parent.children = this.layout(parent, childFiles)
-      parent.loadingState = CodeScapeNodeLoadingState.LOADED
+      parent.loadingState = ChildrenLoadState.LOADED
       onPresent()
     }
   }
@@ -43,17 +43,18 @@ class LayoutServiceImpl(
     )
 
     return childFiles.mapIndexed { index, file ->
-      this.createChild(file, index, colCount, spacing, childSize)
+      this.createChild(parent, file, index, colCount, spacing, childSize)
     }
   }
 
-  private fun createChild(file: FileNode, index: Int, colCount: Double, spacing: Double, size: Double): CodeScapeNode {
+  private fun createChild(parent: CodeScapeNode, file: FileNode, index: Int, colCount: Double, spacing: Double, size: Double): CodeScapeNode {
     val childRow = floor(index / colCount)
     val childCol = index - childRow * colCount
     val x = spacing + childCol * (size + spacing)
     val y = spacing + childRow * (size + spacing)
+    val childrenLoadState = if(file.isDirectory) ChildrenLoadState.UNCHECKED else ChildrenLoadState.NO_CHILDREN
 
-    return CodeScapeNode(file, x, y, size, size)
+    return CodeScapeNode(file, x, y, size, size, parent, emptyList(), childrenLoadState)
   }
 
   companion object {

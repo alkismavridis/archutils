@@ -1,6 +1,5 @@
-package eu.alkismavridis.codescape.ui.swing
+package eu.alkismavridis.codescape.ui
 
-import org.jetbrains.rpc.LOG
 import java.awt.event.*
 
 class CodeScapeMouseAdapter(
@@ -22,16 +21,9 @@ class CodeScapeMouseAdapter(
     val scrollMapX = it.x + e.point.x / it.scale
     val scrollMapY = it.y + e.point.y / it.scale
 
-    LOG.info("OLD: ${it.x}, ${it.y}, scale: ${it.scale}")
-    LOG.info("STABLE: $scrollMapX, $scrollMapY")
-
-
     val zoomFactor = if(e.wheelRotation < 0)  ZOOM_STEP else 1 / ZOOM_STEP
-    LOG.info("zoom factor: $zoomFactor")
     val newLeft = scrollMapX + (it.x - scrollMapX) / zoomFactor
     val newTop = scrollMapY + (it.y - scrollMapY) / zoomFactor
-
-    LOG.info("NEW LEFT/TOP: $newLeft, $newTop\n\n")
     it.withLocationAndScale(newLeft, newTop, it.scale * zoomFactor)
   }
 

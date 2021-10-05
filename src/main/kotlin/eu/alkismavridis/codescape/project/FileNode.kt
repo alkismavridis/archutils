@@ -2,5 +2,6 @@ package eu.alkismavridis.codescape.project
 
 class FileNode(
   val name: String,
-  val path: String
+  val path: String,
+  val isDirectory: Boolean
 )

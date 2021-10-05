@@ -1,5 +1,6 @@
 package eu.alkismavridis.codescape.project
 
+import com.intellij.util.io.isDirectory
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
@@ -17,6 +18,6 @@ class NioFsService: FsService {
   }
 
   private fun toFileNode(path: Path): FileNode {
-    return FileNode(path.fileName.toString(), path.toAbsolutePath().toString())
+    return FileNode(path.fileName.toString(), path.toAbsolutePath().toString(), path.isDirectory())
   }
 }

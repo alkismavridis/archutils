@@ -1,4 +1,4 @@
-package eu.alkismavridis.codescape.ui.swing
+package eu.alkismavridis.codescape.ui
 
 import java.awt.Point
 
