@@ -19,7 +19,7 @@ class LayoutServiceImpl(
     parent.loadingState = ChildrenLoadState.LOADING
     onPresent()
 
-    val childFiles = this.fsService.getChildrenOf(parent.file.path).toList()
+    val childFiles = this.fsService.getChildrenOf(parent.file.path).take(SIZE_LIMIT + 1).toList()
     if (childFiles.size > SIZE_LIMIT) {
       parent.loadingState = ChildrenLoadState.SIZE_TOO_LARGE
       onPresent()

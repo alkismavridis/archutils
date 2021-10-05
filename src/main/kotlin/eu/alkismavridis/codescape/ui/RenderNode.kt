@@ -2,9 +2,9 @@ package eu.alkismavridis.codescape.ui
 
 import eu.alkismavridis.codescape.layout.ChildrenLoadState
 import eu.alkismavridis.codescape.layout.CodeScapeNode
-import eu.alkismavridis.codescape.layout.MapArea
 import java.awt.Color
-import java.awt.Graphics2D
+import java.awt.Font
+import java.awt.Rectangle
 import kotlin.math.roundToInt
 
 
@@ -23,14 +23,13 @@ private fun renderVisibleNode(node: CodeScapeNode, ctx: RenderContext) {
     renderVisibleFile(node, ctx)
   }
 
-  ctx.g.color = Color.BLUE
-  ctx.g.drawString(node.file.name, node.x.toPixelSpace(ctx.scale), node.y.toPixelSpace(ctx.scale))
+  renderNodeLabel(node, ctx)
 }
 
 private fun renderVisibleDirectory(node: CodeScapeNode, ctx: RenderContext) {
   val widthPx = node.width * ctx.scale
   val heightPx = node.height * ctx.scale
-  val shouldRenderOpen = node.file.isDirectory && widthPx > CHILDREN_THRESHOLD || heightPx > CHILDREN_THRESHOLD
+  val shouldRenderOpen = node.file.isDirectory && widthPx > OPEN_DIR_THRESHOLD || heightPx > OPEN_DIR_THRESHOLD
 
   if (shouldRenderOpen) {
     renderOpenDirectory(node, ctx)
@@ -93,15 +92,28 @@ private fun renderVisibleFile(node: CodeScapeNode, ctx: RenderContext) {
   ctx.g.fillRect(node.x.toPixelSpace(scale), node.y.toPixelSpace(scale), node.width.toPixelSpace(scale), node.height.toPixelSpace(scale))
 }
 
+private fun renderNodeLabel(node: CodeScapeNode, ctx: RenderContext) {
+  val widthPx = node.width * ctx.scale
+  if (widthPx > SHOW_LABEL_THRESHOLD) {
+    val nodeXPixel = node.x.toPixelSpace(ctx.scale)
+    val nodeYPixel = node.y.toPixelSpace(ctx.scale)
+
+    val originalClip = ctx.g.clip
+    ctx.g.clip = Rectangle(nodeXPixel, nodeYPixel - 30, node.width.toPixelSpace(ctx.scale), 30)
+
+    ctx.g.color = Color(200,200, 255)
+    ctx.g.font = LABEL_FONT
+    ctx.g.drawString(node.file.name, nodeXPixel, nodeYPixel - 8)
+
+    ctx.g.clip = originalClip
+  }
+}
+
 private fun Double.toPixelSpace(scale: Double): Int {
   return (this * scale).roundToInt()
 }
 
-class RenderContext(
-  val scale: Double,
-  val mapArea: MapArea,
-  val g: Graphics2D,
-  val loadChildren: (node: CodeScapeNode) -> Unit
-)
 
-private const val CHILDREN_THRESHOLD = 200
+private const val OPEN_DIR_THRESHOLD = 200
+private const val SHOW_LABEL_THRESHOLD = 80
+private val LABEL_FONT = Font("serif", Font.PLAIN, 14)
