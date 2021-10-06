@@ -28,7 +28,8 @@ class CodeScapeView(
 
   override fun paintComponent(g: Graphics) {
     if(g !is Graphics2D) return
-    g.clearRect(0, 0, this.width, this.height)
+    g.color = BACKGROUND_COLOR
+    g.fillRect(0, 0, this.width, this.height)
 
     val originalTransform = g.transform
     this.translateAndScale(g)
@@ -99,5 +100,6 @@ class CodeScapeView(
 
   companion object {
     private val DEBUG_FONT = Font("Serif", Font.PLAIN, 14)
+    private val BACKGROUND_COLOR = Color(100, 100, 100)
   }
 }
