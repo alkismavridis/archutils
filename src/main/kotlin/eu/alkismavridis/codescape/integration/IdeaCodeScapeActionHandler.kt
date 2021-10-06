@@ -1,5 +1,6 @@
 package eu.alkismavridis.codescape.integration
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -15,5 +16,9 @@ class IdeaCodeScapeActionHandler(private val project: Project, private val proje
     } else {
       OpenFileDescriptor(this.project, virtualFile, 0).navigate(true)
     }
+  }
+
+  override fun runReadOnlyTask(runnable: () -> Unit) {
+    ApplicationManager.getApplication().runReadAction(runnable)
   }
 }

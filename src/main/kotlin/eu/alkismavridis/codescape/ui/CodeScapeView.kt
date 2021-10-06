@@ -1,5 +1,6 @@
 package eu.alkismavridis.codescape.ui
 
+import com.intellij.openapi.application.ApplicationManager
 import eu.alkismavridis.codescape.integration.CodeScapeActionHandler
 import eu.alkismavridis.codescape.map.CodeScapeNode
 import eu.alkismavridis.codescape.map.LayoutService
@@ -36,7 +37,7 @@ class CodeScapeView(
       this.uiState.scale,
       camera,
       g,
-      { this.layoutService.loadChildren(it, this::repaint) },
+      { node -> this.actionHandler.runReadOnlyTask { this.layoutService.loadChildren(node, this::repaint) } },
       { this.imageCache.getImage(it) }
     )
 
