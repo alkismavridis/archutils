@@ -60,7 +60,6 @@ class NodeRenderer(
   }
 
   private fun renderOpenLoadedDirectory(node: CodeScapeNode) {
-    val scale = this.scale
     val image = node.file.options.image?.let { this.getImage(it) }
     if (image == null) {
       val x = node.x.toPixelSpace(scale)
@@ -118,7 +117,6 @@ class NodeRenderer(
 
   private fun renderSolidNode(node: CodeScapeNode, defaultColor: Color) {
     val image = node.file.options.image?.let { this.getImage(it) }
-    val scale = this.scale
 
     if (image == null) {
       this.g.color = defaultColor
@@ -129,7 +127,6 @@ class NodeRenderer(
   }
 
   private fun renderImage(node: CodeScapeNode, image: Image) {
-    val scale = this.scale
     val nodeLeft = node.x.toPixelSpace(scale)
     val nodeTop = node.y.toPixelSpace(scale)
     val nodeWidth = node.width.toPixelSpace(scale)
