@@ -10,14 +10,21 @@ import javax.swing.JPanel
 import kotlin.math.roundToInt
 
 class CodeScapeView(
-  private val rootNode: CodeScapeNode,
+  private var rootNode: CodeScapeNode,
   private val layoutService: LayoutService,
   private val imageCache: ImageCache,
   private val actionHandler: CodeScapeActionHandler,
 ): JPanel() {
-  private var uiState = CodeScapeViewState(0.0, 0.0, 1.0, null, null)
+  private var uiState = this.createInitialState()
 
   init { this.setupMouseListeners() }
+
+  fun reload(newRoot: CodeScapeNode) {
+    LOG.info("I reload the UI! :)")
+    this.rootNode = newRoot
+    this.uiState = this.createInitialState()
+    this.repaint()
+  }
 
   override fun paintComponent(g: Graphics) {
     if(g !is Graphics2D) return
@@ -87,10 +94,9 @@ class CodeScapeView(
     }
   }
 
+  private fun createInitialState() = CodeScapeViewState(0.0, 0.0, 1.0, null, null)
+
   companion object {
     private val DEBUG_FONT = Font("Serif", Font.PLAIN, 14)
   }
 }
-
-
-
