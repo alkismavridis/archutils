@@ -11,8 +11,8 @@ class CodeScapeNode(
   var loadingState: ChildrenLoadState = ChildrenLoadState.UNCHECKED
 ) {
   fun unloadChildren() {
-    this.children = emptyList()
-    if(file.isDirectory) {
+    if(this.children.isNotEmpty()) {
+      this.children = emptyList()
       this.loadingState = ChildrenLoadState.UNCHECKED
     }
   }
