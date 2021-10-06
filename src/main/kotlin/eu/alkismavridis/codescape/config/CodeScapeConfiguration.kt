@@ -1,7 +1,8 @@
 package eu.alkismavridis.codescape.config
 
 class CodeScapeConfiguration(
-  val rules: List<CodeScapeConfigurationRule>
+  val root: String = "",
+  val rules: List<CodeScapeConfigurationRule> = emptyList()
 )
 
 class CodeScapeConfigurationRule(

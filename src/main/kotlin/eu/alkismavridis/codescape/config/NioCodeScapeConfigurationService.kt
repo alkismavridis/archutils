@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.jetbrains.rpc.LOG
+import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -21,19 +22,23 @@ class NioCodeScapeConfigurationService(private val projectRoot: Path) : CodeScap
     )
   }
 
+  override fun getRootNodePath() = config.root
+
   private fun loadConfiguration(): CodeScapeConfiguration {
-    val configStream = this.projectRoot
+    val loadedConfig = this.projectRoot
       .resolve(".codescape/config.json")
       .takeIf { Files.exists(it) }
       ?.let { Files.newInputStream(it) }
-      ?: this::class.java.classLoader.getResourceAsStream("codescape-config.json")
-      ?: throw IllegalStateException("No config file found")
+      ?.let(this::parseConfig)
+      ?: CodeScapeConfiguration()
 
-    val config = ObjectMapper()
+    LOG.info("Loaded config with ${loadedConfig.rules.size} rules. Root: ${loadedConfig.root}")
+    return loadedConfig
+  }
+
+  private fun parseConfig(input: InputStream): CodeScapeConfiguration {
+    return ObjectMapper()
       .registerKotlinModule()
-      .readValue<CodeScapeConfiguration>(configStream)
-
-    LOG.info("Loaded config with ${config.rules.size} rules")
-    return config
+      .readValue(input)
   }
 }
