@@ -1,5 +1,6 @@
 package eu.alkismavridis.codescape.ui
 
+import eu.alkismavridis.codescape.map.MapPoint
 import java.awt.Point
 
 class CodeScapeViewState(
@@ -42,7 +43,3 @@ class CodeScapeViewState(
   )
 }
 
-class MapPoint(
-  val x: Double,
-  val y: Double,
-)

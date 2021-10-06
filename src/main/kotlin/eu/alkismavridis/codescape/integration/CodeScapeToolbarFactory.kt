@@ -10,8 +10,8 @@ import com.intellij.ui.content.ContentFactory
 import eu.alkismavridis.codescape.config.*
 import eu.alkismavridis.codescape.map.CodeScapeNode
 import eu.alkismavridis.codescape.map.LayoutServiceImpl
-import eu.alkismavridis.codescape.project.FileNode
-import eu.alkismavridis.codescape.project.NioFsService
+import eu.alkismavridis.codescape.fs.FileNode
+import eu.alkismavridis.codescape.fs.NioFsService
 import eu.alkismavridis.codescape.ui.CodeScapeView
 import eu.alkismavridis.codescape.ui.ImageCache
 import org.jetbrains.rpc.LOG
@@ -30,7 +30,7 @@ class CodeScapeToolbarFactory : ToolWindowFactory {
 
     val rootNode = this.createRootNode(project, rootNodePath)
     val actionHandler = IdeaCodeScapeActionHandler(project, projectRoot)
-    val imageCache = ImageCache(projectRoot)
+    val imageCache = ImageCache(fsService)
     val view = CodeScapeView(rootNode, layoutService, imageCache, actionHandler)
     val fileListener = CodeScapeFileListener { this.reload(view, project, rootNodePath) }
     VirtualFileManager.VFS_CHANGES.subscribe(null, fileListener)

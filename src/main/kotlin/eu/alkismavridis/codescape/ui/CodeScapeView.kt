@@ -20,7 +20,6 @@ class CodeScapeView(
   init { this.setupMouseListeners() }
 
   fun reload(newRoot: CodeScapeNode) {
-    LOG.info("I reload the UI! :)")
     this.rootNode = newRoot
     this.uiState = this.createInitialState()
     this.repaint()
@@ -33,7 +32,7 @@ class CodeScapeView(
     val originalTransform = g.transform
     this.translateAndScale(g)
     val mapArea = this.calculateMapArea()
-    val ctx = RenderContext(
+    val renderer = NodeRenderer(
       this.uiState.scale,
       mapArea,
       g,
@@ -41,7 +40,7 @@ class CodeScapeView(
       { this.imageCache.getImage(it) }
     )
 
-    renderNode(this.rootNode, ctx)
+    renderer.render(this.rootNode)
 
     g.transform = originalTransform
     this.debugState(mapArea, g)

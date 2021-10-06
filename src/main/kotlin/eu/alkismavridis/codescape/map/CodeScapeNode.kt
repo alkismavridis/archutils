@@ -1,6 +1,6 @@
 package eu.alkismavridis.codescape.map
 
-import eu.alkismavridis.codescape.project.FileNode
+import eu.alkismavridis.codescape.fs.FileNode
 
 class CodeScapeNode(
   val file: FileNode,

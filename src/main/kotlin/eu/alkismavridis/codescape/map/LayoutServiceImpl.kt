@@ -2,8 +2,8 @@ package eu.alkismavridis.codescape.map
 
 import eu.alkismavridis.codescape.config.CodeScapeConfigurationService
 import eu.alkismavridis.codescape.config.NodeVisibility
-import eu.alkismavridis.codescape.project.FileNode
-import eu.alkismavridis.codescape.project.FsService
+import eu.alkismavridis.codescape.fs.FileNode
+import eu.alkismavridis.codescape.fs.FsService
 import kotlin.math.floor
 import kotlin.math.min
 import kotlin.math.sqrt

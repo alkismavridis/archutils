@@ -1,4 +1,4 @@
-package eu.alkismavridis.codescape.project
+package eu.alkismavridis.codescape.fs
 
 import eu.alkismavridis.codescape.config.NodeOptions
 
