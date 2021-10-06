@@ -4,6 +4,7 @@ import eu.alkismavridis.codescape.config.CodeScapeConfigurationService
 import eu.alkismavridis.codescape.config.NodeVisibility
 import eu.alkismavridis.codescape.fs.FileNode
 import eu.alkismavridis.codescape.fs.FsService
+import eu.alkismavridis.codescape.map.model.MapArea
 import kotlin.math.floor
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -41,13 +42,14 @@ class LayoutServiceImpl(
   private fun layout(parent: CodeScapeNode, childFiles: List<FileNode>): List<CodeScapeNode> {
     if(childFiles.isEmpty()) return emptyList()
 
-    val parentAspectRatio = parent.width / parent.height
-    val spacing = min(parent.width, parent.height) * SPACING_RATIO
+    val parentArea = parent.area
+    val parentAspectRatio = parentArea.getWidth() / parentArea.getHeight()
+    val spacing = min(parentArea.getWidth(), parentArea.getHeight()) * SPACING_RATIO
     val rowCount = floor( sqrt(childFiles.size / parentAspectRatio) )
     val colCount = floor(childFiles.size / rowCount)
     val childSize = min(
-      (parent.width - spacing) / colCount - spacing,
-      (parent.height - spacing) / rowCount - spacing,
+      (parentArea.getWidth() - spacing) / colCount - spacing,
+      (parentArea.getHeight() - spacing) / rowCount - spacing,
     )
 
     return childFiles.mapIndexed { index, file ->
@@ -62,7 +64,8 @@ class LayoutServiceImpl(
     val y = spacing + childRow * (size + spacing)
     val childrenLoadState = if(file.isDirectory) ChildrenLoadState.UNCHECKED else ChildrenLoadState.NO_CHILDREN
 
-    return CodeScapeNode(file, x, y, size, size, parent, emptyList(), childrenLoadState)
+    val area = MapArea(x, y, size, size, parent.area)
+    return CodeScapeNode(file, area, emptyList(), childrenLoadState)
   }
 
   companion object {

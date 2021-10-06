@@ -12,6 +12,7 @@ import eu.alkismavridis.codescape.map.CodeScapeNode
 import eu.alkismavridis.codescape.map.LayoutServiceImpl
 import eu.alkismavridis.codescape.fs.FileNode
 import eu.alkismavridis.codescape.fs.NioFsService
+import eu.alkismavridis.codescape.map.model.MapArea
 import eu.alkismavridis.codescape.ui.CodeScapeView
 import eu.alkismavridis.codescape.ui.ImageCache
 import org.jetbrains.rpc.LOG
@@ -41,7 +42,8 @@ class CodeScapeToolbarFactory : ToolWindowFactory {
 
   private fun createRootNode(project: Project, rootNodePath: Path) : CodeScapeNode {
     val rootFile = FileNode(project.name, rootNodePath.toString(), true, NodeOptions(NodeVisibility.VISIBLE, null))
-    return CodeScapeNode(rootFile, 0.0, 0.0, 1000.0, 1000.0, null)
+    val rootArea = MapArea(0.0, 0.0, 1000.0, 1000.0, null)
+    return CodeScapeNode(rootFile, rootArea)
   }
 
   private fun reload(view: CodeScapeView, project: Project, rootNodePath: Path) {

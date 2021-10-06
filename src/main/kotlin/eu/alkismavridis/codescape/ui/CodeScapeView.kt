@@ -3,7 +3,7 @@ package eu.alkismavridis.codescape.ui
 import eu.alkismavridis.codescape.integration.CodeScapeActionHandler
 import eu.alkismavridis.codescape.map.CodeScapeNode
 import eu.alkismavridis.codescape.map.LayoutService
-import eu.alkismavridis.codescape.map.MapArea
+import eu.alkismavridis.codescape.map.model.MapArea
 import org.jetbrains.rpc.LOG
 import java.awt.*
 import javax.swing.JPanel
@@ -31,10 +31,10 @@ class CodeScapeView(
 
     val originalTransform = g.transform
     this.translateAndScale(g)
-    val mapArea = this.calculateMapArea()
+    val camera = this.calculateCamera()
     val renderer = NodeRenderer(
       this.uiState.scale,
-      mapArea,
+      camera,
       g,
       { this.layoutService.loadChildren(it, this::repaint) },
       { this.imageCache.getImage(it) }
@@ -43,7 +43,7 @@ class CodeScapeView(
     renderer.render(this.rootNode)
 
     g.transform = originalTransform
-    this.debugState(mapArea, g)
+    this.debugState(camera, g)
   }
 
 
@@ -56,11 +56,11 @@ class CodeScapeView(
     g.translate(-this.uiState.x.toPixelSpace(this.uiState.scale), -this.uiState.y.toPixelSpace(this.uiState.scale))
   }
 
-  private fun debugState(mapArea: MapArea, g: Graphics2D) {
+  private fun debugState(camera: MapArea, g: Graphics2D) {
     g.color = Color.green
     g.font = DEBUG_FONT
-    g.drawString("X: ${mapArea.left.roundToInt()}, ${mapArea.right.roundToInt()}", 10.0f, 15.0f)
-    g.drawString("Y: ${mapArea.top.roundToInt()}, ${mapArea.bottom.roundToInt()}", 10.0f, 35.0f)
+    g.drawString("X: ${camera.getLeft().roundToInt()}, ${camera.getRight().roundToInt()}", 10.0f, 15.0f)
+    g.drawString("Y: ${camera.getTop().roundToInt()}, ${camera.getBottom().roundToInt()}", 10.0f, 35.0f)
     g.drawString("Scale: ${this.uiState.scale}", 10.0f, 55.0f)
   }
 
@@ -75,11 +75,12 @@ class CodeScapeView(
     return (this * scale).roundToInt()
   }
 
-  private fun calculateMapArea() = MapArea(
+  private fun calculateCamera() = MapArea(
     this.uiState.x,
-    this.uiState.x + this.width / this.uiState.scale,
     this.uiState.y,
-    this.uiState.y + this.height / this.uiState.scale,
+    this.width / this.uiState.scale,
+    this.height / this.uiState.scale,
+    null
   )
 
   private fun handleNodeClick(node: CodeScapeNode, mouseButton: Int) {

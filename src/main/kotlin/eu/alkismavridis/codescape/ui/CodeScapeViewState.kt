@@ -1,6 +1,6 @@
 package eu.alkismavridis.codescape.ui
 
-import eu.alkismavridis.codescape.map.MapPoint
+import eu.alkismavridis.codescape.map.model.MapPoint
 import java.awt.Point
 
 class CodeScapeViewState(

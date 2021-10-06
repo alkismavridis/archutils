@@ -1,14 +1,12 @@
 package eu.alkismavridis.codescape.map
 
 import eu.alkismavridis.codescape.fs.FileNode
+import eu.alkismavridis.codescape.map.calculations.containsPoint
+import eu.alkismavridis.codescape.map.model.MapArea
 
 class CodeScapeNode(
   val file: FileNode,
-  val x: Double,
-  val y: Double,
-  val width: Double,
-  val height: Double,
-  private val parent: CodeScapeNode?,
+  val area: MapArea,
   var children: List<CodeScapeNode> = emptyList(),
   var loadingState: ChildrenLoadState = ChildrenLoadState.UNCHECKED
 ) {
@@ -19,35 +17,15 @@ class CodeScapeNode(
     }
   }
 
-  fun getAbsoluteX() : Double {
-    return if(this.parent == null) {
-      this.x
-    } else {
-      this.x + this.parent.getAbsoluteX()
-    }
-  }
-
-  fun getAbsoluteY() : Double {
-    return if(this.parent == null) {
-      this.y
-    } else {
-      this.y + this.parent.getAbsoluteY()
-    }
-  }
-
-  fun getNodeAt(x: Double, y: Double, prioritiseChild: Boolean): CodeScapeNode? {
-    val absX = this.getAbsoluteX()
-    val absY = this.getAbsoluteY()
-
-    if (x < absX || x > absX + this.width) return null
-    if (y < absY || y > absY + this.height) return null
+  fun getNodeAt(absX: Double, absY: Double, prioritiseChild: Boolean): CodeScapeNode? {
+    if (!this.area.containsPoint(absX, absY)) return null
     if (!prioritiseChild || this.loadingState != ChildrenLoadState.LOADED) {
       return this
     }
 
     return this.children
       .asSequence()
-      .mapNotNull { it.getNodeAt(x, y, prioritiseChild) }
+      .mapNotNull { it.getNodeAt(absX, absY, prioritiseChild) }
       .firstOrNull()
   }
 }
