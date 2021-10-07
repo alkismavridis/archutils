@@ -7,8 +7,8 @@ import java.awt.event.*
 class CodeScapeMouseAdapter(
   private val getState: () -> CodeScapeViewState,
   private val getRootNode: () -> CodeScapeNode,
-  private val onChange: (state: CodeScapeViewState) -> Unit,
-  private val onNodeClicked: (node: CodeScapeNode, mouseButton: Int) -> Unit
+  private val onChange: (CodeScapeViewState) -> Unit,
+  private val onNodeClicked: (CodeScapeNode?, MouseEvent) -> Unit
 ): MouseListener, MouseMotionListener, MouseWheelListener {
 
   override fun mouseDragged(e: MouseEvent){
@@ -41,9 +41,7 @@ class CodeScapeMouseAdapter(
     val mapX = state.x + e.x / state.scale
     val mapY = state.y + e.y / state.scale
     val clickedNode = rootNode.getNodeAt(mapX, mapY, true)
-    if (clickedNode != null) {
-      this.onNodeClicked(clickedNode, e.button)
-    }
+    this.onNodeClicked(clickedNode, e)
   }
 
   override fun mouseEntered(e: MouseEvent) {}

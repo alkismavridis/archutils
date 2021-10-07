@@ -7,7 +7,10 @@ import eu.alkismavridis.codescape.layout.model.MapArea
 import eu.alkismavridis.codescape.tree.model.NodeType
 import eu.alkismavridis.codescape.tree.TreeDataService
 import java.awt.*
+import java.awt.event.MouseEvent
+import javax.swing.JMenuItem
 import javax.swing.JPanel
+import javax.swing.JPopupMenu
 import kotlin.math.roundToInt
 
 class CodeScapeView(
@@ -45,7 +48,6 @@ class CodeScapeView(
     renderer.render(this.rootNode)
 
     g.transform = originalTransform
-    //this.debugState(camera, g)
   }
 
 
@@ -56,14 +58,6 @@ class CodeScapeView(
 
   private fun translateAndScale(g: Graphics2D) {
     g.translate(-this.uiState.x.toPixelSpace(this.uiState.scale), -this.uiState.y.toPixelSpace(this.uiState.scale))
-  }
-
-  private fun debugState(camera: MapArea, g: Graphics2D) {
-    g.color = Color.green
-    g.font = DEBUG_FONT
-    g.drawString("X: ${camera.getLeft().roundToInt()}, ${camera.getRight().roundToInt()}", 10.0f, 15.0f)
-    g.drawString("Y: ${camera.getTop().roundToInt()}, ${camera.getBottom().roundToInt()}", 10.0f, 35.0f)
-    g.drawString("Scale: ${this.uiState.scale}", 10.0f, 55.0f)
   }
 
   private fun setupMouseListeners() {
@@ -85,16 +79,35 @@ class CodeScapeView(
     null
   )
 
-  private fun handleNodeClick(node: CodeScapeNode, mouseButton: Int) {
-    if (mouseButton == 3) {
-      LOGGER.info("TODO alkis - open menu for ${node.id}")
-    } else if (mouseButton == 1) {
-      LOGGER.info("TODO alkis open file! ${node.id}")
+  private fun handleNodeClick(node: CodeScapeNode?, event: MouseEvent) {
+    if (event.button == 3) {
+      this.createMenuFor(node).show(this, event.x, event.y)
+    } else if (event.button == 1 && node != null) {
       this.actionHandler.handleNodeClick(node.id)
     }
   }
 
   private fun createInitialState() = CodeScapeViewState(0.0, 0.0, 1.0, null, null)
+
+  private fun createMenuFor(node: CodeScapeNode?) : JPopupMenu {
+    return JPopupMenu().also {
+      it.add(createMenuItem("Refresh") { LOGGER.info("I refresh!") })
+    }
+  }
+
+  private fun createMenuItem(label: String, action: () -> Unit): JMenuItem {
+    return JMenuItem(label).also {
+      it.addActionListener{ action() }
+    }
+  }
+
+  private fun debugState(camera: MapArea, g: Graphics2D) {
+    g.color = Color.green
+    g.font = DEBUG_FONT
+    g.drawString("X: ${camera.getLeft().roundToInt()}, ${camera.getRight().roundToInt()}", 10.0f, 15.0f)
+    g.drawString("Y: ${camera.getTop().roundToInt()}, ${camera.getBottom().roundToInt()}", 10.0f, 35.0f)
+    g.drawString("Scale: ${this.uiState.scale}", 10.0f, 55.0f)
+  }
 
   companion object {
     private val DEBUG_FONT = Font("Serif", Font.PLAIN, 14)
