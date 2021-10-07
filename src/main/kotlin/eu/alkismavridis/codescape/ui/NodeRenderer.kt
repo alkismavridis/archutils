@@ -22,15 +22,16 @@ class NodeRenderer(
     if (this.camera.intersectsWith(node.area)) {
       renderVisibleNode(node)
     } else {
+      node.isOpen = false
       node.unloadChildren()
     }
   }
 
   private fun renderVisibleNode(node: CodeScapeNode) {
-    if (node.type == NodeType.BRANCH) {
-      renderVisibleDirectory(node)
-    } else {
-      renderVisibleFile(node)
+    when(node.type) {
+      NodeType.BRANCH -> renderVisibleDirectory(node)
+      NodeType.LOCKED_BRANCH -> renderExplicitlyClosedDirectory(node)
+      NodeType.LEAF -> renderVisibleFile(node)
     }
 
     renderNodeLabel(node)
@@ -39,9 +40,9 @@ class NodeRenderer(
   private fun renderVisibleDirectory(node: CodeScapeNode) {
     val widthPx = node.area.getWidth() * this.scale
     val heightPx = node.area.getHeight() * this.scale
-    val shouldRenderOpen = node.type == NodeType.BRANCH && widthPx > OPEN_DIR_THRESHOLD || heightPx > OPEN_DIR_THRESHOLD
+    node.isOpen = widthPx > OPEN_DIR_THRESHOLD || heightPx > OPEN_DIR_THRESHOLD
 
-    if (shouldRenderOpen) {
+    if (node.isOpen) {
       renderOpenDirectory(node)
     } else {
       node.unloadChildren()

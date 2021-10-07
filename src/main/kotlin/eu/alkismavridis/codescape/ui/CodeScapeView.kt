@@ -88,9 +88,6 @@ class CodeScapeView(
   private fun handleNodeClick(node: CodeScapeNode, mouseButton: Int) {
     if (mouseButton == 3) {
       LOGGER.info("TODO alkis - open menu for ${node.id}")
-    } else if (node.type == NodeType.BRANCH) {
-      LOGGER.info("TODO alkis open directory ${node.id}")
-      return
     } else if (mouseButton == 1) {
       LOGGER.info("TODO alkis open file! ${node.id}")
       this.actionHandler.handleNodeClick(node.id)

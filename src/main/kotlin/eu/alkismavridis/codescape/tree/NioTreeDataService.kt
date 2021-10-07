@@ -73,7 +73,7 @@ class NioTreeDataService(
       ChildrenLoadState.LOADED
     }
 
-    return CodeScapeNode(fileData.path, fileData.name, fileData.options.image, nodeType, area, emptyList(), childLoadState)
+    return CodeScapeNode(fileData.path, fileData.name, fileData.options.image, nodeType, area, false, emptyList(), childLoadState)
   }
 
   private class FileData(

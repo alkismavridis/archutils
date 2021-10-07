@@ -8,6 +8,7 @@ class CodeScapeNode(
   val imageId: String?,
   var type: NodeType,
   val area: MapArea,
+  var isOpen: Boolean,
   var children: List<CodeScapeNode> = emptyList(),
   var loadingState: ChildrenLoadState = ChildrenLoadState.UNCHECKED
 )
