@@ -4,16 +4,18 @@ Instead of a typical tree viewer, codescape displays your project as directories
 inside other directories all the way down.
 
 So, you navigate your project in a way similar to how you navigate the earth in google maps.
-So you get familiar with your project visually, as you would get familiar with a landscape.
+This way, you get familiar with your project visually, like you get familiar with a landscape.
+You learn its regions visually - a way I hope is natural and intuitive to the human mind.
 
 # How do I test this?
-At the moment this is not yet part of the IntelliJ plugin store.
+Codescape is not yet part of the IntelliJ plugin store.
 To test this, open this project with IntelliJ and run:
 `./gradlew :runIde`
 
-This will open a second intelliJ window running the plugin. Open any project and choose the "Codescape" toolbar window.
+This command will open a second intelliJ window running the plugin. Open any project and click on the "Codescape" toolbar window.
 
-Navigate by dragging the pane, and zoom in and out. By clicking a file, it will open in the IntelliJ editor.
+Explore your project by dragging the pane, and zoom in and out. Similar to how google maps works.
+Click a file to open it in the IntelliJ editor.
 
 # What about plugin configuration?
 Every project can configure how codescape behaves. Codescape will automatically check for a configuration file in:
