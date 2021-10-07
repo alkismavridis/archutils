@@ -29,24 +29,25 @@ class CodeScapeToolbarFactory : ToolWindowFactory {
     val treeDataService = NioTreeDataService(configurationService, layoutService, projectRoot)
     val rootNodePath = projectRoot.resolve(configurationService.getRootNodePath()).toAbsolutePath().normalize()
 
-    val rootNode = this.createRootNode(project, rootNodePath)
+    val rootNode = this.createRootNode(project, rootNodePath, configurationService)
     val actionHandler = IdeaCodeScapeActionHandler(project, projectRoot)
     val imageProvider = ImageProvider(projectRoot)
     val view = CodeScapeView(rootNode, treeDataService, imageProvider, actionHandler)
-    val fileListener = CodeScapeFileListener { this.reload(view, project, rootNodePath) }
+    val fileListener = CodeScapeFileListener { this.reload(view, project, rootNodePath, configurationService) }
     VirtualFileManager.VFS_CHANGES.subscribe(null, fileListener)
 
     val content = ContentFactory.SERVICE.getInstance().createContent(view, "Codescape", false)
     toolWindow.contentManager.addContent(content)
   }
 
-  private fun createRootNode(project: Project, rootNodePath: Path) : CodeScapeNode {
+  private fun createRootNode(project: Project, rootNodePath: Path, configurationService: CodeScapeConfigurationService) : CodeScapeNode {
     val rootArea = MapArea(0.0, 0.0, 1000.0, 1000.0, null)
-    return CodeScapeNode(rootNodePath.toString(), project.name, null, null, NodeType.BRANCH, rootArea, false)
+    val options = configurationService.getOptionsFor("")
+    return CodeScapeNode(rootNodePath.toString(), project.name, NodeType.BRANCH, rootArea, false, options)
   }
 
-  private fun reload(view: CodeScapeView, project: Project, rootNodePath: Path) {
-    val newRoot = this.createRootNode(project, rootNodePath)
+  private fun reload(view: CodeScapeView, project: Project, rootNodePath: Path, configurationService: CodeScapeConfigurationService) {
+    val newRoot = this.createRootNode(project, rootNodePath, configurationService)
     view.reload(newRoot)
   }
 

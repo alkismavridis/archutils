@@ -76,11 +76,10 @@ class NioTreeDataService(
     return CodeScapeNode(
       fileData.path,
       fileData.name,
-      fileData.options.image,
-      fileData.options.color,
       nodeType,
       area,
       false,
+      fileData.options,
       emptyList(),
       childLoadState
     )

@@ -46,6 +46,8 @@ The structure of each rule is:
         your regex will receive the string: "src/foo/bar/MyFile.cpp".
         So, a regex such as "src/foo/bar/MyFile\\.cpp" would work.
         A regex such as ".*\\.cpp" would match all cpp files.
+        
+        To match the project root, use empty string as regex.
     */
     regex: string;
     
