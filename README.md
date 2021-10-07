@@ -10,6 +10,7 @@ You learn its regions visually - a way I hope is natural and intuitive to the hu
 # How do I test this?
 Codescape is not yet part of the IntelliJ plugin store.
 To test this, open this project with IntelliJ and run:
+
 `./gradlew :runIde`
 
 This command will open a second intelliJ window running the plugin. Open any project and click on the "Codescape" toolbar window.
@@ -34,25 +35,30 @@ which means that codescape will display the project root. Relative paths are res
 - **rules**: A list of rules to apply to each file. Rules will help you ignore files and directories (for example, your build directory),
 lock directories from opening (for example node_modules for performance reasons), even apply images to specific files or directories.
 
-The strucure of each rules is:
+The structure of each rule is:
 ```
-class CodeScapeRule {
+{
     /**
-        Each file codescape displays will be tested with this regex (paths relative to project root!).
-        If the file path matches, the rule will be applied to it.
+        Each file codescape displays will be tested with the regex of each rule (paths relative to project root!).
+        If the file path matches, the rule will be applied to the file.
         Examples: "frontend/node_modules", "src", "README.md" etc
     */
     regex: string;
     
     /**
-        VISIBLE: Display the file/direcotry. If it is a directory, display its children.
-        CLOSED: Display the file/direcotry. If it is a directory, do not show its children. Usefull for very large directories.
-        HIDDEN: Do not show the file/directory. Useful for ignoring.
-        Default: VISIBLE
+        Optional. Default is VISIBLE.
+        - VISIBLE: Display the file/direcotry. If it is a directory, display its children.
+        - CLOSED:  Same as VISIBLE, but if it is a directory, do not show its children.
+                   Usefull for very large directories that we want to prevent from opening.
+        - HIDDEN:  Do not show the file/directory.
+                   Useful for ignoring things that do not matter.
      */
     visibility: "VISIBLE" | "CLOSED" | "HIDDEN";
     
-    /** Optional. Path for an image to display. Relative paths are resolved from the project root. ~~~~*/
-    image: string;
+    /**
+        Optional. Default is nullPath for an image to display.
+        Relative paths are resolved from the project root.
+    */
+    image: string?;
 }
 ```
