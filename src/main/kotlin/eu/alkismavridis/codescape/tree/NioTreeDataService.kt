@@ -5,6 +5,9 @@ import eu.alkismavridis.codescape.config.NodeOptions
 import eu.alkismavridis.codescape.config.NodeVisibility
 import eu.alkismavridis.codescape.layout.LayoutService
 import eu.alkismavridis.codescape.layout.model.MapArea
+import eu.alkismavridis.codescape.tree.model.ChildrenLoadState
+import eu.alkismavridis.codescape.tree.model.CodeScapeNode
+import eu.alkismavridis.codescape.tree.model.NodeType
 import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path

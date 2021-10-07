@@ -9,10 +9,10 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
 import eu.alkismavridis.codescape.config.*
-import eu.alkismavridis.codescape.tree.CodeScapeNode
+import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.layout.LayoutServiceImpl
 import eu.alkismavridis.codescape.tree.NioTreeDataService
-import eu.alkismavridis.codescape.tree.NodeType
+import eu.alkismavridis.codescape.tree.model.NodeType
 import eu.alkismavridis.codescape.layout.model.MapArea
 import eu.alkismavridis.codescape.ui.CodeScapeView
 import eu.alkismavridis.codescape.ui.ImageCache

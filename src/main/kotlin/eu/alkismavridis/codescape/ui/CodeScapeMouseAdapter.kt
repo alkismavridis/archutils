@@ -1,6 +1,7 @@
 package eu.alkismavridis.codescape.ui
 
-import eu.alkismavridis.codescape.tree.CodeScapeNode
+import eu.alkismavridis.codescape.tree.calculations.getNodeAt
+import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import java.awt.event.*
 
 class CodeScapeMouseAdapter(

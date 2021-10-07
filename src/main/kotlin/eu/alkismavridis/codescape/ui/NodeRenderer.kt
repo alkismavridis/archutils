@@ -1,10 +1,11 @@
 package eu.alkismavridis.codescape.ui
 
-import eu.alkismavridis.codescape.tree.ChildrenLoadState
-import eu.alkismavridis.codescape.tree.CodeScapeNode
+import eu.alkismavridis.codescape.tree.model.ChildrenLoadState
+import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.layout.calculations.intersectsWith
 import eu.alkismavridis.codescape.layout.model.MapArea
-import eu.alkismavridis.codescape.tree.NodeType
+import eu.alkismavridis.codescape.tree.actions.unloadChildren
+import eu.alkismavridis.codescape.tree.model.NodeType
 import java.awt.*
 import kotlin.math.min
 import kotlin.math.roundToInt

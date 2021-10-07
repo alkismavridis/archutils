@@ -2,9 +2,9 @@ package eu.alkismavridis.codescape.ui
 
 import com.intellij.openapi.diagnostic.Logger
 import eu.alkismavridis.codescape.integration.CodeScapeActionHandler
-import eu.alkismavridis.codescape.tree.CodeScapeNode
+import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.layout.model.MapArea
-import eu.alkismavridis.codescape.tree.NodeType
+import eu.alkismavridis.codescape.tree.model.NodeType
 import eu.alkismavridis.codescape.tree.TreeDataService
 import java.awt.*
 import javax.swing.JPanel
