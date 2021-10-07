@@ -1,11 +1,13 @@
-package eu.alkismavridis.codescape.map
+package eu.alkismavridis.codescape.tree
 
-import eu.alkismavridis.codescape.fs.FileNode
-import eu.alkismavridis.codescape.map.calculations.containsPoint
-import eu.alkismavridis.codescape.map.model.MapArea
+import eu.alkismavridis.codescape.layout.calculations.containsPoint
+import eu.alkismavridis.codescape.layout.model.MapArea
 
 class CodeScapeNode(
-  val file: FileNode,
+  val id: String,
+  val label: String,
+  val imageId: String?,
+  var type: NodeType,
   val area: MapArea,
   var children: List<CodeScapeNode> = emptyList(),
   var loadingState: ChildrenLoadState = ChildrenLoadState.UNCHECKED
@@ -19,7 +21,7 @@ class CodeScapeNode(
 
   fun getNodeAt(absX: Double, absY: Double, prioritiseChild: Boolean): CodeScapeNode? {
     if (!this.area.containsPoint(absX, absY)) return null
-    if (!prioritiseChild || this.loadingState != ChildrenLoadState.LOADED) {
+    if (!prioritiseChild || this.type != NodeType.BRANCH || this.loadingState != ChildrenLoadState.LOADED) {
       return this
     }
 
@@ -30,12 +32,5 @@ class CodeScapeNode(
   }
 }
 
-enum class ChildrenLoadState {
-  /** Used for non-directories */
-  NO_CHILDREN,
-  UNCHECKED,
-  LOADING,
-  LOADED,
-  SIZE_TOO_LARGE,
-  CLOSED
-}
+enum class ChildrenLoadState { UNCHECKED, LOADING, LOADED }
+enum class NodeType { BRANCH, LOCKED_BRANCH, LEAF }

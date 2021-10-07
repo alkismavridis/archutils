@@ -1,6 +1,6 @@
 package eu.alkismavridis.codescape.integration
 
 interface CodeScapeActionHandler {
-  fun handleOpenFile(path: String)
+  fun handleNodeClick(nodeId: String)
   fun runReadOnlyTask( runnable: () -> Unit )
 }

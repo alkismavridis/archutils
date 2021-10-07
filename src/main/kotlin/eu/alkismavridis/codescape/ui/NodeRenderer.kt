@@ -1,9 +1,10 @@
 package eu.alkismavridis.codescape.ui
 
-import eu.alkismavridis.codescape.map.ChildrenLoadState
-import eu.alkismavridis.codescape.map.CodeScapeNode
-import eu.alkismavridis.codescape.map.calculations.intersectsWith
-import eu.alkismavridis.codescape.map.model.MapArea
+import eu.alkismavridis.codescape.tree.ChildrenLoadState
+import eu.alkismavridis.codescape.tree.CodeScapeNode
+import eu.alkismavridis.codescape.layout.calculations.intersectsWith
+import eu.alkismavridis.codescape.layout.model.MapArea
+import eu.alkismavridis.codescape.tree.NodeType
 import java.awt.*
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -25,7 +26,7 @@ class NodeRenderer(
   }
 
   private fun renderVisibleNode(node: CodeScapeNode) {
-    if (node.file.isDirectory) {
+    if (node.type == NodeType.BRANCH) {
       renderVisibleDirectory(node)
     } else {
       renderVisibleFile(node)
@@ -37,7 +38,7 @@ class NodeRenderer(
   private fun renderVisibleDirectory(node: CodeScapeNode) {
     val widthPx = node.area.getWidth() * this.scale
     val heightPx = node.area.getHeight() * this.scale
-    val shouldRenderOpen = node.file.isDirectory && widthPx > OPEN_DIR_THRESHOLD || heightPx > OPEN_DIR_THRESHOLD
+    val shouldRenderOpen = node.type == NodeType.BRANCH && widthPx > OPEN_DIR_THRESHOLD || heightPx > OPEN_DIR_THRESHOLD
 
     if (shouldRenderOpen) {
       renderOpenDirectory(node)
@@ -56,13 +57,12 @@ class NodeRenderer(
 
       ChildrenLoadState.LOADING -> renderLoadingDirectory(node)
       ChildrenLoadState.LOADED -> renderOpenLoadedDirectory(node)
-      else -> renderExplicitlyClosedDirectory(node)
     }
   }
 
   private fun renderOpenLoadedDirectory(node: CodeScapeNode) {
     val area = node.area
-    val image = node.file.options.image?.let { this.getImage(it) }
+    val image = node.imageId?.let { this.getImage(it) }
     if (image == null) {
       val x = area.getLeft().toPixelSpace(scale)
       val y = area.getTop().toPixelSpace(scale)
@@ -106,20 +106,20 @@ class NodeRenderer(
 
       this.g.font = Font("serif", Font.PLAIN, fontSize)
       val fm = this.g.fontMetrics
-      val rect = fm.getStringBounds(node.file.name, this.g)
+      val rect = fm.getStringBounds(node.label, this.g)
 
       this.g.color = LABEL_BACKGROUND
       this.g.fillRect(nodeXPixel - 4, nodeYPixel - fm.ascent, rect.width.roundToInt() + 8, rect.height.roundToInt())
 
       this.g.color = LABEL_COLOR
-      this.g.drawString(node.file.name, nodeXPixel, nodeYPixel)
+      this.g.drawString(node.label, nodeXPixel, nodeYPixel)
 
       this.g.clip = originalClip
     }
   }
 
   private fun renderSolidNode(node: CodeScapeNode, defaultColor: Color) {
-    val image = node.file.options.image?.let { this.getImage(it) }
+    val image = node.imageId?.let { this.getImage(it) }
     val area = node.area
 
     if (image == null) {

@@ -1,6 +1,0 @@
-{
-  "rules": [
-    {"regex": "/node_modules", "visibility": "HIDDEN"},
-    {"regex": "/gradle", "visibility": "CLOSED"}
-  ]
-}

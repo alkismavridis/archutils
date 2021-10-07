@@ -4,21 +4,28 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFileManager
-import org.jetbrains.rpc.LOG
 import java.nio.file.Path
+import com.intellij.openapi.diagnostic.Logger
 
 class IdeaCodeScapeActionHandler(private val project: Project, private val projectRoot: Path): CodeScapeActionHandler {
 
-  override fun handleOpenFile(path: String) {
-    val virtualFile = VirtualFileManager.getInstance().findFileByNioPath(projectRoot.resolve(path))
+  override fun handleNodeClick(nodeId: String) {
+    LOGGER.info("Node clicked: $nodeId")
+
+    val virtualFile = VirtualFileManager.getInstance().findFileByNioPath(projectRoot.resolve(nodeId))
     if (virtualFile == null) {
-      LOG.warn("File clicked, but not found: $path")
+      LOGGER.warn("File clicked, but not found: $nodeId")
     } else {
+      LOGGER.info("Opening file: $nodeId")
       OpenFileDescriptor(this.project, virtualFile, 0).navigate(true)
     }
   }
 
   override fun runReadOnlyTask(runnable: () -> Unit) {
     ApplicationManager.getApplication().runReadAction(runnable)
+  }
+
+  companion object {
+    private val LOGGER = Logger.getInstance(IdeaCodeScapeActionHandler::class.java)
   }
 }

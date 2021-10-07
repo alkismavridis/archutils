@@ -1,18 +1,18 @@
 package eu.alkismavridis.codescape.ui
 
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.Logger
 import eu.alkismavridis.codescape.integration.CodeScapeActionHandler
-import eu.alkismavridis.codescape.map.CodeScapeNode
-import eu.alkismavridis.codescape.map.LayoutService
-import eu.alkismavridis.codescape.map.model.MapArea
-import org.jetbrains.rpc.LOG
+import eu.alkismavridis.codescape.tree.CodeScapeNode
+import eu.alkismavridis.codescape.layout.model.MapArea
+import eu.alkismavridis.codescape.tree.NodeType
+import eu.alkismavridis.codescape.tree.TreeDataService
 import java.awt.*
 import javax.swing.JPanel
 import kotlin.math.roundToInt
 
 class CodeScapeView(
   private var rootNode: CodeScapeNode,
-  private val layoutService: LayoutService,
+  private val treeDataService: TreeDataService,
   private val imageCache: ImageCache,
   private val actionHandler: CodeScapeActionHandler,
 ): JPanel() {
@@ -38,7 +38,7 @@ class CodeScapeView(
       this.uiState.scale,
       camera,
       g,
-      { node -> this.actionHandler.runReadOnlyTask { this.layoutService.loadChildren(node, this::repaint) } },
+      { node -> this.actionHandler.runReadOnlyTask { this.treeDataService.loadChildren(node, this::repaint) } },
       { this.imageCache.getImage(it) }
     )
 
@@ -87,12 +87,13 @@ class CodeScapeView(
 
   private fun handleNodeClick(node: CodeScapeNode, mouseButton: Int) {
     if (mouseButton == 3) {
-      LOG.info("TODO alkis - open menu for ${node.file.path}")
-    } else if (node.file.isDirectory) {
-      LOG.info("TODO alkis open directory")
+      LOGGER.info("TODO alkis - open menu for ${node.id}")
+    } else if (node.type == NodeType.BRANCH) {
+      LOGGER.info("TODO alkis open directory ${node.id}")
       return
     } else if (mouseButton == 1) {
-      this.actionHandler.handleOpenFile(node.file.path)
+      LOGGER.info("TODO alkis open file! ${node.id}")
+      this.actionHandler.handleNodeClick(node.id)
     }
   }
 
@@ -101,5 +102,6 @@ class CodeScapeView(
   companion object {
     private val DEBUG_FONT = Font("Serif", Font.PLAIN, 14)
     private val BACKGROUND_COLOR = Color(100, 100, 100)
+    private val LOGGER = Logger.getInstance(CodeScapeView::class.java)
   }
 }

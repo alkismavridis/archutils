@@ -3,7 +3,7 @@ package eu.alkismavridis.codescape.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import org.jetbrains.rpc.LOG
+import com.intellij.openapi.diagnostic.Logger
 import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
@@ -32,7 +32,7 @@ class NioCodeScapeConfigurationService(projectRoot: Path) : CodeScapeConfigurati
       ?.let(this::parseConfig)
       ?: CodeScapeConfiguration()
 
-    LOG.info("Loaded config with ${loadedConfig.rules.size} rules. Root: ${loadedConfig.root}")
+    LOGGER.info("Loaded config with ${loadedConfig.rules.size} rules. Root: ${loadedConfig.root}")
     return loadedConfig
   }
 
@@ -40,5 +40,9 @@ class NioCodeScapeConfigurationService(projectRoot: Path) : CodeScapeConfigurati
     return ObjectMapper()
       .registerKotlinModule()
       .readValue(input)
+  }
+
+  companion object {
+    private val LOGGER = Logger.getInstance(NioCodeScapeConfigurationService::class.java)
   }
 }

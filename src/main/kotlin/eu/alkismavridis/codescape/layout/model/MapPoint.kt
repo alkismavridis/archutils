@@ -1,4 +1,4 @@
-package eu.alkismavridis.codescape.map.model
+package eu.alkismavridis.codescape.layout.model
 
 class MapPoint(
   val x: Double,

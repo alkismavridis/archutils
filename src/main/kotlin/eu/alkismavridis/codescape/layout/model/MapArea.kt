@@ -1,7 +1,7 @@
-package eu.alkismavridis.codescape.map.model
+package eu.alkismavridis.codescape.layout.model
 
-import eu.alkismavridis.codescape.map.calculations.calculateAbsoluteLeft
-import eu.alkismavridis.codescape.map.calculations.calculateAbsoluteTop
+import eu.alkismavridis.codescape.layout.calculations.calculateAbsoluteLeft
+import eu.alkismavridis.codescape.layout.calculations.calculateAbsoluteTop
 
 class MapArea(
   private val left: Double,
