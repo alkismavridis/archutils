@@ -7,7 +7,7 @@ import kotlin.math.sqrt
 
 class LayoutServiceImpl: LayoutService {
 
-  override fun <INP, RES> layout(parentArea: MapArea, children: List<INP>, mapper: (INP, MapArea) -> RES): Sequence<RES> {
+  override fun <T> layout(parentArea: MapArea, children: List<T>): Sequence<LayoutResult<T>> {
     if (children.isEmpty()) return emptySequence()
 
     val parentAspectRatio = parentArea.getWidth() / parentArea.getHeight()
@@ -21,7 +21,7 @@ class LayoutServiceImpl: LayoutService {
 
     return children.asSequence().mapIndexed { index, input ->
       val area = this.createChildArea(parentArea, index, colCount, spacing, childSize)
-      mapper(input, area)
+      LayoutResult(input, area)
     }
   }
 

@@ -34,7 +34,8 @@ class NioTreeDataService(
       onPresent()
     } else {
       parent.children = this.layoutService
-        .layout(parent.area, files) { file, area -> this.createNode(file, area) }
+        .layout(parent.area, files)
+        .map { this.createNode(it.data, it.area) }
         .toList()
 
       parent.loadingState = ChildrenLoadState.LOADED
