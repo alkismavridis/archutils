@@ -71,12 +71,13 @@ class NodeRenderer(
       val width = area.getWidth().toPixelSpace(scale)
       val height = area.getHeight().toPixelSpace(scale)
 
-      this.g.color = node.options.color
-        ?.let { this.imageProvider.getColor(it) }
+      this.g.color = node.options.openColor?.let { this.imageProvider.getColor(it) }
+        ?: node.options.color?.let { this.imageProvider.getColor(it) }
         ?: OPEN_DIR_BACKGROUND
       this.g.fillRect(x, y, width, height)
 
-      this.g.color = OPEN_DIR_BORDER_COLOR
+      g.stroke = node.options.borderWidth?.let { BasicStroke(it) } ?: BORDER_STROKE
+      this.g.color = node.options.borderColor?.let { this.imageProvider.getColor(it) } ?: BORDER_COLOR
       this.g.drawRect(x, y, width, height)
     } else {
       renderImage(node.area, image)
@@ -126,12 +127,23 @@ class NodeRenderer(
     val image = node.options.imageId?.let { this.imageProvider.getImage(it) }
     val area = node.area
 
+    val leftPx = area.getLeft().toPixelSpace(scale)
+    val topPx = area.getTop().toPixelSpace(scale)
+    val widthPx = area.getWidth().toPixelSpace(scale)
+    val heightPx = area.getHeight().toPixelSpace(scale)
+
     if (image == null) {
       this.g.color = node.options.color?.let{ this.imageProvider.getColor(it) } ?: defaultColor
-      this.g.fillRect(area.getLeft().toPixelSpace(scale), area.getTop().toPixelSpace(scale), area.getWidth().toPixelSpace(scale), area.getHeight().toPixelSpace(scale))
+      this.g.fillRect(leftPx, topPx, widthPx, heightPx)
     } else {
       renderImage(node.area, image)
     }
+
+    g.stroke = node.options.borderWidth?.let { BasicStroke(it) } ?: BORDER_STROKE
+    g.color = node.options.borderColor
+      ?.let { this.imageProvider.getColor(it) }
+      ?: BORDER_COLOR
+    this.g.drawRect(leftPx, topPx, widthPx, heightPx)
   }
 
   private fun renderImage(area: MapArea, image: Image) {
@@ -170,12 +182,13 @@ class NodeRenderer(
     private const val SHOW_LABEL_THRESHOLD = 60
 
     private val OPEN_DIR_BACKGROUND = Color(192, 192, 192, 200)
-    private val OPEN_DIR_BORDER_COLOR = Color.BLACK
     private val LOADING_DIR_BACKGROUND = Color.GRAY
     private val EXPLICITLY_CLOSED_BACKGROUND = Color(148, 2, 2, 200)
     private val CLOSED_DIR_BACKGROUND = Color(175, 150, 3, 200)
     private val FILE_BACKGROUND = Color(0, 120, 0, 200)
     private val LABEL_COLOR = Color(0,0, 0)
     private val LABEL_BACKGROUND = Color(200,200, 200)
+    private val BORDER_COLOR = Color.BLACK
+    private val BORDER_STROKE = BasicStroke(2f)
   }
 }

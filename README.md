@@ -35,39 +35,21 @@ which means that codescape will display the project root. Relative paths are res
 - **rules**: A list of rules to apply to each file. Rules will help you ignore files and directories (for example, your build directory),
 lock directories from opening (for example node_modules for performance reasons), even apply images to specific files or directories.
 
-The structure of each rule is:
-```
-{
-    /**
-        For each file codescape displays, its project-relative path will be tested against the regex of each rule.
-        The last rule that matches the file's project-relative path will be applied.
-        
-        Example: if you want to target "PROJECT_ROOT/src/foo/bar/MyFile.cpp"
-        your regex will receive the string: "src/foo/bar/MyFile.cpp".
-        So, a regex such as "src/foo/bar/MyFile\\.cpp" would work.
-        A regex such as ".*\\.cpp" would match all cpp files.
-        
-        To match the project root, use empty string as regex.
-    */
-    regex: string;
-    
-    /**
-        Optional. Default is VISIBLE.
-        - VISIBLE: Display the file/direcotry. If it is a directory, display its children.
-        - CLOSED:  Same as VISIBLE, but if it is a directory, do not show its children.
-                   Usefull for very large directories that we want to prevent from opening.
-        - HIDDEN:  Do not show the file/directory.
-                   Useful for ignoring things that do not matter.
-     */
-    visibility: "VISIBLE" | "CLOSED" | "HIDDEN";
-    
-    /**
-        Optional. Default is nullPath for an image to display.
-        Relative paths are resolved from the project root.
-    */
-    image: string?;
-    
-    /** Any valid rgb or rgba value. Example: "#F3D277" */
-    color: string?
-}
-```
+### Rule structure
+Each rule contains the following fields:
+- **regex** (String): For each displayed file, the project-relative path of the file path will be tested against this regex.
+  The last rule in the list that matches the file's project-relative path will be applied.
+**Example**: if we want to target `PROJECT_ROOT/src/foo/bar/MyFile.cpp`, our regex will receive the string: `src/foo/bar/MyFile.cpp`.
+Thus, a regex such as `src/foo/bar/MyFile\\.cpp` would work fine. A regex such as `.*\\.cpp` would also work, and match all cpp files.
+To match the project root, use empty string as regex.
+- **visibility** (optional): A string enum that can take the following values:
+  - VISIBLE: The default value. Display the file/direcotry. If it is a directory, display its children.
+  - CLOSED:  Same as VISIBLE, but if it is a directory, do not show its children.
+    Usefull for very large directories that we want to prevent from opening.
+  - HIDDEN:  Do not show the file/directory.
+    Useful for ignoring things that do not matter.
+- **color** (optional): A hex code with the color for the node. Example: `#7C66BA`
+- **openColor** (optional): A hex code with the color for a directory-node, when it is open.
+- **borderColor** (optional): A hex code with the color for the node's border.
+- **borderWidth** (optional): A float number with the border's width in pixels.
+

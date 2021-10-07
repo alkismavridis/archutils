@@ -45,7 +45,7 @@ class CodeScapeView(
     renderer.render(this.rootNode)
 
     g.transform = originalTransform
-    this.debugState(camera, g)
+    //this.debugState(camera, g)
   }
 
 

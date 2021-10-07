@@ -10,6 +10,9 @@ class CodeScapeConfigurationRule(
   val visibility: NodeVisibility = NodeVisibility.VISIBLE,
   val image: String? = null,
   val color: String? = null,
+  val openColor: String? = null,
+  val borderColor: String? = null,
+  val borderWidth: Float? = null,
 ) {
   val compiledRegex by lazy { Regex(regex) }
 }

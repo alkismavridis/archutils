@@ -20,6 +20,9 @@ class NioCodeScapeConfigurationService(projectRoot: Path) : CodeScapeConfigurati
       rule?.visibility ?: NodeVisibility.VISIBLE,
       rule?.image,
       rule?.color,
+      rule?.openColor,
+      rule?.borderColor,
+      rule?.borderWidth,
     )
   }
 
