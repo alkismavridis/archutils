@@ -22,29 +22,19 @@ class NioTreeDataService(
   override fun loadChildren(parent: CodeScapeNode, onPresent: () -> Unit) {
     if (parent.loadingState != ChildrenLoadState.UNCHECKED) {
       return
-    } else if (parent.type == NodeType.LEAF || parent.type == NodeType.LOCKED_BRANCH) {
-      parent.loadingState = ChildrenLoadState.LOADED
-      return
     }
 
     parent.loadingState = ChildrenLoadState.LOADING
     onPresent()
 
-    val files = Files.walk(this.projectRoot.resolve(parent.id), 1)
-      .skip(1)
-      .map(this::toFileNode)
-      .filter { it.options.visibility != NodeVisibility.HIDDEN }
-      .limit(SIZE_LIMIT + 1L)
-      .collect(toList())
-
+    val files = this.getFiles(parent.id)
     if (files.size > SIZE_LIMIT) {
       parent.loadingState = ChildrenLoadState.LOADED
       parent.type = NodeType.LOCKED_BRANCH
       onPresent()
     } else {
       parent.children = this.layoutService
-        .layoutIt(parent.area, files.size)
-        .mapIndexed { index, area -> this.createNode(files[index], area)}
+        .layout(parent.area, files) { file, area -> this.createNode(file, area) }
         .toList()
 
       parent.loadingState = ChildrenLoadState.LOADED
@@ -56,24 +46,38 @@ class NioTreeDataService(
     return Files.newInputStream(this.projectRoot.resolve(path))
   }
 
-  private fun toFileNode(path: Path): FileNode {
-    val projectPath = projectRoot.relativize(path).toString()
-    val nodeOptions = this.configService.getOptionsFor(projectPath)
-    return FileNode(path.fileName.toString(), projectPath, Files.isDirectory(path), nodeOptions)
+  private fun getFiles(parentPath: String) : List<FileData> {
+    return Files.walk(this.projectRoot.resolve(parentPath), 1)
+      .skip(1)
+      .map(this::toFileNode)
+      .filter { it.options.visibility != NodeVisibility.HIDDEN }
+      .limit(SIZE_LIMIT + 1L)
+      .collect(toList())
   }
 
-  private fun createNode(fileData: FileNode, area: MapArea) : CodeScapeNode {
-    val childLoadState = if(fileData.isDirectory) ChildrenLoadState.UNCHECKED else ChildrenLoadState.LOADED
+  private fun toFileNode(path: Path): FileData {
+    val projectPath = projectRoot.relativize(path).toString()
+    val nodeOptions = this.configService.getOptionsFor(projectPath)
+    return FileData(path.fileName.toString(), projectPath, Files.isDirectory(path), nodeOptions)
+  }
+
+  private fun createNode(fileData: FileData, area: MapArea) : CodeScapeNode {
     val nodeType = when {
       !fileData.isDirectory -> NodeType.LEAF
       fileData.options.visibility == NodeVisibility.CLOSED -> NodeType.LOCKED_BRANCH
       else -> NodeType.BRANCH
     }
 
+    val childLoadState = if(nodeType == NodeType.BRANCH) {
+      ChildrenLoadState.UNCHECKED
+    } else {
+      ChildrenLoadState.LOADED
+    }
+
     return CodeScapeNode(fileData.path, fileData.name, fileData.options.image, nodeType, area, emptyList(), childLoadState)
   }
 
-  private class FileNode(
+  private class FileData(
     val name: String,
     val path: String,
     val isDirectory: Boolean,
