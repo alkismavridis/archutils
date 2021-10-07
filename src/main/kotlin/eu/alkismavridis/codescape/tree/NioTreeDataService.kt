@@ -8,7 +8,6 @@ import eu.alkismavridis.codescape.layout.model.MapArea
 import eu.alkismavridis.codescape.tree.model.ChildrenLoadState
 import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.tree.model.NodeType
-import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.stream.Collectors.toList
@@ -37,10 +36,6 @@ class NioTreeDataService(
       parent.loadingState = ChildrenLoadState.LOADED
       onPresent()
     }
-  }
-
-  override fun loadContentsOf(path: String): InputStream {
-    return Files.newInputStream(this.projectRoot.resolve(path))
   }
 
   private fun getFiles(parentPath: String) : List<FileData> {
