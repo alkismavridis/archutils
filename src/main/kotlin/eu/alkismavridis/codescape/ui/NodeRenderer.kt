@@ -125,7 +125,7 @@ class NodeRenderer(
     val area = node.area
 
     if (image == null) {
-      this.g.color = defaultColor
+      this.g.color = node.color?.let{ Color.decode(it) } ?: defaultColor
       this.g.fillRect(area.getLeft().toPixelSpace(scale), area.getTop().toPixelSpace(scale), area.getWidth().toPixelSpace(scale), area.getHeight().toPixelSpace(scale))
     } else {
       renderImage(node.area, image)

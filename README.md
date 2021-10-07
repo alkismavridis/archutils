@@ -43,7 +43,9 @@ The structure of each rule is:
         The first rule that matches the file's project-relative path will be applied.
         
         Example: if you want to target "PROJECT_ROOT/src/foo/bar/MyFile.cpp"
-        your regex will receive the string: "src/foo/bar/MyFile.cpp"
+        your regex will receive the string: "src/foo/bar/MyFile.cpp".
+        So, a regex such as "src/foo/bar/MyFile\\.cpp" would work.
+        A regex such as ".*\\.cpp" would match all cpp files.
     */
     regex: string;
     
@@ -62,5 +64,8 @@ The structure of each rule is:
         Relative paths are resolved from the project root.
     */
     image: string?;
+    
+    /** Any valid rgb or rgba value. Example: "#F3D277" */
+    color: string?
 }
 ```

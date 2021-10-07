@@ -42,7 +42,7 @@ class CodeScapeToolbarFactory : ToolWindowFactory {
 
   private fun createRootNode(project: Project, rootNodePath: Path) : CodeScapeNode {
     val rootArea = MapArea(0.0, 0.0, 1000.0, 1000.0, null)
-    return CodeScapeNode(rootNodePath.toString(), project.name, null, NodeType.BRANCH, rootArea, false)
+    return CodeScapeNode(rootNodePath.toString(), project.name, null, null, NodeType.BRANCH, rootArea, false)
   }
 
   private fun reload(view: CodeScapeView, project: Project, rootNodePath: Path) {

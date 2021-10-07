@@ -18,7 +18,8 @@ class NioCodeScapeConfigurationService(projectRoot: Path) : CodeScapeConfigurati
 
     return NodeOptions(
       rule?.visibility ?: NodeVisibility.VISIBLE,
-      rule?.image
+      rule?.image,
+      rule?.color,
     )
   }
 

@@ -6,6 +6,7 @@ class CodeScapeNode(
   val id: String,
   val label: String,
   val imageId: String?,
+  val color: String?,
   var type: NodeType,
   val area: MapArea,
   var isOpen: Boolean,
