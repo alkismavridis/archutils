@@ -12,7 +12,7 @@ class NioCodeScapeConfigurationService(projectRoot: Path) : CodeScapeConfigurati
   private val config = this.loadConfiguration(projectRoot)
 
   override fun getOptionsFor(projectPath: String): NodeOptions {
-    val rule = this.config.rules.find {
+    val rule = this.config.rules.findLast {
       it.compiledRegex.matches(projectPath)
     }
 

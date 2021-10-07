@@ -16,7 +16,7 @@ class NodeRenderer(
   private val camera: MapArea,
   private val g: Graphics2D,
   private val loadChildren: (node: CodeScapeNode) -> Unit,
-  private val getImage: (path: String) -> Image,
+  private val imageProvider: ImageProvider,
 ) {
   fun render(node: CodeScapeNode) {
     if (this.camera.intersectsWith(node.area)) {
@@ -64,14 +64,14 @@ class NodeRenderer(
 
   private fun renderOpenLoadedDirectory(node: CodeScapeNode) {
     val area = node.area
-    val image = node.imageId?.let { this.getImage(it) }
+    val image = node.imageId?.let { this.imageProvider.getImage(it) }
     if (image == null) {
       val x = area.getLeft().toPixelSpace(scale)
       val y = area.getTop().toPixelSpace(scale)
       val width = area.getWidth().toPixelSpace(scale)
       val height = area.getHeight().toPixelSpace(scale)
 
-      this.g.color = OPEN_DIR_BACKGROUND
+      this.g.color = node.color?.let { this.imageProvider.getColor(it) } ?: OPEN_DIR_BACKGROUND
       this.g.fillRect(x, y, width, height)
 
       this.g.color = OPEN_DIR_BORDER_COLOR
@@ -121,11 +121,11 @@ class NodeRenderer(
   }
 
   private fun renderSolidNode(node: CodeScapeNode, defaultColor: Color) {
-    val image = node.imageId?.let { this.getImage(it) }
+    val image = node.imageId?.let { this.imageProvider.getImage(it) }
     val area = node.area
 
     if (image == null) {
-      this.g.color = node.color?.let{ Color.decode(it) } ?: defaultColor
+      this.g.color = node.color?.let{ this.imageProvider.getColor(it) } ?: defaultColor
       this.g.fillRect(area.getLeft().toPixelSpace(scale), area.getTop().toPixelSpace(scale), area.getWidth().toPixelSpace(scale), area.getHeight().toPixelSpace(scale))
     } else {
       renderImage(node.area, image)

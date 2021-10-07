@@ -39,7 +39,7 @@ class CodeScapeView(
       camera,
       g,
       { node -> this.actionHandler.runReadOnlyTask { this.treeDataService.loadChildren(node, this::repaint) } },
-      { this.imageProvider.getImage(it) }
+      this.imageProvider
     )
 
     renderer.render(this.rootNode)
