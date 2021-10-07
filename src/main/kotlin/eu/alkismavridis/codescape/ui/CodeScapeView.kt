@@ -13,7 +13,7 @@ import kotlin.math.roundToInt
 class CodeScapeView(
   private var rootNode: CodeScapeNode,
   private val treeDataService: TreeDataService,
-  private val imageCache: ImageCache,
+  private val imageProvider: ImageProvider,
   private val actionHandler: CodeScapeActionHandler,
 ): JPanel() {
   private var uiState = this.createInitialState()
@@ -39,7 +39,7 @@ class CodeScapeView(
       camera,
       g,
       { node -> this.actionHandler.runReadOnlyTask { this.treeDataService.loadChildren(node, this::repaint) } },
-      { this.imageCache.getImage(it) }
+      { this.imageProvider.getImage(it) }
     )
 
     renderer.render(this.rootNode)

@@ -33,11 +33,7 @@ class NioTreeDataService(
       parent.type = NodeType.LOCKED_BRANCH
       onPresent()
     } else {
-      parent.children = this.layoutService
-        .layout(parent.area, files)
-        .map { this.createNode(it.data, it.area) }
-        .toList()
-
+      parent.children = this.calculateChildren(parent, files)
       parent.loadingState = ChildrenLoadState.LOADED
       onPresent()
     }
@@ -50,16 +46,23 @@ class NioTreeDataService(
   private fun getFiles(parentPath: String) : List<FileData> {
     return Files.walk(this.projectRoot.resolve(parentPath), 1)
       .skip(1)
-      .map(this::toFileNode)
+      .map(this::toFileData)
       .filter { it.options.visibility != NodeVisibility.HIDDEN }
       .limit(SIZE_LIMIT + 1L)
       .collect(toList())
   }
 
-  private fun toFileNode(path: Path): FileData {
+  private fun toFileData(path: Path): FileData {
     val projectPath = projectRoot.relativize(path).toString()
     val nodeOptions = this.configService.getOptionsFor(projectPath)
     return FileData(path.fileName.toString(), projectPath, Files.isDirectory(path), nodeOptions)
+  }
+
+  private fun calculateChildren(parent: CodeScapeNode, files: List<FileData>): List<CodeScapeNode> {
+    return this.layoutService
+      .layout(parent.area, files)
+      .map { this.createNode(it.data, it.area) }
+      .toList()
   }
 
   private fun createNode(fileData: FileData, area: MapArea) : CodeScapeNode {

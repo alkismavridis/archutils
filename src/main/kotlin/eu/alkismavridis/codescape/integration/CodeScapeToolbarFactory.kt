@@ -15,7 +15,7 @@ import eu.alkismavridis.codescape.tree.NioTreeDataService
 import eu.alkismavridis.codescape.tree.model.NodeType
 import eu.alkismavridis.codescape.layout.model.MapArea
 import eu.alkismavridis.codescape.ui.CodeScapeView
-import eu.alkismavridis.codescape.ui.ImageCache
+import eu.alkismavridis.codescape.ui.ImageProvider
 import java.nio.file.Path
 
 class CodeScapeToolbarFactory : ToolWindowFactory {
@@ -31,8 +31,8 @@ class CodeScapeToolbarFactory : ToolWindowFactory {
 
     val rootNode = this.createRootNode(project, rootNodePath)
     val actionHandler = IdeaCodeScapeActionHandler(project, projectRoot)
-    val imageCache = ImageCache(treeDataService)
-    val view = CodeScapeView(rootNode, treeDataService, imageCache, actionHandler)
+    val imageProvider = ImageProvider(projectRoot)
+    val view = CodeScapeView(rootNode, treeDataService, imageProvider, actionHandler)
     val fileListener = CodeScapeFileListener { this.reload(view, project, rootNodePath) }
     VirtualFileManager.VFS_CHANGES.subscribe(null, fileListener)
 
