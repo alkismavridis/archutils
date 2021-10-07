@@ -7,7 +7,11 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import java.nio.file.Path
 import com.intellij.openapi.diagnostic.Logger
 
-class IdeaCodeScapeActionHandler(private val project: Project, private val projectRoot: Path): CodeScapeActionHandler {
+class IdeaCodeScapeActionHandler(
+  private val project: Project,
+  private val projectRoot: Path,
+  private val onReload: () -> Unit
+): CodeScapeActionHandler {
 
   override fun handleNodeClick(nodeId: String) {
     LOGGER.info("Node clicked: $nodeId")
@@ -24,6 +28,8 @@ class IdeaCodeScapeActionHandler(private val project: Project, private val proje
   override fun runReadOnlyTask(runnable: () -> Unit) {
     ApplicationManager.getApplication().runReadAction(runnable)
   }
+
+  override fun handleReload() = this.onReload()
 
   companion object {
     private val LOGGER = Logger.getInstance(IdeaCodeScapeActionHandler::class.java)

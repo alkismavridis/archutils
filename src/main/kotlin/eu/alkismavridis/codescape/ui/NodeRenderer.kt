@@ -181,11 +181,11 @@ class NodeRenderer(
     private const val OPEN_DIR_THRESHOLD = 200
     private const val SHOW_LABEL_THRESHOLD = 60
 
-    private val OPEN_DIR_BACKGROUND = Color(192, 192, 192, 200)
+    private val OPEN_DIR_BACKGROUND = Color(192, 192, 192)
     private val LOADING_DIR_BACKGROUND = Color.GRAY
-    private val EXPLICITLY_CLOSED_BACKGROUND = Color(148, 2, 2, 200)
-    private val CLOSED_DIR_BACKGROUND = Color(175, 150, 3, 200)
-    private val FILE_BACKGROUND = Color(0, 120, 0, 200)
+    private val EXPLICITLY_CLOSED_BACKGROUND = Color(148, 2, 2)
+    private val CLOSED_DIR_BACKGROUND = Color(175, 150, 3)
+    private val FILE_BACKGROUND = Color(0, 120, 0)
     private val LABEL_COLOR = Color(0,0, 0)
     private val LABEL_BACKGROUND = Color(200,200, 200)
     private val BORDER_COLOR = Color.BLACK

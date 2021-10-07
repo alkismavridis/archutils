@@ -91,7 +91,7 @@ class CodeScapeView(
 
   private fun createMenuFor(node: CodeScapeNode?) : JPopupMenu {
     return JPopupMenu().also {
-      it.add(createMenuItem("Refresh") { LOGGER.info("I refresh!") })
+      it.add(createMenuItem("Refresh", this.actionHandler::handleReload))
     }
   }
 

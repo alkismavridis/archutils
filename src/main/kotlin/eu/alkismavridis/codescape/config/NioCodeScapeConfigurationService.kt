@@ -8,8 +8,8 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 
-class NioCodeScapeConfigurationService(projectRoot: Path) : CodeScapeConfigurationService {
-  private val config = this.loadConfiguration(projectRoot)
+class NioCodeScapeConfigurationService(private val projectRoot: Path) : CodeScapeConfigurationService {
+  private var config = this.loadConfiguration()
 
   override fun getOptionsFor(projectPath: String): NodeOptions {
     val rule = this.config.rules.findLast {
@@ -28,8 +28,12 @@ class NioCodeScapeConfigurationService(projectRoot: Path) : CodeScapeConfigurati
 
   override fun getRootNodePath() = config.root
 
-  private fun loadConfiguration(projectRoot: Path): CodeScapeConfiguration {
-    val loadedConfig = projectRoot
+  override fun reload() {
+    this.config = loadConfiguration()
+  }
+
+  private fun loadConfiguration(): CodeScapeConfiguration {
+    val loadedConfig = this.projectRoot
       .resolve(".codescape/config.json")
       .takeIf { Files.exists(it) }
       ?.let { Files.newInputStream(it) }
