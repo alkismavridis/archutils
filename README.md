@@ -39,9 +39,11 @@ The structure of each rule is:
 ```
 {
     /**
-        Each file codescape displays will be tested with the regex of each rule (paths relative to project root!).
-        If the file path matches, the rule will be applied to the file.
-        Examples: "frontend/node_modules", "src", "README.md" etc
+        For each file codescape displays, its project-relative path will be tested against the regex of each rule.
+        The first rule that matches the file's project-relative path will be applied.
+        
+        Example: if you want to target "PROJECT_ROOT/src/foo/bar/MyFile.cpp"
+        your regex will receive the string: "src/foo/bar/MyFile.cpp"
     */
     regex: string;
     
