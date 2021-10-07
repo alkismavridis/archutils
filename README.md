@@ -50,7 +50,7 @@ class CodeScapeRule {
      */
     visibility: "VISIBLE" | "CLOSED" | "HIDDEN";
     
-    /** Optional. Path for an image to display. Relative paths are resolved from the project root. */
+    /** Optional. Path for an image to display. Relative paths are resolved from the project root. ~~~~*/
     image: string;
 }
 ```
