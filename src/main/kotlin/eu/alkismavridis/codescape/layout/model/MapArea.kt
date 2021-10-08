@@ -18,6 +18,9 @@ class MapArea(
   fun getTop() = this.top
   fun getBottom() = this.top + this.height
 
+  fun getCenterX() = this.left + this.width / 2
+  fun getCenterY() = this.top + this.height / 2
+
   fun getAbsLeft() = this.lazyAbsLeft
   fun getAbsRight() = this.lazyAbsLeft + this.width
 
