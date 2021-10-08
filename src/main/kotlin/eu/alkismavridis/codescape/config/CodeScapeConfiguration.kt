@@ -28,5 +28,5 @@ class StyleConfiguration(
   val labelColor: String = "#000000",
   val labelBackground: String = "#C8C8C8",
   val borderColor: String = "#000000",
-  val borderWidth: Float = 2f,
+  val borderWidth: Float = 1f,
 )
