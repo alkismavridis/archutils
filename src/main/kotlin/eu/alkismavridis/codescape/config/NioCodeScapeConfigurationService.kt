@@ -3,6 +3,9 @@ package eu.alkismavridis.codescape.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.diagnostic.Logger
 import java.io.InputStream
 import java.nio.file.Files
@@ -34,15 +37,20 @@ class NioCodeScapeConfigurationService(private val projectRoot: Path) : CodeScap
   }
 
   private fun loadConfiguration(): CodeScapeConfiguration {
-    val loadedConfig = this.projectRoot
-      .resolve(".codescape/config.json")
-      .takeIf { Files.exists(it) }
-      ?.let { Files.newInputStream(it) }
-      ?.let(this::parseConfig)
-      ?: CodeScapeConfiguration()
+    try {
+      val loadedConfig = this.projectRoot
+        .resolve(".codescape/config.json")
+        .takeIf { Files.exists(it) }
+        ?.let { Files.newInputStream(it) }
+        ?.let(this::parseConfig)
+        ?: CodeScapeConfiguration()
 
-    LOGGER.info("Loaded config with ${loadedConfig.rules.size} rules. Root: ${loadedConfig.root}")
-    return loadedConfig
+      LOGGER.info("Loaded config with ${loadedConfig.rules.size} rules. Root: ${loadedConfig.root}")
+      return loadedConfig
+    } catch (e: Exception) {
+      Notifications.Bus.notify(Notification("CodescapeNotification", "Could not load Codescape configuration: ${e.message}", NotificationType.WARNING))
+      return CodeScapeConfiguration()
+    }
   }
 
   private fun parseConfig(input: InputStream): CodeScapeConfiguration {

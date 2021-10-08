@@ -99,7 +99,7 @@ class NodeRenderer(
   }
 
   private fun renderLoadingDirectory(node: CodeScapeNode) = renderSolidNode(node, LOADING_DIR_BACKGROUND, AllIcons.General.Ellipsis)
-  private fun renderVisibleFile(node: CodeScapeNode) = renderSolidNode(node, FILE_BACKGROUND, null)
+  private fun renderVisibleFile(node: CodeScapeNode) = renderSolidNode(node, FILE_BACKGROUND, AllIcons.Actions.Checked)
   private fun renderExplicitlyClosedDirectory(node: CodeScapeNode) = renderSolidNode(node, EXPLICITLY_CLOSED_BACKGROUND, AllIcons.Process.Stop)
   private fun renderClosedDirectory(node: CodeScapeNode) = renderSolidNode(node, CLOSED_DIR_BACKGROUND, AllIcons.Nodes.Folder)
 
@@ -199,11 +199,12 @@ class NodeRenderer(
     private const val OPEN_DIR_THRESHOLD = 200
     private const val SHOW_LABEL_THRESHOLD = 60
 
-    private val OPEN_DIR_BACKGROUND = Color(192, 192, 192)
+    private val FILE_BACKGROUND = Color(122, 128, 1)
+    private val CLOSED_DIR_BACKGROUND = Color(175, 121, 3)
+    private val EXPLICITLY_CLOSED_BACKGROUND = Color(175, 121, 3)
+    private val OPEN_DIR_BACKGROUND = Color(106, 106, 106)
     private val LOADING_DIR_BACKGROUND = Color.GRAY
-    private val EXPLICITLY_CLOSED_BACKGROUND = Color(148, 2, 2)
-    private val CLOSED_DIR_BACKGROUND = Color(175, 150, 3)
-    private val FILE_BACKGROUND = Color(0, 120, 0)
+
     private val LABEL_COLOR = Color(0,0, 0)
     private val LABEL_BACKGROUND = Color(200,200, 200)
     private val BORDER_COLOR = Color.BLACK

@@ -44,6 +44,7 @@ class NioTreeDataService(
       .map(this::toFileData)
       .filter { it.options.visibility != NodeVisibility.HIDDEN }
       .limit(SIZE_LIMIT + 1L)
+      .sorted { f1, f2 -> f1.name.compareTo(f2.name) }
       .collect(toList())
   }
 

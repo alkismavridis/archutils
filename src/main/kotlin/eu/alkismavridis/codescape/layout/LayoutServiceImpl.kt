@@ -40,22 +40,3 @@ class LayoutServiceImpl: LayoutService {
     private const val SPACING_RATIO = 0.05
   }
 }
-
-/*
-
-  CHILDREN                COLS
-      1                     1
-      2                     2
-      3                     2
-      4                     2
-      5                     3
-      6                     3
-      7                     3
-      8                     3
-      9                     3
-      10                    4
-
-
-
-
-* */
