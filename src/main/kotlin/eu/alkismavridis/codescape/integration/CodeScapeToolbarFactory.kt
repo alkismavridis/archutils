@@ -20,7 +20,7 @@ class CodeScapeToolbarFactory : ToolWindowFactory {
     val content = ContentFactory.SERVICE.getInstance().createContent(rootComponent, "Codescape", false)
     toolWindow.contentManager.addContent(content)
 
-    val fileListener = CodeScapeFileListener { this.reload(ctx) }
+    val fileListener = CodeScapeFileListener(project) { this.reload(ctx) }
     VirtualFileManager.VFS_CHANGES.subscribe(null, fileListener)
   }
 

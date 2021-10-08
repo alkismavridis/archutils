@@ -1,6 +1,8 @@
 package eu.alkismavridis.codescape.layout
 
 import eu.alkismavridis.codescape.layout.model.MapArea
+import org.jetbrains.rpc.LOG
+import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -13,11 +15,13 @@ class LayoutServiceImpl: LayoutService {
     val parentAspectRatio = parentArea.getWidth() / parentArea.getHeight()
     val spacing = min(parentArea.getWidth(), parentArea.getHeight()) * SPACING_RATIO
     val rowCount = floor(sqrt(children.size / parentAspectRatio))
-    val colCount = floor(children.size / rowCount).toInt()
+    val colCount = ceil(children.size / rowCount).toInt()
     val childSize = min(
       (parentArea.getWidth() - spacing) / colCount - spacing,
       (parentArea.getHeight() - spacing) / rowCount - spacing,
     )
+
+    LOG.info("Laying out ${children.size} Children.\n rowCount: $rowCount \n parentAspectRatio: $parentAspectRatio \n colCount: $colCount")
 
     return children.asSequence().mapIndexed { index, input ->
       val area = this.createChildArea(parentArea, index, colCount, spacing, childSize)
