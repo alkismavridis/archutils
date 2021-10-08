@@ -14,14 +14,12 @@ class LayoutServiceImpl: LayoutService {
 
     val parentAspectRatio = parentArea.getWidth() / parentArea.getHeight()
     val spacing = min(parentArea.getWidth(), parentArea.getHeight()) * SPACING_RATIO
-    val rowCount = floor(sqrt(children.size / parentAspectRatio))
-    val colCount = ceil(children.size / rowCount).toInt()
+    val colCount = ceil(sqrt(children.size * parentAspectRatio)).toInt()
+    val rowCount = children.size / colCount
     val childSize = min(
       (parentArea.getWidth() - spacing) / colCount - spacing,
       (parentArea.getHeight() - spacing) / rowCount - spacing,
     )
-
-    LOG.info("Laying out ${children.size} Children.\n rowCount: $rowCount \n parentAspectRatio: $parentAspectRatio \n colCount: $colCount")
 
     return children.asSequence().mapIndexed { index, input ->
       val area = this.createChildArea(parentArea, index, colCount, spacing, childSize)
@@ -43,3 +41,21 @@ class LayoutServiceImpl: LayoutService {
   }
 }
 
+/*
+
+  CHILDREN                COLS
+      1                     1
+      2                     2
+      3                     2
+      4                     2
+      5                     3
+      6                     3
+      7                     3
+      8                     3
+      9                     3
+      10                    4
+
+
+
+
+* */
