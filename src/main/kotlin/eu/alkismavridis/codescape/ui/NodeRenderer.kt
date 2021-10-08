@@ -150,7 +150,7 @@ class NodeRenderer(
       ?: BORDER_COLOR
     this.g.drawRect(leftPx, topPx, widthPx, heightPx)
 
-    if (icon != null) {
+    if (icon != null && !node.options.hideIcon) {
       this.renderIcon(icon, leftPx, topPx, widthPx, heightPx)
     }
     renderNodeLabel(node)

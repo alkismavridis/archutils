@@ -23,6 +23,7 @@ class NioCodeScapeConfigurationService(private val projectRoot: Path) : CodeScap
       rule?.openColor,
       rule?.borderColor,
       rule?.borderWidth,
+      rule?.hideIcon ?: false,
     )
   }
 

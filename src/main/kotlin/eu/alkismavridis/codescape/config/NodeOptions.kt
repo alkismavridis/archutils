@@ -7,4 +7,5 @@ class NodeOptions(
  val openColor: String?,
  val borderColor: String?,
  val borderWidth: Float?,
+ val hideIcon: Boolean,
 )

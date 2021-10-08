@@ -13,6 +13,7 @@ class CodeScapeConfigurationRule(
   val openColor: String? = null,
   val borderColor: String? = null,
   val borderWidth: Float? = null,
+  val hideIcon: Boolean = false,
 ) {
   val compiledRegex by lazy { Regex(regex) }
 }
