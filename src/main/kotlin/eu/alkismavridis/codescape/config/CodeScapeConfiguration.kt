@@ -2,6 +2,7 @@ package eu.alkismavridis.codescape.config
 
 class CodeScapeConfiguration(
   val root: String = "",
+  val style: StyleConfiguration = StyleConfiguration(),
   val rules: List<CodeScapeConfigurationRule> = emptyList()
 )
 
@@ -17,3 +18,15 @@ class CodeScapeConfigurationRule(
 ) {
   val compiledRegex by lazy { Regex(regex) }
 }
+
+class StyleConfiguration(
+  val fileColor: String = "#7A8001",
+  val closedDirColor: String = "#AF7903",
+  val openDirColor: String = "#6A6A6A",
+  val lockedDirColor: String = "#AF7903",
+  val loadingDirColor: String = "#969696",
+  val labelColor: String = "#000000",
+  val labelBackground: String = "#C8C8C8",
+  val borderColor: String = "#000000",
+  val borderWidth: Float = 2f,
+)

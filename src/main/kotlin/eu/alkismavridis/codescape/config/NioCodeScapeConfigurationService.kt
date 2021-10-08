@@ -32,6 +32,8 @@ class NioCodeScapeConfigurationService(private val projectRoot: Path) : CodeScap
 
   override fun getRootNodePath() = config.root
 
+  override fun getColorPalette() = config.style
+
   override fun reload() {
     this.config = loadConfiguration()
   }

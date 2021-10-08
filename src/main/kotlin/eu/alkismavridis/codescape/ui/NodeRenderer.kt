@@ -2,16 +2,15 @@ package eu.alkismavridis.codescape.ui
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.ScalableIcon
+import eu.alkismavridis.codescape.config.StyleConfiguration
 import eu.alkismavridis.codescape.tree.model.ChildrenLoadState
 import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.layout.calculations.intersectsWith
 import eu.alkismavridis.codescape.layout.model.MapArea
 import eu.alkismavridis.codescape.tree.actions.unloadChildren
 import eu.alkismavridis.codescape.tree.model.NodeType
-import org.jetbrains.rpc.LOG
 import java.awt.*
 import javax.swing.Icon
-import javax.swing.ImageIcon
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -20,6 +19,7 @@ class NodeRenderer(
   private val scale: Double,
   private val camera: MapArea,
   private val g: Graphics2D,
+  private val styleConfig: StyleConfiguration,
   private val loadChildren: (node: CodeScapeNode) -> Unit,
   private val imageProvider: ImageProvider,
 ) {
@@ -76,11 +76,13 @@ class NodeRenderer(
 
       this.g.color = node.options.openColor?.let { this.imageProvider.getColor(it) }
         ?: node.options.color?.let { this.imageProvider.getColor(it) }
-        ?: OPEN_DIR_BACKGROUND
+        ?: this.imageProvider.getColor(this.styleConfig.openDirColor)
       this.g.fillRect(x, y, width, height)
 
-      g.stroke = node.options.borderWidth?.let { BasicStroke(it) } ?: BORDER_STROKE
-      this.g.color = node.options.borderColor?.let { this.imageProvider.getColor(it) } ?: BORDER_COLOR
+      g.stroke = BasicStroke(node.options.borderWidth ?: this.styleConfig.borderWidth)
+      this.g.color = node.options.borderColor
+        ?.let { this.imageProvider.getColor(it) }
+        ?: this.imageProvider.getColor(this.styleConfig.borderColor)
       this.g.drawRect(x, y, width, height)
     } else {
       renderImage(node.area, image)
@@ -98,10 +100,10 @@ class NodeRenderer(
     this.g.translate(-translateX, -translateY)
   }
 
-  private fun renderLoadingDirectory(node: CodeScapeNode) = renderSolidNode(node, LOADING_DIR_BACKGROUND, AllIcons.General.Ellipsis)
-  private fun renderVisibleFile(node: CodeScapeNode) = renderSolidNode(node, FILE_BACKGROUND, AllIcons.Actions.Checked)
-  private fun renderExplicitlyClosedDirectory(node: CodeScapeNode) = renderSolidNode(node, EXPLICITLY_CLOSED_BACKGROUND, AllIcons.Process.Stop)
-  private fun renderClosedDirectory(node: CodeScapeNode) = renderSolidNode(node, CLOSED_DIR_BACKGROUND, AllIcons.Nodes.Folder)
+  private fun renderLoadingDirectory(node: CodeScapeNode) = renderSolidNode(node, this.styleConfig.loadingDirColor, AllIcons.General.Ellipsis)
+  private fun renderVisibleFile(node: CodeScapeNode) = renderSolidNode(node, this.styleConfig.fileColor, AllIcons.Actions.Checked)
+  private fun renderExplicitlyClosedDirectory(node: CodeScapeNode) = renderSolidNode(node, this.styleConfig.lockedDirColor, AllIcons.Process.Stop)
+  private fun renderClosedDirectory(node: CodeScapeNode) = renderSolidNode(node, this.styleConfig.closedDirColor, AllIcons.Nodes.Folder)
 
   private fun renderNodeLabel(node: CodeScapeNode) {
     val area = node.area
@@ -118,17 +120,17 @@ class NodeRenderer(
       val fm = this.g.fontMetrics
       val rect = fm.getStringBounds(node.label, this.g)
 
-      this.g.color = LABEL_BACKGROUND
+      this.g.color = this.imageProvider.getColor(this.styleConfig.labelBackground)
       this.g.fillRect(nodeXPixel - 4, nodeYPixel - fm.ascent, rect.width.roundToInt() + 8, rect.height.roundToInt())
 
-      this.g.color = LABEL_COLOR
+      this.g.color = this.imageProvider.getColor(this.styleConfig.labelColor)
       this.g.drawString(node.label, nodeXPixel, nodeYPixel)
 
       this.g.clip = originalClip
     }
   }
 
-  private fun renderSolidNode(node: CodeScapeNode, defaultColor: Color, icon: Icon?) {
+  private fun renderSolidNode(node: CodeScapeNode, defaultColor: String, icon: Icon?) {
     val image = node.options.imageId?.let { this.imageProvider.getImage(it) }
     val area = node.area
 
@@ -138,16 +140,18 @@ class NodeRenderer(
     val heightPx = area.getHeight().toPixelSpace(scale)
 
     if (image == null) {
-      this.g.color = node.options.color?.let{ this.imageProvider.getColor(it) } ?: defaultColor
+      this.g.color = node.options.color
+        ?.let{ this.imageProvider.getColor(it) }
+        ?: this.imageProvider.getColor(defaultColor)
       this.g.fillRect(leftPx, topPx, widthPx, heightPx)
     } else {
       renderImage(node.area, image)
     }
 
-    g.stroke = node.options.borderWidth?.let { BasicStroke(it) } ?: BORDER_STROKE
+    g.stroke = BasicStroke(node.options.borderWidth ?: this.styleConfig.borderWidth)
     g.color = node.options.borderColor
       ?.let { this.imageProvider.getColor(it) }
-      ?: BORDER_COLOR
+      ?: this.imageProvider.getColor(this.styleConfig.borderColor)
     this.g.drawRect(leftPx, topPx, widthPx, heightPx)
 
     if (icon != null && !node.options.hideIcon) {
@@ -198,16 +202,5 @@ class NodeRenderer(
   companion object {
     private const val OPEN_DIR_THRESHOLD = 200
     private const val SHOW_LABEL_THRESHOLD = 60
-
-    private val FILE_BACKGROUND = Color(122, 128, 1)
-    private val CLOSED_DIR_BACKGROUND = Color(175, 121, 3)
-    private val EXPLICITLY_CLOSED_BACKGROUND = Color(175, 121, 3)
-    private val OPEN_DIR_BACKGROUND = Color(106, 106, 106)
-    private val LOADING_DIR_BACKGROUND = Color.GRAY
-
-    private val LABEL_COLOR = Color(0,0, 0)
-    private val LABEL_BACKGROUND = Color(200,200, 200)
-    private val BORDER_COLOR = Color.BLACK
-    private val BORDER_STROKE = BasicStroke(2f)
   }
 }

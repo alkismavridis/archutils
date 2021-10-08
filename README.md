@@ -26,12 +26,14 @@ The format is:
 ```
 {
     "root": string, // optional
+    "style": StyleConfiguration, // optional
     "rules: CodeScapeRule[] // optional
 }
 ```
 
 - **root**: A path specifying the root directory that codescape will display. Default is "",
 which means that codescape will display the project root. Relative paths are resolved by the project root.
+- **style**: Options to customize the look-and-feel of codescape.
 - **rules**: A list of rules to apply to each file. Rules will help you ignore files and directories (for example, your build directory),
 lock directories from opening (for example node_modules for performance reasons), even apply images to specific files or directories.
 
@@ -53,3 +55,15 @@ To match the project root, use empty string as regex.
 - **borderColor** (optional): A hex code with the color for the node's border.
 - **borderWidth** (optional): A float number with the border's width in pixels.
 
+### Style configuration
+The following options can be applied in the style section.
+
+- **fileColor**: Hex color string
+- **closedDirColor**: Hex color string
+- **openDirColor**: Hex color string
+- **lockedDirColor**: Hex color string
+- **loadingDirColor**: Hex color string
+- **labelColor**: Hex color string
+- **labelBackground**: Hex color string
+- **borderColor**: Hex color string
+- **borderWidth**: Float

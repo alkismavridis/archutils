@@ -1,10 +1,10 @@
 package eu.alkismavridis.codescape.ui
 
 import com.intellij.openapi.diagnostic.Logger
+import eu.alkismavridis.codescape.config.StyleConfiguration
 import eu.alkismavridis.codescape.integration.CodeScapeActionHandler
 import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.layout.model.MapArea
-import eu.alkismavridis.codescape.tree.model.NodeType
 import eu.alkismavridis.codescape.tree.TreeDataService
 import java.awt.*
 import java.awt.event.MouseEvent
@@ -16,18 +16,13 @@ import kotlin.math.roundToInt
 class CodeScapeView(
   private var rootNode: CodeScapeNode,
   private val treeDataService: TreeDataService,
+  private val styleConfig: StyleConfiguration,
   private val imageProvider: ImageProvider,
   private val actionHandler: CodeScapeActionHandler,
 ): JPanel() {
   private var uiState = this.createInitialState()
 
   init { this.setupMouseListeners() }
-
-  fun reload(newRoot: CodeScapeNode) {
-    this.rootNode = newRoot
-    this.uiState = this.createInitialState()
-    this.repaint()
-  }
 
   override fun paintComponent(g: Graphics) {
     if(g !is Graphics2D) return
@@ -41,6 +36,7 @@ class CodeScapeView(
       this.uiState.scale,
       camera,
       g,
+      this.styleConfig,
       { node -> this.actionHandler.runReadOnlyTask { this.treeDataService.loadChildren(node, this::repaint) } },
       this.imageProvider
     )

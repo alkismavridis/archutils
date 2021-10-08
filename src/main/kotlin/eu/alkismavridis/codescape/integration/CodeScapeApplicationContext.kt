@@ -31,7 +31,7 @@ class CodeScapeApplicationContext(
   private val actionHandler = IdeaCodeScapeActionHandler(project, projectRoot) { this.onReload(this) }
   private val imageProvider = ImageProvider(projectRoot)
 
-  val view = CodeScapeView(rootNode, treeDataService, imageProvider, actionHandler)
+  val view = CodeScapeView(rootNode, treeDataService, configurationService.getColorPalette(), imageProvider, actionHandler)
 
 
   private fun createRootNode(project: Project, rootNodePath: Path, configurationService: CodeScapeConfigurationService) : CodeScapeNode {
