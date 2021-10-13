@@ -29,4 +29,6 @@ class StyleConfiguration(
   val labelBackground: String = "#C8C8C8",
   val borderColor: String = "#000000",
   val borderWidth: Float = 1f,
+  val autoOpenDirPx: Int = 250,
+  val autoCloseDirPx: Int = 70,
 )

@@ -211,8 +211,8 @@ class NodeRenderer(
     val heightPx = node.area.getHeight() * this.scale
     val maxDimension = max(widthPx, heightPx)
 
-    return if(maxDimension > OPEN_DIR_THRESHOLD) AutoOpenStatus.AUTO_OPEN
-    else if (maxDimension < CLOSE_DIR_THRESHOLD) AutoOpenStatus.AUTO_CLOSE
+    return if(this.styleConfig.autoOpenDirPx > 0 && maxDimension > this.styleConfig.autoOpenDirPx) AutoOpenStatus.AUTO_OPEN
+    else if (this.styleConfig.autoCloseDirPx > 0 && maxDimension < this.styleConfig.autoCloseDirPx) AutoOpenStatus.AUTO_CLOSE
     else AutoOpenStatus.NO_ACTION
   }
 
@@ -223,8 +223,6 @@ class NodeRenderer(
   private enum class AutoOpenStatus { AUTO_OPEN, AUTO_CLOSE, NO_ACTION }
 
   companion object {
-    private const val OPEN_DIR_THRESHOLD = 200
-    private const val CLOSE_DIR_THRESHOLD = 100
     private const val SHOW_LABEL_THRESHOLD = 60
   }
 }
