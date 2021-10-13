@@ -36,17 +36,13 @@ class NodeRenderer(
 
   private fun renderVisibleNode(node: CodeScapeNode) {
     when(node.type) {
-      NodeType.BRANCH -> renderVisibleDirectory(node)
+      NodeType.SIMPLE_BRANCH, NodeType.AUTO_LOADING_BRANCH -> renderVisibleDirectory(node)
       NodeType.LEAF -> renderVisibleFile(node)
+      NodeType.LOCKED_BRANCH -> renderExplicitlyClosedDirectory(node)
     }
   }
 
   private fun renderVisibleDirectory(node: CodeScapeNode) {
-    if (!node.isOpen && !node.autoLoad) {
-      renderExplicitlyClosedDirectory(node)
-      return
-    }
-
     this.handleAutoOpenStatus(node)
     if (node.isOpen) {
       renderOpenDirectory(node)

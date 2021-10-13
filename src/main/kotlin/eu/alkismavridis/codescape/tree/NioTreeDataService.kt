@@ -5,6 +5,7 @@ import eu.alkismavridis.codescape.config.NodeOptions
 import eu.alkismavridis.codescape.config.NodeVisibility
 import eu.alkismavridis.codescape.layout.LayoutService
 import eu.alkismavridis.codescape.layout.model.MapArea
+import eu.alkismavridis.codescape.tree.actions.unloadChildren
 import eu.alkismavridis.codescape.tree.model.ChildrenLoadState
 import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.tree.model.NodeType
@@ -19,7 +20,7 @@ class NioTreeDataService(
 ): TreeDataService {
 
   override fun loadChildren(parent: CodeScapeNode, onPresent: () -> Unit) {
-    if (parent.loadingState != ChildrenLoadState.UNCHECKED) {
+    if (parent.loadingState != ChildrenLoadState.UNCHECKED || parent.type in CLOSED_NODE_TYPES) {
       return
     }
 
@@ -28,6 +29,7 @@ class NioTreeDataService(
 
     val files = this.getFiles(parent.id)
     if (files.size > SIZE_LIMIT) {
+      parent.type = NodeType.SIMPLE_BRANCH
       parent.loadingState = ChildrenLoadState.LOADED
       onPresent()
     } else {
@@ -41,6 +43,14 @@ class NioTreeDataService(
     if (isExplicit || node.options.visibility == NodeVisibility.VISIBLE) {
       node.isOpen = true
     }
+  }
+
+  override fun closeNode(node: CodeScapeNode, onPresent: () -> Unit) {
+    if (!node.isOpen) return
+
+    node.isOpen = false
+    node.unloadChildren()
+    onPresent()
   }
 
   private fun getFiles(parentPath: String) : List<FileData> {
@@ -67,20 +77,19 @@ class NioTreeDataService(
   }
 
   private fun createNode(fileData: FileData, area: MapArea) : CodeScapeNode {
-    val nodeType = if(fileData.isDirectory) NodeType.BRANCH else NodeType.LEAF
-
-    val childLoadState = if(nodeType == NodeType.BRANCH) {
-      ChildrenLoadState.UNCHECKED
-    } else {
-      ChildrenLoadState.LOADED
+    val nodeType = when {
+      !fileData.isDirectory -> NodeType.LEAF
+      fileData.options.visibility == NodeVisibility.CLOSED -> NodeType.SIMPLE_BRANCH
+      else -> NodeType.AUTO_LOADING_BRANCH
     }
+
+    val childLoadState = if(fileData.isDirectory) ChildrenLoadState.UNCHECKED else ChildrenLoadState.LOADED
 
     return CodeScapeNode(
       fileData.path,
       fileData.name,
       nodeType,
       area,
-      fileData.options.visibility == NodeVisibility.VISIBLE,
       false,
       fileData.options,
       emptyList(),
@@ -97,5 +106,6 @@ class NioTreeDataService(
 
   companion object {
     private const val SIZE_LIMIT = 100
+    private val CLOSED_NODE_TYPES = listOf(NodeType.LEAF, NodeType.LOCKED_BRANCH)
   }
 }

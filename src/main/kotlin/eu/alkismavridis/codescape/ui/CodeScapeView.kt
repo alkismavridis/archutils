@@ -80,38 +80,24 @@ class CodeScapeView(
 
   private fun handleNodeClick(node: CodeScapeNode?, event: MouseEvent) {
     if (event.button == 3) {
-      this.createMenuFor(node).show(this, event.x, event.y)
+      CodeScapeMenu(node, this.actionHandler, this.treeDataService, this::repaint).show(this, event.x, event.y)
       return
     }
 
     if (event.button == 1 && node != null) {
       when (node.type) {
         NodeType.LEAF -> this.actionHandler.openLeafNode(node.id)
-        NodeType.BRANCH -> this.treeDataService.openNode(node, isExplicit = true, this::repaint)
+        NodeType.SIMPLE_BRANCH,
+        NodeType.AUTO_LOADING_BRANCH -> this.treeDataService.openNode(node, isExplicit = true, this::repaint)
+        NodeType.LOCKED_BRANCH -> {}
       }
     }
   }
 
   private fun createInitialState() = CodeScapeViewState(0.0, 0.0, 1.0, null, null)
 
-  private fun createMenuFor(node: CodeScapeNode?) : JPopupMenu {
-    val items = listOfNotNull(
-      createMenuItem("Refresh", this.actionHandler::handleReload),
-      if (node == null) null else createMenuItem("Show in project") { this.actionHandler.showNodeInViewer(node.id)}
-    )
-
-    return JPopupMenu().also {
-      items.forEach(it::add)
-    }
-  }
-
-  private fun createMenuItem(label: String, action: () -> Unit): JMenuItem {
-    return JMenuItem(label).also {
-      it.addActionListener{ action() }
-    }
-  }
-
   private fun loadChildrenInNewTread(node: CodeScapeNode) {
+    LOGGER.info("Loading children of ${node.id}")
     this.actionHandler.runReadOnlyTask { this.treeDataService.loadChildren(node, this::repaint) }
   }
 
@@ -120,8 +106,7 @@ class CodeScapeView(
   }
 
   private fun handleAutoClose(node: CodeScapeNode) {
-    node.isOpen = false
-    node.unloadChildren()
+    this.treeDataService.closeNode(node) {}
   }
 
   private fun debugState(camera: MapArea, g: Graphics2D) {

@@ -6,9 +6,8 @@ import eu.alkismavridis.codescape.layout.model.MapArea
 class CodeScapeNode(
   val id: String,
   val label: String,
-  val type: NodeType,
+  var type: NodeType,
   val area: MapArea,
-  val autoLoad: Boolean,
   var isOpen: Boolean,
   val options: NodeOptions,
   var children: List<CodeScapeNode> = emptyList(),

@@ -37,7 +37,7 @@ class CodeScapeApplicationContext(
   private fun createRootNode(project: Project, rootNodePath: Path, configurationService: CodeScapeConfigurationService) : CodeScapeNode {
     val rootArea = MapArea(0.0, 0.0, 1000.0, 1000.0, null)
     val options = configurationService.getOptionsFor("")
-    return CodeScapeNode(rootNodePath.toString(), project.name, NodeType.BRANCH, rootArea, autoLoad = true, isOpen = false, options = options)
+    return CodeScapeNode(rootNodePath.toString(), project.name, NodeType.AUTO_LOADING_BRANCH, rootArea, isOpen = false, options = options)
   }
 
   private fun getProjectRoot(project: Project): Path {
