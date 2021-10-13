@@ -6,6 +6,8 @@ import eu.alkismavridis.codescape.integration.CodeScapeActionHandler
 import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.layout.model.MapArea
 import eu.alkismavridis.codescape.tree.TreeDataService
+import eu.alkismavridis.codescape.tree.actions.unloadChildren
+import eu.alkismavridis.codescape.tree.model.NodeType
 import java.awt.*
 import java.awt.event.MouseEvent
 import javax.swing.JMenuItem
@@ -37,12 +39,13 @@ class CodeScapeView(
       camera,
       g,
       this.styleConfig,
-      { node -> this.actionHandler.runReadOnlyTask { this.treeDataService.loadChildren(node, this::repaint) } },
+      this::loadChildrenInNewTread,
+      this::handleAutoOpen,
+      this::handleAutoClose,
       this.imageProvider
     )
 
     renderer.render(this.rootNode)
-
     g.transform = originalTransform
   }
 
@@ -78,16 +81,27 @@ class CodeScapeView(
   private fun handleNodeClick(node: CodeScapeNode?, event: MouseEvent) {
     if (event.button == 3) {
       this.createMenuFor(node).show(this, event.x, event.y)
-    } else if (event.button == 1 && node != null) {
-      this.actionHandler.handleNodeClick(node.id)
+      return
+    }
+
+    if (event.button == 1 && node != null) {
+      when (node.type) {
+        NodeType.LEAF -> this.actionHandler.openLeafNode(node.id)
+        NodeType.BRANCH -> this.treeDataService.openNode(node, isExplicit = true, this::repaint)
+      }
     }
   }
 
   private fun createInitialState() = CodeScapeViewState(0.0, 0.0, 1.0, null, null)
 
   private fun createMenuFor(node: CodeScapeNode?) : JPopupMenu {
+    val items = listOfNotNull(
+      createMenuItem("Refresh", this.actionHandler::handleReload),
+      if (node == null) null else createMenuItem("Show in project") { this.actionHandler.showNodeInViewer(node.id)}
+    )
+
     return JPopupMenu().also {
-      it.add(createMenuItem("Refresh", this.actionHandler::handleReload))
+      items.forEach(it::add)
     }
   }
 
@@ -95,6 +109,19 @@ class CodeScapeView(
     return JMenuItem(label).also {
       it.addActionListener{ action() }
     }
+  }
+
+  private fun loadChildrenInNewTread(node: CodeScapeNode) {
+    this.actionHandler.runReadOnlyTask { this.treeDataService.loadChildren(node, this::repaint) }
+  }
+
+  private fun handleAutoOpen(node: CodeScapeNode) {
+    this.treeDataService.openNode(node, isExplicit = false) {}
+  }
+
+  private fun handleAutoClose(node: CodeScapeNode) {
+    node.isOpen = false
+    node.unloadChildren()
   }
 
   private fun debugState(camera: MapArea, g: Graphics2D) {

@@ -29,12 +29,17 @@ class NioTreeDataService(
     val files = this.getFiles(parent.id)
     if (files.size > SIZE_LIMIT) {
       parent.loadingState = ChildrenLoadState.LOADED
-      parent.type = NodeType.LOCKED_BRANCH
       onPresent()
     } else {
       parent.children = this.calculateChildren(parent, files)
       parent.loadingState = ChildrenLoadState.LOADED
       onPresent()
+    }
+  }
+
+  override fun openNode(node: CodeScapeNode, isExplicit: Boolean, onPresent: () -> Unit) {
+    if (isExplicit || node.options.visibility == NodeVisibility.VISIBLE) {
+      node.isOpen = true
     }
   }
 
@@ -62,11 +67,7 @@ class NioTreeDataService(
   }
 
   private fun createNode(fileData: FileData, area: MapArea) : CodeScapeNode {
-    val nodeType = when {
-      !fileData.isDirectory -> NodeType.LEAF
-      fileData.options.visibility == NodeVisibility.CLOSED -> NodeType.LOCKED_BRANCH
-      else -> NodeType.BRANCH
-    }
+    val nodeType = if(fileData.isDirectory) NodeType.BRANCH else NodeType.LEAF
 
     val childLoadState = if(nodeType == NodeType.BRANCH) {
       ChildrenLoadState.UNCHECKED
@@ -79,6 +80,7 @@ class NioTreeDataService(
       fileData.name,
       nodeType,
       area,
+      fileData.options.visibility == NodeVisibility.VISIBLE, //TODO alkis make this configuration explicit
       false,
       fileData.options,
       emptyList(),

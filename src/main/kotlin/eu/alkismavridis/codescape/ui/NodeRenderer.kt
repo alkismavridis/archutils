@@ -7,6 +7,7 @@ import eu.alkismavridis.codescape.tree.model.ChildrenLoadState
 import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.layout.calculations.intersectsWith
 import eu.alkismavridis.codescape.layout.model.MapArea
+import eu.alkismavridis.codescape.tree.TreeDataService
 import eu.alkismavridis.codescape.tree.actions.unloadChildren
 import eu.alkismavridis.codescape.tree.model.NodeType
 import java.awt.*
@@ -21,29 +22,36 @@ class NodeRenderer(
   private val g: Graphics2D,
   private val styleConfig: StyleConfiguration,
   private val loadChildren: (node: CodeScapeNode) -> Unit,
+  private val onAutoOpen: (node: CodeScapeNode) -> Unit,
+  private val onAutoClose: (node: CodeScapeNode) -> Unit,
   private val imageProvider: ImageProvider,
 ) {
   fun render(node: CodeScapeNode) {
     if (this.camera.intersectsWith(node.area)) {
       renderVisibleNode(node)
     } else {
-      node.isOpen = false
-      node.unloadChildren()
+      this.onAutoClose(node)
     }
   }
 
   private fun renderVisibleNode(node: CodeScapeNode) {
     when(node.type) {
       NodeType.BRANCH -> renderVisibleDirectory(node)
-      NodeType.LOCKED_BRANCH -> renderExplicitlyClosedDirectory(node)
       NodeType.LEAF -> renderVisibleFile(node)
     }
   }
 
   private fun renderVisibleDirectory(node: CodeScapeNode) {
-    val widthPx = node.area.getWidth() * this.scale
-    val heightPx = node.area.getHeight() * this.scale
-    node.isOpen = widthPx > OPEN_DIR_THRESHOLD || heightPx > OPEN_DIR_THRESHOLD
+    if (!node.isOpen && !node.autoLoad) {
+      renderExplicitlyClosedDirectory(node)
+      return
+    }
+
+    if (this.shouldAutoOpen(node)) {
+      this.onAutoOpen(node)
+    } else {
+      this.onAutoClose(node)
+    }
 
     if (node.isOpen) {
       renderOpenDirectory(node)
@@ -193,6 +201,12 @@ class NodeRenderer(
       val scaled = icon.scale(scaleFactor.toFloat())
       scaled.paintIcon(null, this.g, nodeLeft + nodeWidth / 2 - scaled.iconWidth / 2, nodeTop + nodeHeight / 2 - scaled.iconHeight / 2)
     }
+  }
+
+  private fun shouldAutoOpen(node: CodeScapeNode) : Boolean {
+    val widthPx = node.area.getWidth() * this.scale
+    val heightPx = node.area.getHeight() * this.scale
+    return widthPx > OPEN_DIR_THRESHOLD || heightPx > OPEN_DIR_THRESHOLD
   }
 
   private fun Double.toPixelSpace(scale: Double): Int {

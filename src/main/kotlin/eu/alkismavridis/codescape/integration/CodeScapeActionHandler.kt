@@ -1,7 +1,8 @@
 package eu.alkismavridis.codescape.integration
 
 interface CodeScapeActionHandler {
-  fun handleNodeClick(nodeId: String)
+  fun openLeafNode(nodeId: String)
   fun runReadOnlyTask( runnable: () -> Unit )
   fun handleReload()
+  fun showNodeInViewer(nodeId: String)
 }
