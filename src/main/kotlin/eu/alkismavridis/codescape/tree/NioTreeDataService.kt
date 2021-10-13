@@ -9,6 +9,7 @@ import eu.alkismavridis.codescape.tree.actions.unloadChildren
 import eu.alkismavridis.codescape.tree.model.ChildrenLoadState
 import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.tree.model.NodeType
+import eu.alkismavridis.codescape.tree.model.OpenState
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.stream.Collectors.toList
@@ -40,15 +41,17 @@ class NioTreeDataService(
   }
 
   override fun openNode(node: CodeScapeNode, isExplicit: Boolean, onPresent: () -> Unit) {
+    if(node.openState.isOpen) return
+
     if (isExplicit || node.options.visibility == NodeVisibility.VISIBLE) {
-      node.isOpen = true
+      node.openState = if(isExplicit) OpenState.EXPLICITLY_OPEN else OpenState.OPEN
     }
   }
 
-  override fun closeNode(node: CodeScapeNode, onPresent: () -> Unit) {
-    if (!node.isOpen) return
+  override fun closeNode(node: CodeScapeNode, isExplicit: Boolean, onPresent: () -> Unit) {
+    if (!node.openState.isOpen) return
 
-    node.isOpen = false
+    node.openState = if(isExplicit) OpenState.EXPLICITLY_CLOSED else OpenState.CLOSED
     node.unloadChildren()
     onPresent()
   }
@@ -90,7 +93,7 @@ class NioTreeDataService(
       fileData.name,
       nodeType,
       area,
-      false,
+      OpenState.CLOSED,
       fileData.options,
       emptyList(),
       childLoadState

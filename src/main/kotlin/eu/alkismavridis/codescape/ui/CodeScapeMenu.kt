@@ -25,8 +25,8 @@ class CodeScapeMenu(
 
       createOptionalItem("Show in project") { this.actionHandler.showNodeInViewer(it.id)},
 
-      if (this.node?.isOpen != true) null else {
-        createOptionalItem("Close") { this.treeDataService.closeNode(it, this.onUpdate) }
+      if (this.node?.openState?.isOpen != true) null else {
+        createOptionalItem("Close") { this.treeDataService.closeNode(it, true, this.onUpdate) }
       }
     )
   }

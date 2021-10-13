@@ -30,5 +30,7 @@ class StyleConfiguration(
   val borderColor: String = "#000000",
   val borderWidth: Float = 1f,
   val autoOpenDirPx: Int = 250,
+  val hardOpenDirPx: Int = 1000,
   val autoCloseDirPx: Int = 70,
+  val hardCloseDirPx: Int = 30,
 )

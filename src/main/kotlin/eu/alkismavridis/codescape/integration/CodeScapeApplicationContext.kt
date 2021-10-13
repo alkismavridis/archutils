@@ -10,6 +10,7 @@ import eu.alkismavridis.codescape.layout.model.MapArea
 import eu.alkismavridis.codescape.tree.NioTreeDataService
 import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.tree.model.NodeType
+import eu.alkismavridis.codescape.tree.model.OpenState
 import eu.alkismavridis.codescape.ui.CodeScapeView
 import eu.alkismavridis.codescape.ui.ImageProvider
 import java.nio.file.Path
@@ -37,7 +38,7 @@ class CodeScapeApplicationContext(
   private fun createRootNode(project: Project, rootNodePath: Path, configurationService: CodeScapeConfigurationService) : CodeScapeNode {
     val rootArea = MapArea(0.0, 0.0, 1000.0, 1000.0, null)
     val options = configurationService.getOptionsFor("")
-    return CodeScapeNode(rootNodePath.toString(), project.name, NodeType.AUTO_LOADING_BRANCH, rootArea, isOpen = false, options = options)
+    return CodeScapeNode(rootNodePath.toString(), project.name, NodeType.AUTO_LOADING_BRANCH, rootArea, OpenState.CLOSED, options = options)
   }
 
   private fun getProjectRoot(project: Project): Path {

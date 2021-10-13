@@ -106,7 +106,7 @@ class CodeScapeView(
   }
 
   private fun handleAutoClose(node: CodeScapeNode) {
-    this.treeDataService.closeNode(node) {}
+    this.treeDataService.closeNode(node, isExplicit = false) {}
   }
 
   private fun debugState(camera: MapArea, g: Graphics2D) {

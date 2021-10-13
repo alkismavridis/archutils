@@ -9,6 +9,7 @@ import eu.alkismavridis.codescape.layout.calculations.intersectsWith
 import eu.alkismavridis.codescape.layout.model.MapArea
 import eu.alkismavridis.codescape.tree.actions.unloadChildren
 import eu.alkismavridis.codescape.tree.model.NodeType
+import eu.alkismavridis.codescape.tree.model.OpenState
 import java.awt.*
 import javax.swing.Icon
 import kotlin.math.max
@@ -44,7 +45,7 @@ class NodeRenderer(
 
   private fun renderVisibleDirectory(node: CodeScapeNode) {
     this.handleAutoOpenStatus(node)
-    if (node.isOpen) {
+    if (node.openState.isOpen) {
       renderOpenDirectory(node)
     } else {
       node.unloadChildren()
@@ -206,9 +207,11 @@ class NodeRenderer(
     val widthPx = node.area.getWidth() * this.scale
     val heightPx = node.area.getHeight() * this.scale
     val maxDimension = max(widthPx, heightPx)
+    val openingThreshold = if(node.openState == OpenState.EXPLICITLY_CLOSED) this.styleConfig.hardOpenDirPx else this.styleConfig.autoOpenDirPx
+    val closingThreshold = if(node.openState == OpenState.EXPLICITLY_OPEN) this.styleConfig.hardCloseDirPx else this.styleConfig.autoCloseDirPx
 
-    return if(this.styleConfig.autoOpenDirPx > 0 && maxDimension > this.styleConfig.autoOpenDirPx) AutoOpenStatus.AUTO_OPEN
-    else if (this.styleConfig.autoCloseDirPx > 0 && maxDimension < this.styleConfig.autoCloseDirPx) AutoOpenStatus.AUTO_CLOSE
+    return if(openingThreshold > 0 && maxDimension > openingThreshold) AutoOpenStatus.AUTO_OPEN
+    else if (closingThreshold > 0 && maxDimension < closingThreshold) AutoOpenStatus.AUTO_CLOSE
     else AutoOpenStatus.NO_ACTION
   }
 

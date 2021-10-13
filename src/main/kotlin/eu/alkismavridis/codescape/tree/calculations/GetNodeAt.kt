@@ -5,7 +5,7 @@ import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 
 fun CodeScapeNode.getNodeAt(absX: Double, absY: Double, prioritiseChild: Boolean): CodeScapeNode? {
   if (!this.area.containsPoint(absX, absY)) return null
-  if (!prioritiseChild || !this.isOpen) {
+  if (!prioritiseChild || !this.openState.isOpen) {
     return this
   }
 

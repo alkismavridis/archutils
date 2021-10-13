@@ -8,7 +8,7 @@ class CodeScapeNode(
   val label: String,
   var type: NodeType,
   val area: MapArea,
-  var isOpen: Boolean,
+  var openState: OpenState,
   val options: NodeOptions,
   var children: List<CodeScapeNode> = emptyList(),
   var loadingState: ChildrenLoadState = ChildrenLoadState.UNCHECKED
