@@ -7,11 +7,11 @@ import eu.alkismavridis.codescape.tree.model.ChildrenLoadState
 import eu.alkismavridis.codescape.tree.model.CodeScapeNode
 import eu.alkismavridis.codescape.layout.calculations.intersectsWith
 import eu.alkismavridis.codescape.layout.model.MapArea
-import eu.alkismavridis.codescape.tree.TreeDataService
 import eu.alkismavridis.codescape.tree.actions.unloadChildren
 import eu.alkismavridis.codescape.tree.model.NodeType
 import java.awt.*
 import javax.swing.Icon
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -47,12 +47,7 @@ class NodeRenderer(
       return
     }
 
-    if (this.shouldAutoOpen(node)) {
-      this.onAutoOpen(node)
-    } else {
-      this.onAutoClose(node)
-    }
-
+    this.handleAutoOpenStatus(node)
     if (node.isOpen) {
       renderOpenDirectory(node)
     } else {
@@ -203,18 +198,33 @@ class NodeRenderer(
     }
   }
 
-  private fun shouldAutoOpen(node: CodeScapeNode) : Boolean {
+  private fun handleAutoOpenStatus(node: CodeScapeNode) {
+    when(this.getAutoOpenStatus(node)) {
+      AutoOpenStatus.AUTO_OPEN -> this.onAutoOpen(node)
+      AutoOpenStatus.AUTO_CLOSE -> this.onAutoClose(node)
+      else -> {}
+    }
+  }
+
+  private fun getAutoOpenStatus(node: CodeScapeNode) : AutoOpenStatus {
     val widthPx = node.area.getWidth() * this.scale
     val heightPx = node.area.getHeight() * this.scale
-    return widthPx > OPEN_DIR_THRESHOLD || heightPx > OPEN_DIR_THRESHOLD
+    val maxDimension = max(widthPx, heightPx)
+
+    return if(maxDimension > OPEN_DIR_THRESHOLD) AutoOpenStatus.AUTO_OPEN
+    else if (maxDimension < CLOSE_DIR_THRESHOLD) AutoOpenStatus.AUTO_CLOSE
+    else AutoOpenStatus.NO_ACTION
   }
 
   private fun Double.toPixelSpace(scale: Double): Int {
     return (this * scale).roundToInt()
   }
 
+  private enum class AutoOpenStatus { AUTO_OPEN, AUTO_CLOSE, NO_ACTION }
+
   companion object {
     private const val OPEN_DIR_THRESHOLD = 200
+    private const val CLOSE_DIR_THRESHOLD = 100
     private const val SHOW_LABEL_THRESHOLD = 60
   }
 }

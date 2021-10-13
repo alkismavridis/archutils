@@ -80,7 +80,7 @@ class NioTreeDataService(
       fileData.name,
       nodeType,
       area,
-      fileData.options.visibility == NodeVisibility.VISIBLE, //TODO alkis make this configuration explicit
+      fileData.options.visibility == NodeVisibility.VISIBLE,
       false,
       fileData.options,
       emptyList(),
