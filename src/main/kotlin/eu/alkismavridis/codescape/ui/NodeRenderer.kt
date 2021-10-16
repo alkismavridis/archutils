@@ -10,8 +10,6 @@ import eu.alkismavridis.codescape.layout.model.MapArea
 import eu.alkismavridis.codescape.tree.actions.unloadChildren
 import eu.alkismavridis.codescape.tree.model.NodeType
 import eu.alkismavridis.codescape.tree.model.OpenState
-import okhttp3.internal.notify
-import org.jetbrains.rpc.LOG
 import java.awt.*
 import javax.swing.Icon
 import kotlin.math.max

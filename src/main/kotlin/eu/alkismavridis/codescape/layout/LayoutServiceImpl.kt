@@ -1,9 +1,7 @@
 package eu.alkismavridis.codescape.layout
 
 import eu.alkismavridis.codescape.layout.model.MapArea
-import org.jetbrains.rpc.LOG
 import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.min
 import kotlin.math.sqrt
 
