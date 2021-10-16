@@ -110,9 +110,9 @@ class NodeRenderer(
     val widthPx = area.getWidth().toPixelSpace(this.scale)
     if (widthPx > SHOW_LABEL_THRESHOLD) {
       val labelXPixel = area.getLeft().toPixelSpace(this.scale)
-      val labelHeightPx = (area.getHeight() * 0.15).toPixelSpace(this.scale)
+      val labelHeightPx = min((area.getHeight() * 0.15).toPixelSpace(this.scale), 30)
       val labelYPixel = area.getTop().toPixelSpace(this.scale)
-      val fontSize = min(widthPx / 10.0, 20.0).roundToInt()
+      val fontSize = min(widthPx / 10.0, 16.0).roundToInt()
 
       this.g.color = this.imageProvider.getColor(this.styleConfig.labelBackground)
       this.g.fillRect(labelXPixel, labelYPixel, widthPx, labelHeightPx)
