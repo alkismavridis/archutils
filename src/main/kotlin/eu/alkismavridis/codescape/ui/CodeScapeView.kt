@@ -97,7 +97,6 @@ class CodeScapeView(
   private fun createInitialState() = CodeScapeViewState(0.0, 0.0, 1.0, null, null)
 
   private fun loadChildrenInNewTread(node: CodeScapeNode) {
-    LOGGER.info("Loading children of ${node.id}")
     this.actionHandler.runReadOnlyTask { this.treeDataService.loadChildren(node, this::repaint) }
   }
 

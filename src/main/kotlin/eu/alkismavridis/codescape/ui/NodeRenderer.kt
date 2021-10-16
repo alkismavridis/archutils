@@ -10,6 +10,8 @@ import eu.alkismavridis.codescape.layout.model.MapArea
 import eu.alkismavridis.codescape.tree.actions.unloadChildren
 import eu.alkismavridis.codescape.tree.model.NodeType
 import eu.alkismavridis.codescape.tree.model.OpenState
+import okhttp3.internal.notify
+import org.jetbrains.rpc.LOG
 import java.awt.*
 import javax.swing.Icon
 import kotlin.math.max
@@ -107,25 +109,23 @@ class NodeRenderer(
 
   private fun renderNodeLabel(node: CodeScapeNode) {
     val area = node.area
-    val widthPx = area.getWidth() * this.scale
+    val widthPx = area.getWidth().toPixelSpace(this.scale)
     if (widthPx > SHOW_LABEL_THRESHOLD) {
-      val nodeXPixel = area.getLeft().toPixelSpace(this.scale)
-      val nodeYPixel = area.getTop().toPixelSpace(this.scale)
-      val fontSize = min(widthPx / 10, 20.0).roundToInt()
+      val labelXPixel = area.getLeft().toPixelSpace(this.scale)
+      val labelHeightPx = (area.getHeight() * 0.15).toPixelSpace(this.scale)
+      val labelYPixel = area.getTop().toPixelSpace(this.scale)
+      val fontSize = min(widthPx / 10.0, 20.0).roundToInt()
 
-      val originalClip = this.g.clip
-      this.g.clip = Rectangle(nodeXPixel, nodeYPixel - 26, area.getWidth().toPixelSpace(this.scale), 30)
+      this.g.color = this.imageProvider.getColor(this.styleConfig.labelBackground)
+      this.g.fillRect(labelXPixel, labelYPixel, widthPx, labelHeightPx)
 
       this.g.font = Font("serif", Font.PLAIN, fontSize)
       val fm = this.g.fontMetrics
-      val rect = fm.getStringBounds(node.label, this.g)
 
-      this.g.color = this.imageProvider.getColor(this.styleConfig.labelBackground)
-      this.g.fillRect(nodeXPixel - 4, nodeYPixel - fm.ascent, rect.width.roundToInt() + 8, rect.height.roundToInt())
-
+      val originalClip = this.g.clip
       this.g.color = this.imageProvider.getColor(this.styleConfig.labelColor)
-      this.g.drawString(node.label, nodeXPixel, nodeYPixel)
-
+      this.g.clip = Rectangle(labelXPixel, labelYPixel, widthPx, labelHeightPx)
+      this.g.drawString(node.label, labelXPixel + 4, labelYPixel + (fm.ascent + labelHeightPx) / 2)
       this.g.clip = originalClip
     }
   }

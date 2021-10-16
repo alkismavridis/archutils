@@ -34,7 +34,7 @@ class NioTreeDataService(
       parent.loadingState = ChildrenLoadState.LOADED
       onPresent()
     } else {
-      parent.children = this.calculateChildren(parent, files)
+      parent.children = this.createChildren(parent, files)
       parent.loadingState = ChildrenLoadState.LOADED
       onPresent()
     }
@@ -72,7 +72,7 @@ class NioTreeDataService(
     return FileData(path.fileName.toString(), projectPath, Files.isDirectory(path), nodeOptions)
   }
 
-  private fun calculateChildren(parent: CodeScapeNode, files: List<FileData>): List<CodeScapeNode> {
+  private fun createChildren(parent: CodeScapeNode, files: List<FileData>): List<CodeScapeNode> {
     return this.layoutService
       .layout(parent.area, files)
       .map { this.createNode(it.data, it.area) }
