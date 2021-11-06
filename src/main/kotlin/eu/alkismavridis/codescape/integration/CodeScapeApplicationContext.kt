@@ -14,6 +14,7 @@ import eu.alkismavridis.codescape.tree.model.OpenState
 import eu.alkismavridis.codescape.ui.CodeScapeView
 import eu.alkismavridis.codescape.ui.ImageProvider
 import java.nio.file.Path
+import java.nio.file.Paths
 import javax.swing.JPanel
 
 class CodeScapeApplicationContext(
@@ -42,16 +43,19 @@ class CodeScapeApplicationContext(
   }
 
   private fun getProjectRoot(project: Project): Path {
-    val rootPath = ProjectRootManager.getInstance(project)
+    val contentRootPaths = ProjectRootManager.getInstance(project)
       .contentRoots
-      .firstOrNull()
-      ?.toNioPath()
-      ?.toAbsolutePath()
-      ?.normalize()
-      ?: throw IllegalStateException("No project path found")
+      .map { it.toNioPath().toAbsolutePath().normalize().toString() }
 
-    LOGGER.info("Project root detected: $projectRoot")
-    return rootPath
+    val topLevelPaths = getTopLevelPaths(contentRootPaths)
+
+    val result = topLevelPaths
+      .firstOrNull()
+      ?.let { Paths.get(it) }
+      ?: throw IllegalStateException("Could not extract root path")
+
+    LOGGER.info("Project root detected: $result")
+    return result
   }
 
   companion object {
