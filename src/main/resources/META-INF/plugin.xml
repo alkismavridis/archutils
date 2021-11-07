@@ -15,8 +15,8 @@
         <action
                 id="eu.alkismavridis.archutils.integration.AnalyzeProjectAction"
                 class="eu.alkismavridis.archutils.integration.AnalyzeProjectAction"
-                text="Analyze Project"
-                description="Analyze project architecture">
+                text="Analyze Dependencies"
+                description="Analyze project or module dependencies">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
         </action>
     </actions>

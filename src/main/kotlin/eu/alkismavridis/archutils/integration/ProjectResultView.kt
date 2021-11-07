@@ -26,31 +26,29 @@ class ProjectResultView(private val result: ProjectAnalysisResult): JPanel() {
     val modules = this.result.getModules()
     moduleTable.layout = GridLayout(modules.size + 1, 7, 8, 8)
 
-    moduleTable.add(createHeader("Name"))
-    moduleTable.add(createHeader("Incoming"))
-    moduleTable.add(createHeader("Outgoing"))
-    moduleTable.add(createHeader("Internal"))
-    moduleTable.add(createHeader("Cross-module"))
-    moduleTable.add(createHeader("Cohesion factor"))
-    moduleTable.add(createHeader("Instability factor"))
+    moduleTable.add(createBoldCell("Name"))
+    moduleTable.add(createBoldCell("Cohesion factor"))
+    moduleTable.add(createBoldCell("Instability factor"))
+    moduleTable.add(createBoldCell("Incoming"))
+    moduleTable.add(createBoldCell("Outgoing"))
+    moduleTable.add(createBoldCell("Internal"))
+    moduleTable.add(createBoldCell("Cross-module"))
 
     modules.forEach{
       val totalDependencies = it.internalDependencyCount + it.incomingDependencyCount + it.outgoingDependencyCount
       val crossModuleDependencies = it.incomingDependencyCount + it.outgoingDependencyCount
-      val instabilityFactor = it.outgoingDependencyCount.toDouble() / crossModuleDependencies
-      val cohesionFactor = it.internalDependencyCount.toDouble() / (it.outgoingDependencyCount + it.internalDependencyCount)
 
-      moduleTable.add(createCell(it.name))
+      moduleTable.add(createBoldCell(it.name))
+      moduleTable.add(createCell(getRatioString(it.internalDependencyCount, it.outgoingDependencyCount + it.internalDependencyCount)))
+      moduleTable.add(createCell(getRatioString(it.outgoingDependencyCount, crossModuleDependencies)))
       moduleTable.add(createRatioCell(it.incomingDependencyCount, totalDependencies))
       moduleTable.add(createRatioCell(it.outgoingDependencyCount, totalDependencies))
       moduleTable.add(createRatioCell(it.internalDependencyCount, totalDependencies))
       moduleTable.add(createRatioCell(crossModuleDependencies, totalDependencies))
-      moduleTable.add(createCell(cohesionFactor.toString(2)))
-      moduleTable.add(createCell(instabilityFactor.toString(2)))
     }
   }
 
-  private fun createHeader(text: String): JLabel {
+  private fun createBoldCell(text: String): JLabel {
     return JLabel(text).also {
       it.font = it.font.deriveFont(it.font.style or Font.BOLD)
     }
@@ -72,5 +70,11 @@ class ProjectResultView(private val result: ProjectAnalysisResult): JPanel() {
     "---"
   } else {
     (100.0 * nominator / denominator).toString(1)
+  }
+
+  private fun getRatioString(nominator: Int, denominator: Int): String = if (denominator == 0) {
+    "---"
+  } else {
+    (nominator.toDouble() / denominator).toString(1)
   }
 }
