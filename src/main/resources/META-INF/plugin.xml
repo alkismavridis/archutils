@@ -1,28 +1,23 @@
 <idea-plugin>
-    <id>eu.alkismavridis.codescape</id>
+    <id>eu.alkismavridis.archutils</id>
     <name>Codescape</name>
     <vendor email="alkismavridis@gmail.com">AlkisMavridis</vendor>
 
     <description><![CDATA[
-        Project file-structure visualisation.
-        The goal of this plugin is to present the project in a way that is intuitive to the human mind.
-        The developer should be able to navigate through the project like
-        an inhabitant of a land navigates its terrain, knowing its mountains, rivers, trees, roads etc.
+        Utils to analyze project modules and extract architectural information.
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <notificationGroup id="CodescapeNotification" displayType="BALLOON"/>
-        <toolWindow
-                id="Codescape"
-                icon="AllIcons.General.Locate"
-                anchor="right"
-                factoryClass="eu.alkismavridis.codescape.integration.CodeScapeToolbarFactory"/>
-    </extensions>
-
     <actions>
+        <action
+                id="eu.alkismavridis.archutils.integration.AnalyzeProjectAction"
+                class="eu.alkismavridis.archutils.integration.AnalyzeProjectAction"
+                text="Analyze Project"
+                description="Analyze project architecture">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </action>
     </actions>
 </idea-plugin>

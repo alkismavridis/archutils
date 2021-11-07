@@ -1,6 +1,6 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.5.31'
-    id 'org.jetbrains.intellij' version '1.2.0'
+    id 'org.jetbrains.intellij' version '1.2.1'
 }
 
 group 'eu.alkismavridis'
@@ -12,6 +12,11 @@ repositories {
 
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.31'
+
+    /// TEST
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    testImplementation 'org.assertj:assertj-core:3.21.0'
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
@@ -22,4 +27,8 @@ patchPluginXml {
     changeNotes = """
       Add change notes here.<br>
       <em>most HTML tags may be used</em>"""
+}
+
+test {
+    useJUnitPlatform()
 }
