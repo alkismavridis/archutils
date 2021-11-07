@@ -1,11 +1,7 @@
 package eu.alkismavridis.archutils.integration
 
-import com.intellij.ui.components.JBScrollBar
-import com.intellij.ui.components.JBScrollPane
 import eu.alkismavridis.archutils.project.ProjectAnalysisResult
 import org.jetbrains.projector.common.misc.toString
-import java.awt.BorderLayout
-import java.awt.Color
 import java.awt.Font
 import java.awt.GridLayout
 import javax.swing.JLabel
