@@ -27,11 +27,7 @@ class ProjectAnalysingPsiVisitor(
         .forEach { usagePaths.add(it) }
     }
 
-    usagePaths.forEach { this.addUsageToResult(it, filePath) }
-  }
-
-  private fun addUsageToResult(usingFilePath: String, usedFilePath: String) {
-    result.addDependency(usingFilePath, usedFilePath)
+    result.addFile(filePath, usagePaths)
   }
 
   companion object {

@@ -24,33 +24,42 @@ class ProjectResultView(private val result: ProjectAnalysisResult): JPanel() {
   private fun renderModuleTable() {
     this.moduleTable.removeAll()
     val modules = this.result.getModules()
-    moduleTable.layout = GridLayout(modules.size + 1, 7, 8, 8)
+    moduleTable.layout = GridLayout(modules.size + 1, 11, 8, 8)
 
     moduleTable.add(createBoldCell("Name"))
-    moduleTable.add(createBoldCell("Cohesion factor"))
-    moduleTable.add(createBoldCell("Instability factor"))
-    moduleTable.add(createBoldCell("Incoming"))
-    moduleTable.add(createBoldCell("Outgoing"))
-    moduleTable.add(createBoldCell("Internal"))
-    moduleTable.add(createBoldCell("Cross-module"))
+    moduleTable.add(createBoldCell("Files"))
+    moduleTable.add(createBoldCell("Exposed files", "Files used outside the module"))
+    moduleTable.add(createBoldCell("Private files", "Files used only inside the module"))
+    moduleTable.add(createBoldCell("Internally used files", "Files used inside the module"))
+    moduleTable.add(createBoldCell("Cohesion factor", "Internal dependencies / Internal+Outgoing"))
+    moduleTable.add(createBoldCell("Instability factor", "Outgoing dependencies / Cross Module Dependencies"))
+    moduleTable.add(createBoldCell("Incoming Deps."))
+    moduleTable.add(createBoldCell("Outgoing Deps."))
+    moduleTable.add(createBoldCell("Internal Deps."))
+    moduleTable.add(createBoldCell("Cross-module", "Outgoing dependencies + Incoming dependencies"))
 
     modules.forEach{
-      val totalDependencies = it.internalDependencyCount + it.incomingDependencyCount + it.outgoingDependencyCount
-      val crossModuleDependencies = it.incomingDependencyCount + it.outgoingDependencyCount
+      val totalDependencies = it.internalDependencies + it.incomingDependencies + it.outgoingDependencies
+      val crossModuleDependencies = it.incomingDependencies + it.outgoingDependencies
 
       moduleTable.add(createBoldCell(it.name))
-      moduleTable.add(createCell(getRatioString(it.internalDependencyCount, it.outgoingDependencyCount + it.internalDependencyCount)))
-      moduleTable.add(createCell(getRatioString(it.outgoingDependencyCount, crossModuleDependencies)))
-      moduleTable.add(createRatioCell(it.incomingDependencyCount, totalDependencies))
-      moduleTable.add(createRatioCell(it.outgoingDependencyCount, totalDependencies))
-      moduleTable.add(createRatioCell(it.internalDependencyCount, totalDependencies))
-      moduleTable.add(createRatioCell(crossModuleDependencies, totalDependencies))
+      moduleTable.add(createCell(it.files.toString()))
+      moduleTable.add(createValueAndPercentCell(it.externallyUsedFiles, it.files))
+      moduleTable.add(createValueAndPercentCell(it.files - it.externallyUsedFiles, it.files))
+      moduleTable.add(createValueAndPercentCell(it.internallyUsedFiles, it.files))
+      moduleTable.add(getRatioCell(it.internalDependencies, it.outgoingDependencies + it.internalDependencies))
+      moduleTable.add(getRatioCell(it.outgoingDependencies, crossModuleDependencies))
+      moduleTable.add(createValueAndPercentCell(it.incomingDependencies, totalDependencies))
+      moduleTable.add(createValueAndPercentCell(it.outgoingDependencies, totalDependencies))
+      moduleTable.add(createValueAndPercentCell(it.internalDependencies, totalDependencies))
+      moduleTable.add(createValueAndPercentCell(crossModuleDependencies, totalDependencies))
     }
   }
 
-  private fun createBoldCell(text: String): JLabel {
+  private fun createBoldCell(text: String, tooltip: String? = null): JLabel {
     return JLabel(text).also {
       it.font = it.font.deriveFont(it.font.style or Font.BOLD)
+      it.toolTipText = tooltip
     }
   }
 
@@ -58,7 +67,7 @@ class ProjectResultView(private val result: ProjectAnalysisResult): JPanel() {
     return JLabel(text)
   }
 
-  private fun createRatioCell(amount: Int, denominator: Int): JLabel {
+  private fun createValueAndPercentCell(amount: Int, denominator: Int): JLabel {
     if (amount == 0) {
       return JLabel("0")
     }
@@ -72,9 +81,9 @@ class ProjectResultView(private val result: ProjectAnalysisResult): JPanel() {
     (100.0 * nominator / denominator).toString(1)
   }
 
-  private fun getRatioString(nominator: Int, denominator: Int): String = if (denominator == 0) {
-    "---"
+  private fun getRatioCell(nominator: Int, denominator: Int): JLabel = if (denominator == 0) {
+    JLabel("---")
   } else {
-    (nominator.toDouble() / denominator).toString(1)
+    JLabel((nominator.toDouble() / denominator).toString(1))
   }
 }

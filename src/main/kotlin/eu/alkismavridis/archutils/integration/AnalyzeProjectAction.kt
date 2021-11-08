@@ -46,6 +46,8 @@ class AnalyzeProjectAction: AnAction() {
     JBPopupFactory.getInstance()
       .createComponentPopupBuilder(scrollBar, null)
       .setTitle("Project Analysis")
+      .setNormalWindowLevel(true)
+      .setCancelOnWindowDeactivation(false)
       .setResizable(true)
       .setMovable(true)
       .setMinSize(Dimension(500, 200))

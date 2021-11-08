@@ -13,23 +13,40 @@ class ProjectAnalysisResult(rootPackage: String) {
     return this.moduleMap.values.sortedBy { it.name }
   }
 
-  fun addDependency(usingFilePath: String, usedFilePath: String) {
-    val usingModule = this.getModuleOf(usingFilePath) ?: return
-    val usedModule = if (usingFilePath == usedFilePath) {
-      usingModule
-    } else{
-      this.getModuleOf(usedFilePath) ?: return
+  fun addFile(file: String, usingFiles: Collection<String>) {
+    val moduleName = this.getModuleOf(file) ?: return
+    val module = getOrCreateModuleData(moduleName)
+
+    var hasExternalDependencies = false
+    var hasInternalDependencies = false
+    for (usingFile in usingFiles) {
+      val usingModuleName = this.getUsingModule(file, usingFile, moduleName) ?: continue
+      val usingModule = getOrCreateModuleData(usingModuleName)
+      addDependencyForModules(module, usingModule)
+
+      if (moduleName != usingModuleName) {
+        hasExternalDependencies = true
+      } else {
+        hasInternalDependencies = true
+      }
     }
 
-    addDependencyForModules(usingModule, usedModule)
+    module.files++
+    if (hasExternalDependencies) {
+      module.externallyUsedFiles++
+    }
+
+    if (hasInternalDependencies) {
+      module.internallyUsedFiles++
+    }
   }
 
-  private fun addDependencyForModules(usingModule: String, usedModule: String) {
-    if(usedModule == usingModule) {
-      getOrCreateModuleData(usedModule).internalDependencyCount++
+  private fun addDependencyForModules(usingModule: MutableModuleData, usedModule: MutableModuleData) {
+    if(usedModule.name == usingModule.name) {
+      usedModule.internalDependencies++
     } else {
-      getOrCreateModuleData(usedModule).incomingDependencyCount++
-      getOrCreateModuleData(usingModule).outgoingDependencyCount++
+      usedModule.incomingDependencies++
+      usingModule.outgoingDependencies++
     }
   }
 
@@ -48,14 +65,27 @@ class ProjectAnalysisResult(rootPackage: String) {
   }
 
   private fun getOrCreateModuleData(name: String) = this.moduleMap.computeIfAbsent(name) {
-    MutableModuleData(name, 0, 0, 0)
+    MutableModuleData(name)
   }
+
+  private fun getUsingModule(usingFile: String, usedFile: String, usingModule: String): String? {
+    return if (usingFile == usedFile) {
+      usingModule
+    } else{
+      this.getModuleOf(usedFile) ?: return null
+    }
+  }
+
+
 
   private data class MutableModuleData(
     override val name: String,
-    override var internalDependencyCount: Int,
-    override var incomingDependencyCount: Int,
-    override var outgoingDependencyCount: Int,
+    override var files: Int = 0,
+    override var internallyUsedFiles: Int = 0,
+    override var externallyUsedFiles: Int = 0,
+    override var internalDependencies: Int = 0,
+    override var incomingDependencies: Int = 0,
+    override var outgoingDependencies: Int = 0,
   ): ModuleData
 }
 

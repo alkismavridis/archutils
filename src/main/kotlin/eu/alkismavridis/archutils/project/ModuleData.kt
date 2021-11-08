@@ -2,7 +2,10 @@ package eu.alkismavridis.archutils.project
 
 interface ModuleData {
   val name: String
-  val internalDependencyCount: Int
-  val incomingDependencyCount: Int
-  val outgoingDependencyCount: Int
+  val files: Int
+  val internallyUsedFiles: Int
+  val externallyUsedFiles: Int
+  val internalDependencies: Int
+  val incomingDependencies: Int
+  val outgoingDependencies: Int
 }
