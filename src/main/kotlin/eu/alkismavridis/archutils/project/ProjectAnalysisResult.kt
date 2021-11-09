@@ -45,8 +45,8 @@ class ProjectAnalysisResult(rootPackage: String) {
     if(usedModule.name == usingModule.name) {
       usedModule.internalDependencies++
     } else {
-      usedModule.incomingDependencies++
-      usingModule.outgoingDependencies++
+      usedModule.externalUsages++
+      usingModule.externalDependencies++
     }
   }
 
@@ -84,8 +84,8 @@ class ProjectAnalysisResult(rootPackage: String) {
     override var internallyUsedFiles: Int = 0,
     override var externallyUsedFiles: Int = 0,
     override var internalDependencies: Int = 0,
-    override var incomingDependencies: Int = 0,
-    override var outgoingDependencies: Int = 0,
+    override var externalDependencies: Int = 0,
+    override var externalUsages: Int = 0,
   ): ModuleData
 }
 

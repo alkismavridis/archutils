@@ -6,6 +6,6 @@ interface ModuleData {
   val internallyUsedFiles: Int
   val externallyUsedFiles: Int
   val internalDependencies: Int
-  val incomingDependencies: Int
-  val outgoingDependencies: Int
+  val externalDependencies: Int
+  val externalUsages: Int
 }

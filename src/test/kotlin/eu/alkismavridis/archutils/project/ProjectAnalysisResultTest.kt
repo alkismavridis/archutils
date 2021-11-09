@@ -76,7 +76,7 @@ internal class ProjectAnalysisResultTest {
     assertThat(this.internallyUsedFiles).isEqualTo(internallyUsedFile)
     assertThat(this.externallyUsedFiles).isEqualTo(externallyUsedFile)
     assertThat(this.internalDependencies).isEqualTo(internalDependencies)
-    assertThat(this.incomingDependencies).isEqualTo(incomingDependencies)
-    assertThat(this.outgoingDependencies).isEqualTo(outgoingDependencies)
+    assertThat(this.externalUsages).isEqualTo(incomingDependencies)
+    assertThat(this.externalDependencies).isEqualTo(outgoingDependencies)
   }
 }
