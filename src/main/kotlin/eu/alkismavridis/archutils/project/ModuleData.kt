@@ -8,4 +8,6 @@ interface ModuleData {
   val internalDependencies: Int
   val externalDependencies: Int
   val externalUsages: Int
+  val usedModules: Set<String>
+  val dependingModules: Set<String>
 }

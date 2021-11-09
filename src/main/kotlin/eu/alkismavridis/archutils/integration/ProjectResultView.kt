@@ -1,14 +1,14 @@
 package eu.alkismavridis.archutils.integration
 
 import eu.alkismavridis.archutils.project.ModuleData
-import eu.alkismavridis.archutils.project.ProjectAnalysisResult
+import eu.alkismavridis.archutils.project.ProjectAnalysisService
 import org.jetbrains.projector.common.misc.toString
 import java.awt.Font
 import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
-class ProjectResultView(private val result: ProjectAnalysisResult): JPanel() {
+class ProjectResultView(private val result: ProjectAnalysisService): JPanel() {
 
   init {
     this.border = EmptyBorder(16, 16, 16, 16)
@@ -22,10 +22,12 @@ class ProjectResultView(private val result: ProjectAnalysisResult): JPanel() {
     this.removeAll()
     val modules = this.result.getModules()
 
-    this.add(createLabel("File analysis"))
+    this.add(createLabel("File Statistics"))
     this.add(createFileDataTable(modules))
-    this.add(createLabel("Dependency analysis"))
-    this.add(createDependencyDataTable(modules))
+    this.add(createLabel("File Dependency Statistics"))
+    this.add(createFileDependencyDataTable(modules))
+    this.add(createLabel("Module Dependency Statistics"))
+    this.add(createModuleDependencyDataTable(modules))
   }
 
   private fun createFileDataTable(modules: Collection<ModuleData>) : JPanel {
@@ -52,9 +54,10 @@ class ProjectResultView(private val result: ProjectAnalysisResult): JPanel() {
     return fileTable
   }
 
-  private fun createDependencyDataTable(modules: Collection<ModuleData>) : JPanel {
+  private fun createFileDependencyDataTable(modules: Collection<ModuleData>) : JPanel {
     val dependencyTable = JPanel()
     dependencyTable.alignmentX = LEFT_ALIGNMENT
+    dependencyTable.border = EmptyBorder(0, 0, 40, 0)
     dependencyTable.layout = GridLayout(modules.size + 1, 7, 8, 8)
 
     dependencyTable.add(createBoldCell("Module"))
@@ -76,6 +79,29 @@ class ProjectResultView(private val result: ProjectAnalysisResult): JPanel() {
       dependencyTable.add(createCell(it.externalUsages.toString()))
       dependencyTable.add(createCell(externalTraffic.toString()))
       dependencyTable.add(createRatioCell(it.externalDependencies, externalTraffic))
+    }
+
+    dependencyTable.maximumSize = dependencyTable.preferredSize
+    return dependencyTable
+  }
+
+  private fun createModuleDependencyDataTable(modules: Collection<ModuleData>) : JPanel {
+    val dependencyTable = JPanel()
+    dependencyTable.alignmentX = LEFT_ALIGNMENT
+    dependencyTable.layout = GridLayout(modules.size + 1, 4, 8, 8)
+
+    dependencyTable.add(createBoldCell("Module"))
+    dependencyTable.add(createBoldCell("All Dependencies"))
+    dependencyTable.add(createBoldCell("Used by Modules"))
+    dependencyTable.add(createBoldCell("Uses Modules"))
+
+    modules.forEach{
+      val allDependencies = it.dependingModules.size + it.usedModules.size
+
+      dependencyTable.add(createBoldCell(it.name))
+      dependencyTable.add(createCell(allDependencies.toString()))
+      dependencyTable.add(createValueAndPercentCell(it.dependingModules.size, allDependencies))
+      dependencyTable.add(createValueAndPercentCell(it.usedModules.size, allDependencies))
     }
 
     dependencyTable.maximumSize = dependencyTable.preferredSize
@@ -117,18 +143,15 @@ class ProjectResultView(private val result: ProjectAnalysisResult): JPanel() {
     return createSelectableText(text).also {
       it.font = Font(it.font.fontName, Font.BOLD, 16)
       it.alignmentX = LEFT_ALIGNMENT
-      it.border = EmptyBorder(0, 0, 24, 0)
+      it.border = EmptyBorder(0, 0, 8, 0)
     }
   }
 
-  private fun createSelectableText(text: String): JComponent {
-    return JTextPane().also {
-      it.contentType = "text/plain"
+  private fun createSelectableText(text: String): JLabel {
+    return JLabel().also {
       it.text = text
-      it.isEditable = false
       it.background = null
       it.border = null
-      it.maximumSize = it.preferredSize
     }
   }
 }

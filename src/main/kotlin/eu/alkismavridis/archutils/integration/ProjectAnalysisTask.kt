@@ -10,14 +10,14 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScopesCore
 import com.intellij.ui.components.JBScrollPane
-import eu.alkismavridis.archutils.project.ProjectAnalysisResult
+import eu.alkismavridis.archutils.project.ProjectAnalysisService
 import java.awt.Dimension
 
 class ProjectAnalysisTask(
   project: Project,
   private val rootDirectory: VirtualFile,
 ) : Task.Modal(project, "Analyzing Dependencies", true) {
-  private val result = ProjectAnalysisResult(rootDirectory.path)
+  private val result = ProjectAnalysisService(rootDirectory.path)
 
   override fun run(indicator: ProgressIndicator) {
     thisLogger().info("Project analysis starts for ${rootDirectory.path}")

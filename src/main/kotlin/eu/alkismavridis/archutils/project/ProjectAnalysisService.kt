@@ -2,7 +2,7 @@ package eu.alkismavridis.archutils.project
 
 import com.intellij.openapi.diagnostic.thisLogger
 
-class ProjectAnalysisResult(rootPackage: String) {
+class ProjectAnalysisService(rootPackage: String) {
   private val rootPath = rootPackage
     .replace("\\", "/")
     .let { if(it.endsWith("/")) it else "$it/" }
@@ -41,12 +41,15 @@ class ProjectAnalysisResult(rootPackage: String) {
     }
   }
 
-  private fun addDependencyForModules(usingModule: MutableModuleData, usedModule: MutableModuleData) {
+  private fun addDependencyForModules(usedModule: MutableModuleData, usingModule: MutableModuleData) {
     if(usedModule.name == usingModule.name) {
       usedModule.internalDependencies++
     } else {
       usedModule.externalUsages++
+      usedModule.dependingModules.add(usingModule.name)
+
       usingModule.externalDependencies++
+      usingModule.usedModules.add(usedModule.name)
     }
   }
 
@@ -77,7 +80,6 @@ class ProjectAnalysisResult(rootPackage: String) {
   }
 
 
-
   private data class MutableModuleData(
     override val name: String,
     override var files: Int = 0,
@@ -86,6 +88,8 @@ class ProjectAnalysisResult(rootPackage: String) {
     override var internalDependencies: Int = 0,
     override var externalDependencies: Int = 0,
     override var externalUsages: Int = 0,
+    override val usedModules: MutableSet<String> = mutableSetOf(),
+    override val dependingModules: MutableSet<String> = mutableSetOf(),
   ): ModuleData
 }
 

@@ -4,10 +4,10 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor
 import com.intellij.psi.search.SearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
-import eu.alkismavridis.archutils.project.ProjectAnalysisResult
+import eu.alkismavridis.archutils.project.ProjectAnalysisService
 
 class ProjectAnalysingPsiVisitor(
-  private val result: ProjectAnalysisResult,
+  private val result: ProjectAnalysisService,
   private val searchScope: SearchScope
 ): PsiRecursiveElementWalkingVisitor() {
   override fun visitFile(file: PsiFile) {
