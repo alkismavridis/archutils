@@ -10,28 +10,30 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScopesCore
 import com.intellij.ui.components.JBScrollPane
-import eu.alkismavridis.archutils.project.ProjectAnalysisService
+import eu.alkismavridis.archutils.project.ModuleStatsBuilder
 import java.awt.Dimension
 
 class ProjectAnalysisTask(
   project: Project,
   private val rootDirectory: VirtualFile,
 ) : Task.Modal(project, "Analyzing Dependencies", true) {
-  private val result = ProjectAnalysisService(rootDirectory.path)
+  private val builder = ModuleStatsBuilder(rootDirectory.path)
 
   override fun run(indicator: ProgressIndicator) {
-    thisLogger().info("Project analysis starts for ${rootDirectory.path}")
+    thisLogger().info("Analysis starts for ${rootDirectory.path}")
 
     ApplicationManager.getApplication().runReadAction{
       val rootPsi = PsiManager.getInstance(project).findDirectory(rootDirectory) ?: return@runReadAction
       val searchScope = GlobalSearchScopesCore.DirectoryScope(project, rootDirectory, true)
-      rootPsi.accept(ProjectAnalysingPsiVisitor(result, searchScope))
+      rootPsi.accept(ProjectAnalysingPsiVisitor(this.builder, searchScope))
     }
   }
 
   override fun onSuccess() {
-    val view = ProjectResultView(this.result)
+    val modules = this.builder.build()
+    val view = ProjectResultView(modules)
     val scrollBar = JBScrollPane(view)
+
     JBPopupFactory.getInstance()
       .createComponentPopupBuilder(scrollBar, null)
       .setTitle("Project Analysis")
@@ -45,5 +47,4 @@ class ProjectAnalysisTask(
       .createPopup()
       .showInFocusCenter()
   }
-
 }
