@@ -20,7 +20,8 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
   private fun renderModules() {
     this.removeAll()
 
-    this.add(createConfigLabel())
+    this.add(createConfigLabel("Path: ${this.result.projectRelativePath}"))
+    this.add(createConfigLabel("Applied rules: ${this.result.rules.name}"))
     this.add(createLabel("File Statistics"))
     this.add(createFileDataTable(this.result))
     this.add(createLabel("File Dependency Statistics"))
@@ -146,8 +147,8 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
     }
   }
 
-  private fun createConfigLabel(): JComponent {
-    return createLabel("Configuration: ${this.result.analysisParams.name}").also {
+  private fun createConfigLabel(text: String): JComponent {
+    return createLabel(text).also {
       it.font = Font(it.font.fontName, Font.PLAIN, 12)
       it.foreground = Color.GRAY
     }

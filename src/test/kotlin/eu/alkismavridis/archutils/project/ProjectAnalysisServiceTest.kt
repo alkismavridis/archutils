@@ -12,7 +12,7 @@ internal class ProjectAnalysisServiceTest {
       DummyModuleStats("bar", dependenciesGoingOut = 8)
     )
 
-    val result = ProjectAnalysisService(AnalysisParameters()).analyse(modules)
+    val result = ProjectAnalysisService(AnalysisParameters()).analyse(modules, "src")
     assertThat(result.moduleStats).isEqualTo(modules)
   }
 

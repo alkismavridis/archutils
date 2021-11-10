@@ -33,7 +33,8 @@ class ProjectAnalysisTask(
       rootPsi.accept(ProjectAnalysingPsiVisitor(builder, searchScope))
 
       this.title = "Analysing module dependencies..."
-      this.result = this.analysisService.analyse(builder.build())
+      val projectRelativePath = relativizeToProjectRoot(rootDirectory.path, project)
+      this.result = this.analysisService.analyse(builder.build(), projectRelativePath)
     }
   }
 

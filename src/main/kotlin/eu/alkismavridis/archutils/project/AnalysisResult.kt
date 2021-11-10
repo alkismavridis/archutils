@@ -1,6 +1,7 @@
 package eu.alkismavridis.archutils.project
 
 class AnalysisResult(
-  val analysisParams: AnalysisParameters,
+  val projectRelativePath: String,
+  val rules: DependencyRuleSet,
   val moduleStats: List<ModuleStats>
 )
