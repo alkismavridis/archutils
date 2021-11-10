@@ -20,4 +20,12 @@
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
         </action>
     </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectConfigurable
+                parentId="tools"
+                instance="eu.alkismavridis.archutils.integration.SettingsConfigurable"
+                id="eu.alkismavridis.archutils.integration.SettingsConfigurable"
+                displayName="Archutils Settings"/>
+    </extensions>
 </idea-plugin>

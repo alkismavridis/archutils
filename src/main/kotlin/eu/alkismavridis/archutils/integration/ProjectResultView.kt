@@ -1,8 +1,8 @@
 package eu.alkismavridis.archutils.integration
 
 import eu.alkismavridis.archutils.project.AnalysisResult
-import eu.alkismavridis.archutils.project.ModuleStats
 import org.jetbrains.projector.common.misc.toString
+import java.awt.Color
 import java.awt.Font
 import java.awt.GridLayout
 import javax.swing.*
@@ -20,6 +20,7 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
   private fun renderModules() {
     this.removeAll()
 
+    this.add(createConfigLabel())
     this.add(createLabel("File Statistics"))
     this.add(createFileDataTable(this.result))
     this.add(createLabel("File Dependency Statistics"))
@@ -142,6 +143,13 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
       it.font = Font(it.font.fontName, Font.BOLD, 16)
       it.alignmentX = LEFT_ALIGNMENT
       it.border = EmptyBorder(0, 0, 8, 0)
+    }
+  }
+
+  private fun createConfigLabel(): JComponent {
+    return createLabel("Configuration: ${this.result.analysisParams.name}").also {
+      it.font = Font(it.font.fontName, Font.PLAIN, 12)
+      it.foreground = Color.GRAY
     }
   }
 

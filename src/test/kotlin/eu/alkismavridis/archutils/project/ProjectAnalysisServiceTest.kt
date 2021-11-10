@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class ProjectAnalysisServiceTest {
+
   @Test
   fun `should return incoming modules`() {
     val modules = listOf(
@@ -11,7 +12,7 @@ internal class ProjectAnalysisServiceTest {
       DummyModuleStats("bar", dependenciesGoingOut = 8)
     )
 
-    val result = ProjectAnalysisService().analyse(modules)
+    val result = ProjectAnalysisService(AnalysisParameters()).analyse(modules)
     assertThat(result.moduleStats).isEqualTo(modules)
   }
 
