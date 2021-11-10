@@ -1,5 +1,6 @@
 package eu.alkismavridis.archutils.integration
 
+import eu.alkismavridis.archutils.project.AnalysisResult
 import eu.alkismavridis.archutils.project.ModuleStats
 import org.jetbrains.projector.common.misc.toString
 import java.awt.Font
@@ -7,7 +8,7 @@ import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
-class ProjectResultView(private val modules: List<ModuleStats>): JPanel() {
+class ProjectResultView(private val result: AnalysisResult): JPanel() {
 
   init {
     this.border = EmptyBorder(16, 16, 16, 16)
@@ -20,18 +21,18 @@ class ProjectResultView(private val modules: List<ModuleStats>): JPanel() {
     this.removeAll()
 
     this.add(createLabel("File Statistics"))
-    this.add(createFileDataTable(this.modules))
+    this.add(createFileDataTable(this.result))
     this.add(createLabel("File Dependency Statistics"))
-    this.add(createFileDependencyDataTable(this.modules))
+    this.add(createFileDependencyDataTable(this.result))
     this.add(createLabel("Module Dependency Statistics"))
-    this.add(createModuleDependencyDataTable(this.modules))
+    this.add(createModuleDependencyDataTable(this.result))
   }
 
-  private fun createFileDataTable(modules: Collection<ModuleStats>) : JPanel {
+  private fun createFileDataTable(result: AnalysisResult) : JPanel {
     val fileTable = JPanel()
     fileTable.alignmentX = LEFT_ALIGNMENT
     fileTable.border = EmptyBorder(0, 0, 40, 0)
-    fileTable.layout = GridLayout(modules.size + 1, 5, 8, 8)
+    fileTable.layout = GridLayout(result.moduleStats.size + 1, 5, 8, 8)
 
     fileTable.add(createBoldCell("Module"))
     fileTable.add(createBoldCell("Number of Files"))
@@ -39,7 +40,7 @@ class ProjectResultView(private val modules: List<ModuleStats>): JPanel() {
     fileTable.add(createBoldCell("Private Files", "Files used only inside the module"))
     fileTable.add(createBoldCell("Internally used Files", "Files used inside the module"))
 
-    modules.forEach{
+    result.moduleStats.forEach{
       fileTable.add(createBoldCell(it.name))
       fileTable.add(createCell(it.files.toString()))
       fileTable.add(createValueAndPercentCell(it.externallyUsedFiles, it.files))
@@ -51,11 +52,11 @@ class ProjectResultView(private val modules: List<ModuleStats>): JPanel() {
     return fileTable
   }
 
-  private fun createFileDependencyDataTable(modules: Collection<ModuleStats>) : JPanel {
+  private fun createFileDependencyDataTable(result: AnalysisResult) : JPanel {
     val dependencyTable = JPanel()
     dependencyTable.alignmentX = LEFT_ALIGNMENT
     dependencyTable.border = EmptyBorder(0, 0, 40, 0)
-    dependencyTable.layout = GridLayout(modules.size + 1, 7, 8, 8)
+    dependencyTable.layout = GridLayout(result.moduleStats.size + 1, 7, 8, 8)
 
     dependencyTable.add(createBoldCell("Module"))
     dependencyTable.add(createBoldCell("All Dep."))
@@ -65,7 +66,7 @@ class ProjectResultView(private val modules: List<ModuleStats>): JPanel() {
     dependencyTable.add(createBoldCell("External Traffic", "External Dependencies + External Usages"))
     dependencyTable.add(createBoldCell("Instability Factor", "External Dependencies / External Traffic"))
 
-    modules.forEach{
+    result.moduleStats.forEach{
       val dependencyCount = it.internalDependencies + it.dependenciesComingIn
       val externalTraffic = it.dependenciesGoingOut + it.dependenciesComingIn
 
@@ -82,17 +83,17 @@ class ProjectResultView(private val modules: List<ModuleStats>): JPanel() {
     return dependencyTable
   }
 
-  private fun createModuleDependencyDataTable(modules: Collection<ModuleStats>) : JPanel {
+  private fun createModuleDependencyDataTable(result: AnalysisResult) : JPanel {
     val dependencyTable = JPanel()
     dependencyTable.alignmentX = LEFT_ALIGNMENT
-    dependencyTable.layout = GridLayout(modules.size + 1, 4, 8, 8)
+    dependencyTable.layout = GridLayout(result.moduleStats.size + 1, 4, 8, 8)
 
     dependencyTable.add(createBoldCell("Module"))
     dependencyTable.add(createBoldCell("All Dependencies"))
     dependencyTable.add(createBoldCell("Used by Modules"))
     dependencyTable.add(createBoldCell("Uses Modules"))
 
-    modules.forEach{
+    result.moduleStats.forEach{
       val allDependencies = it.usedByModules.size + it.usesModules.size
 
       dependencyTable.add(createBoldCell(it.name))

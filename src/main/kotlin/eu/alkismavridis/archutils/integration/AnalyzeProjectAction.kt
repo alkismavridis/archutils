@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.progress.ProgressManager
+import eu.alkismavridis.archutils.project.ProjectAnalysisService
 
 class AnalyzeProjectAction: AnAction() {
 
@@ -11,7 +12,8 @@ class AnalyzeProjectAction: AnAction() {
     val project = e.project ?: return
     val root = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
 
-    val task = ProjectAnalysisTask(project, root)
+    val analysisService = ProjectAnalysisService()
+    val task = ProjectAnalysisTask(project, root, analysisService)
     ProgressManager.getInstance().run(task)
   }
 }
