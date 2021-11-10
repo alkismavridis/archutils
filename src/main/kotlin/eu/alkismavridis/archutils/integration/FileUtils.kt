@@ -4,8 +4,9 @@ import com.intellij.openapi.project.Project
 import java.nio.file.Path
 import java.nio.file.Paths
 
-fun relativizeToProjectRootIfPossible(path: Path?, project: Project): String {
-  if (path == null) return ""
+fun relativizeToProjectRoot(pathString: String, project: Project): String {
+  if (pathString.isEmpty()) return ""
+  val path = Paths.get(pathString)
   val projectRoot = project.workspaceFile?.toNioPath()?.parent?.parent
 
   return if (projectRoot == null || !path.startsWith(projectRoot)) {
