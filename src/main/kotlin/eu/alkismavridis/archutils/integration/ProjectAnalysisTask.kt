@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScopesCore
 import com.intellij.ui.components.JBScrollPane
+import eu.alkismavridis.archutils.project.AnalysisResult
 import eu.alkismavridis.archutils.project.ModuleStatsBuilder
 import eu.alkismavridis.archutils.project.ProjectAnalysisService
 import java.awt.Dimension
@@ -19,21 +20,25 @@ class ProjectAnalysisTask(
   private val rootDirectory: VirtualFile,
   private val analysisService: ProjectAnalysisService,
 ) : Task.Modal(project, "Analyzing Dependencies", true) {
-  private val builder = ModuleStatsBuilder(rootDirectory.path)
+  private var result: AnalysisResult? = null
 
   override fun run(indicator: ProgressIndicator) {
     thisLogger().info("Analysis starts for ${rootDirectory.path}")
 
     ApplicationManager.getApplication().runReadAction{
+      this.title = "Collecting module dependencies..."
+      val builder = ModuleStatsBuilder(rootDirectory.path)
       val rootPsi = PsiManager.getInstance(project).findDirectory(rootDirectory) ?: return@runReadAction
       val searchScope = GlobalSearchScopesCore.DirectoryScope(project, rootDirectory, true)
-      rootPsi.accept(ProjectAnalysingPsiVisitor(this.builder, searchScope))
+      rootPsi.accept(ProjectAnalysingPsiVisitor(builder, searchScope))
+
+      this.title = "Analysing module dependencies..."
+      this.result = this.analysisService.analyse(builder.build())
     }
   }
 
   override fun onSuccess() {
-    val modules = this.builder.build()
-    val result = this.analysisService.analyse(modules)
+    val result = this.result ?: return
     val view = ProjectResultView(result)
     val scrollBar = JBScrollPane(view)
 
