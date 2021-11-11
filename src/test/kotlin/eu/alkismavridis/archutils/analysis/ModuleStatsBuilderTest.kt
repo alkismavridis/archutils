@@ -1,5 +1,6 @@
-package eu.alkismavridis.archutils.project
+package eu.alkismavridis.archutils.analysis
 
+import eu.alkismavridis.archutils.analysis.model.ModuleStats
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

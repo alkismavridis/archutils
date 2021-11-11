@@ -1,6 +1,7 @@
-package eu.alkismavridis.archutils.project
+package eu.alkismavridis.archutils.analysis
 
 import com.intellij.openapi.diagnostic.thisLogger
+import eu.alkismavridis.archutils.analysis.model.ModuleStats
 
 class ModuleStatsBuilder(rootPackage: String) {
   private val rootPath = rootPackage

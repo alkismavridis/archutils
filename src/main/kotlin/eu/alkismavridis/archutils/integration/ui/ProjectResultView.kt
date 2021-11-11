@@ -1,7 +1,7 @@
-package eu.alkismavridis.archutils.integration
+package eu.alkismavridis.archutils.integration.ui
 
-import eu.alkismavridis.archutils.project.AnalysisRequest
-import eu.alkismavridis.archutils.project.AnalysisResult
+import eu.alkismavridis.archutils.analysis.model.AnalysisRequest
+import eu.alkismavridis.archutils.analysis.model.AnalysisResult
 import org.jetbrains.projector.common.misc.toString
 import java.awt.Color
 import java.awt.Font
@@ -21,14 +21,38 @@ class ProjectResultView(private val request: AnalysisRequest, private val result
   private fun renderModules() {
     this.removeAll()
 
-    this.add(createConfigLabel("Path: ${this.request.projectRelativePath}"))
-    this.add(createConfigLabel("Applied rules: ${this.request.rules.name}"))
+    this.add(createConfigLabel("Path: ${this.request.projectRelativePath}", 4))
+    this.add(createConfigLabel("Dependency rules: ${this.request.rules.name}", 40))
+
+    if (this.result.illegalDependencies.isNotEmpty()) {
+      this.add(createLabel("Illegal Dependencies").also { it.foreground = Color.RED })
+      this.add(createIllegalDependenciesTable())
+    }
+
     this.add(createLabel("File Statistics"))
     this.add(createFileDataTable(this.result))
     this.add(createLabel("File Dependency Statistics"))
     this.add(createFileDependencyDataTable(this.result))
     this.add(createLabel("Module Dependency Statistics"))
     this.add(createModuleDependencyDataTable(this.result))
+  }
+
+  private fun createIllegalDependenciesTable(): JComponent {
+    val table = JPanel()
+    table.alignmentX = LEFT_ALIGNMENT
+    table.layout = GridLayout(result.illegalDependencies.size + 1, 2, 24, 8)
+    table.border = EmptyBorder(0, 0, 40, 0)
+
+    table.add(createBoldCell("From"))
+    table.add(createBoldCell("To"))
+
+    this.result.illegalDependencies.forEach {
+      table.add(createCell(it.moduleFrom))
+      table.add(createCell(it.moduleTo))
+    }
+
+    table.maximumSize = table.preferredSize
+    return table
   }
 
   private fun createFileDataTable(result: AnalysisResult) : JPanel {
@@ -148,10 +172,11 @@ class ProjectResultView(private val request: AnalysisRequest, private val result
     }
   }
 
-  private fun createConfigLabel(text: String): JComponent {
+  private fun createConfigLabel(text: String, marginBottom: Int = 0): JComponent {
     return createLabel(text).also {
       it.font = Font(it.font.fontName, Font.PLAIN, 12)
       it.foreground = Color.GRAY
+      it.border = EmptyBorder(0, 0, marginBottom, 0)
     }
   }
 

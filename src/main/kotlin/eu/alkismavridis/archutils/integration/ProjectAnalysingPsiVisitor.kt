@@ -4,7 +4,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor
 import com.intellij.psi.search.SearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
-import eu.alkismavridis.archutils.project.ModuleStatsBuilder
+import eu.alkismavridis.archutils.analysis.ModuleStatsBuilder
 
 class ProjectAnalysingPsiVisitor(
   private val result: ModuleStatsBuilder,

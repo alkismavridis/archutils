@@ -1,4 +1,4 @@
-package eu.alkismavridis.archutils.project
+package eu.alkismavridis.archutils.analysis.model
 
 interface ModuleStats {
   val name: String
