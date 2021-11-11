@@ -4,10 +4,6 @@ import eu.alkismavridis.archutils.analysis.model.*
 
 class DependencyAnalysisService {
   fun findIllegalDependencies(request: AnalysisRequest, modulesStats: List<ModuleStats>) : List<IllegalModuleDependency> {
-    if (request.rules.allowedDependencies.isEmpty()) {
-      return emptyList()
-    }
-
     return modulesStats
       .asSequence()
       .flatMap { getIllegalDependenciesFrom(it, request.rules) }

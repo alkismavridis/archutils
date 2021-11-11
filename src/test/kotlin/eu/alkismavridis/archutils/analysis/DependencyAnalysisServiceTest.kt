@@ -17,16 +17,6 @@ internal class DependencyAnalysisServiceTest {
   }
 
   @Test
-  fun `zero rules should return no warnings`() {
-    val modules = listOf(
-      DummyModuleStats(name = "utils", usesModules = setOf("api", "db"))
-    )
-    val request = AnalysisRequest("src", DependencyRules())
-    val result = DependencyAnalysisService().findIllegalDependencies(request, modules)
-    assertThat(result).isEmpty()
-  }
-
-  @Test
   fun `should find illegal dependency from wildcard source rule`() {
     val modules = listOf(
       DummyModuleStats(name = "utils", usesModules = setOf("api"))
@@ -127,6 +117,25 @@ internal class DependencyAnalysisServiceTest {
     val request = AnalysisRequest("src", rules)
     val result = DependencyAnalysisService().findIllegalDependencies(request, modules)
     assertThat(result).isEmpty()
+  }
+
+  @Test
+  fun `should forbid everything in an allow-nothing configuration`() {
+    val rules = DependencyRules("", "", mapOf())
+
+    val modules = listOf(
+      DummyModuleStats(name = "api", usesModules = setOf("model", "utils")),
+      DummyModuleStats(name = "utils", usesModules = setOf("api", "model")),
+    )
+
+    val request = AnalysisRequest("src", rules)
+    val result = DependencyAnalysisService().findIllegalDependencies(request, modules)
+    assertThat(result).containsExactlyInAnyOrder(
+      IllegalModuleDependency(moduleFrom = "api", moduleTo = "model"),
+      IllegalModuleDependency(moduleFrom = "api", moduleTo = "utils"),
+      IllegalModuleDependency(moduleFrom = "utils", moduleTo = "api"),
+      IllegalModuleDependency(moduleFrom = "utils", moduleTo = "model"),
+    )
   }
 
   private class DummyModuleStats(
