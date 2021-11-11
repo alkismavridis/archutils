@@ -14,6 +14,7 @@ import eu.alkismavridis.archutils.analysis.model.AnalysisConfiguration
 import eu.alkismavridis.archutils.analysis.model.AnalysisRequest
 import eu.alkismavridis.archutils.analysis.model.DependencyRules
 import eu.alkismavridis.archutils.analysis.DependencyAnalysisService
+import java.lang.IllegalArgumentException
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -41,7 +42,7 @@ class AnalyzeProjectAction: AnAction() {
       ?: return AnalysisConfiguration()
 
     try {
-      val path = Paths.get(pathString)
+      val path = getAbsolutePath(pathString, project)
       return ObjectMapper()
         .registerKotlinModule()
         .readValue(Files.newInputStream(path))
