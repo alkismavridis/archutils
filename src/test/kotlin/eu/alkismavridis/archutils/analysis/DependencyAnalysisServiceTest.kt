@@ -11,7 +11,7 @@ internal class DependencyAnalysisServiceTest {
 
   @Test
   fun `zero modules should return no warnings`() {
-    val request = AnalysisRequest("src", FORBID_ALL_RULE)
+    val request = AnalysisRequest("src", DependencyRules())
     val result = DependencyAnalysisService().findIllegalDependencies(request, listOf())
     assertThat(result).isEmpty()
   }
@@ -22,7 +22,7 @@ internal class DependencyAnalysisServiceTest {
       DummyModuleStats(name = "utils", usesModules = setOf("api"))
     )
 
-    val request = AnalysisRequest("src", FORBID_ALL_RULE)
+    val request = AnalysisRequest("src", FORBID_ALL_RULE_BY_WILDCARD)
     val result = DependencyAnalysisService().findIllegalDependencies(request, modules)
     assertThat(result).containsExactlyInAnyOrder(
       IllegalModuleDependency(moduleFrom = "utils", moduleTo = "api")
@@ -35,7 +35,7 @@ internal class DependencyAnalysisServiceTest {
       DummyModuleStats(name = "utils", usesModules = setOf("api", "db"))
     )
 
-    val request = AnalysisRequest("src", FORBID_ALL_RULE)
+    val request = AnalysisRequest("src", FORBID_ALL_RULE_BY_WILDCARD)
     val result = DependencyAnalysisService().findIllegalDependencies(request, modules)
     assertThat(result).containsExactlyInAnyOrder(
       IllegalModuleDependency(moduleFrom = "utils", moduleTo = "api"),
@@ -152,6 +152,6 @@ internal class DependencyAnalysisServiceTest {
 
 
   companion object {
-    val FORBID_ALL_RULE = DependencyRules("", "", mapOf("*" to emptyList()))
+    val FORBID_ALL_RULE_BY_WILDCARD = DependencyRules("", "", mapOf("*" to emptyList()))
   }
 }
