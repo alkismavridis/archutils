@@ -1,5 +1,6 @@
 package eu.alkismavridis.archutils.integration
 
+import eu.alkismavridis.archutils.project.AnalysisRequest
 import eu.alkismavridis.archutils.project.AnalysisResult
 import org.jetbrains.projector.common.misc.toString
 import java.awt.Color
@@ -8,7 +9,7 @@ import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
-class ProjectResultView(private val result: AnalysisResult): JPanel() {
+class ProjectResultView(private val request: AnalysisRequest, private val result: AnalysisResult): JPanel() {
 
   init {
     this.border = EmptyBorder(16, 16, 16, 16)
@@ -20,8 +21,8 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
   private fun renderModules() {
     this.removeAll()
 
-    this.add(createConfigLabel("Path: ${this.result.projectRelativePath}"))
-    this.add(createConfigLabel("Applied rules: ${this.result.rules.name}"))
+    this.add(createConfigLabel("Path: ${this.request.projectRelativePath}"))
+    this.add(createConfigLabel("Applied rules: ${this.request.rules.name}"))
     this.add(createLabel("File Statistics"))
     this.add(createFileDataTable(this.result))
     this.add(createLabel("File Dependency Statistics"))

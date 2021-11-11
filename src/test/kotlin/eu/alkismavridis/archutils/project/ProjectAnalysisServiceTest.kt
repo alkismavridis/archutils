@@ -12,7 +12,8 @@ internal class ProjectAnalysisServiceTest {
       DummyModuleStats("bar", dependenciesGoingOut = 8)
     )
 
-    val result = ProjectAnalysisService(AnalysisParameters()).analyse(modules, "src")
+    val request = AnalysisRequest("src", DependencyRules.allowAll())
+    val result = ProjectAnalysisService().analyse(request, modules)
     assertThat(result.moduleStats).isEqualTo(modules)
   }
 

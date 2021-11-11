@@ -10,13 +10,12 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScopesCore
 import com.intellij.ui.components.JBScrollPane
-import eu.alkismavridis.archutils.project.AnalysisResult
-import eu.alkismavridis.archutils.project.ModuleStatsBuilder
-import eu.alkismavridis.archutils.project.ProjectAnalysisService
+import eu.alkismavridis.archutils.project.*
 import java.awt.Dimension
 
 class ProjectAnalysisTask(
   project: Project,
+  private val request: AnalysisRequest,
   private val rootDirectory: VirtualFile,
   private val analysisService: ProjectAnalysisService,
 ) : Task.Modal(project, "Analyzing Dependencies", true) {
@@ -33,14 +32,13 @@ class ProjectAnalysisTask(
       rootPsi.accept(ProjectAnalysingPsiVisitor(builder, searchScope))
 
       this.title = "Analysing module dependencies..."
-      val projectRelativePath = relativizeToProjectRoot(rootDirectory.path, project)
-      this.result = this.analysisService.analyse(builder.build(), projectRelativePath)
+      this.result = this.analysisService.analyse(request, builder.build())
     }
   }
 
   override fun onSuccess() {
     val result = this.result ?: return
-    val view = ProjectResultView(result)
+    val view = ProjectResultView(this.request, result)
     val scrollBar = JBScrollPane(view)
 
     JBPopupFactory.getInstance()
