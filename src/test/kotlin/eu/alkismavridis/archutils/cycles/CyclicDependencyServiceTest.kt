@@ -25,7 +25,7 @@ class CyclicDependencyServiceTest {
 
     val result = createService().detectCycles(modules)
     assertThat(result).hasSize(1)
-    assertThat(result[0]).containsExactly("module1", "module2")
+    assertThat(result.first()).containsExactly("module1", "module2")
   }
 
   @Test
@@ -39,7 +39,7 @@ class CyclicDependencyServiceTest {
 
     val result = createService().detectCycles(modules)
     assertThat(result).hasSize(1)
-    assertThat(result[0]).containsExactly("module1", "module2", "module3", "module4")
+    assertThat(result.first()).containsExactly("module1", "module2", "module3", "module4")
   }
 
   @Test
@@ -55,9 +55,10 @@ class CyclicDependencyServiceTest {
     )
 
     val result = createService().detectCycles(modules)
-    assertThat(result).hasSize(2)
-    assertThat(result[0]).containsExactly("module1", "module2", "module3", "module4")
-    assertThat(result[1]).containsExactly("isolated1", "isolated2")
+    assertThat(result.toList())
+      .hasSize(2)
+      .anyMatch { it.toSet() == setOf("module1", "module2", "module3", "module4") }
+      .anyMatch { it.toSet() == setOf("isolated1", "isolated2") }
   }
 
 
@@ -91,7 +92,7 @@ class CyclicDependencyServiceTest {
     )
 
     val result = createService().detectCycles(modules)
-    assertThat(result)
+    assertThat(result.toList())
       .hasSize(3)
       .anyMatch { it.toSet() == setOf("module1", "module7", "module8") }
       .anyMatch { it.toSet() == setOf("module4", "module5") }

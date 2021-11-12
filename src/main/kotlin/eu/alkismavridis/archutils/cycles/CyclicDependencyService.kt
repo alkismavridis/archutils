@@ -8,7 +8,7 @@ typealias CyclicDependency = List<String>
 
 class CyclicDependencyService {
 
-  fun detectCycles(modules: List<ModuleStats>): List<CyclicDependency> {
+  fun detectCycles(modules: List<ModuleStats>): Set<CyclicDependency> {
     val ctx = DependencyCycleContext(modules)
     while (true) {
       val notVisited = this.getNextUnvisited(ctx) ?: break
@@ -48,9 +48,9 @@ class CyclicDependencyService {
     private val moduleMap = this.modules.associateBy { it.name }
     private val visitedNames = mutableSetOf<String>()
     private val currentPath = Stack<String>()
-    private val cycles = mutableListOf<CyclicDependency>()
+    private val cycles = mutableSetOf<CyclicDependency>()
 
-    fun getResult(): List<CyclicDependency> = this.cycles
+    fun getResult(): Set<CyclicDependency> = this.cycles
     fun getVisitedNames(): Set<String> = this.visitedNames
     fun getModule(name: String) = moduleMap[name]
 
