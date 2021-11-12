@@ -24,8 +24,9 @@ class CyclicDependencyServiceTest {
     )
 
     val result = createService().detectCycles(modules)
-    assertThat(result).hasSize(1)
-    assertThat(result.first()).containsExactly("module1", "module2")
+    assertThat(result).containsExactlyInAnyOrder(
+      CyclicDependency(listOf("module1", "module2"))
+    )
   }
 
   @Test
@@ -38,8 +39,9 @@ class CyclicDependencyServiceTest {
     )
 
     val result = createService().detectCycles(modules)
-    assertThat(result).hasSize(1)
-    assertThat(result.first()).containsExactly("module1", "module2", "module3", "module4")
+    assertThat(result).containsExactlyInAnyOrder(
+      CyclicDependency(listOf("module1", "module2", "module3", "module4"))
+    )
   }
 
   @Test
@@ -55,10 +57,10 @@ class CyclicDependencyServiceTest {
     )
 
     val result = createService().detectCycles(modules)
-    assertThat(result.toList())
-      .hasSize(2)
-      .anyMatch { it.toSet() == setOf("module1", "module2", "module3", "module4") }
-      .anyMatch { it.toSet() == setOf("isolated1", "isolated2") }
+    assertThat(result).containsExactlyInAnyOrder(
+      CyclicDependency(listOf("module1", "module2", "module3", "module4")),
+      CyclicDependency(listOf("isolated1", "isolated2"))
+    )
   }
 
 
@@ -71,8 +73,9 @@ class CyclicDependencyServiceTest {
     )
 
     val result = createService().detectCycles(modules)
-    assertThat(result).hasSize(1)
-    assertThat(result).anyMatch { it.toSet() == setOf("module1", "module2") }
+    assertThat(result).containsExactlyInAnyOrder(
+      CyclicDependency(listOf("module1", "module2"))
+    )
   }
 
   @Test
@@ -92,11 +95,11 @@ class CyclicDependencyServiceTest {
     )
 
     val result = createService().detectCycles(modules)
-    assertThat(result.toList())
-      .hasSize(3)
-      .anyMatch { it.toSet() == setOf("module1", "module7", "module8") }
-      .anyMatch { it.toSet() == setOf("module4", "module5") }
-      .anyMatch { it.toSet() == setOf("module2", "module7", "module8") }
+    assertThat(result).containsExactlyInAnyOrder(
+      CyclicDependency(listOf("module1", "module7", "module8")),
+      CyclicDependency(listOf("module4", "module5")),
+      CyclicDependency(listOf("module2", "module7", "module8"))
+    )
   }
 
 

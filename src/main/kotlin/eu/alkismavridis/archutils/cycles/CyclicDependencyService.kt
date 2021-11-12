@@ -4,8 +4,6 @@ import eu.alkismavridis.archutils.analysis.model.ModuleStats
 import java.util.*
 
 
-typealias CyclicDependency = List<String>
-
 class CyclicDependencyService {
 
   fun detectCycles(modules: List<ModuleStats>): Set<CyclicDependency> {
@@ -64,8 +62,8 @@ class CyclicDependencyService {
 
     fun markPathAsCyclic() {
       val cycleStart = this.firstIndexOfTail()
-      val cycle = currentPath.slice(cycleStart until currentPath.lastIndex)
-      this.cycles.add(cycle)
+      val cyclicSlice = currentPath.slice(cycleStart until currentPath.lastIndex)
+      this.cycles.add(CyclicDependency(cyclicSlice))
     }
 
     private fun firstIndexOfTail() : Int {

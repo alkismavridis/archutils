@@ -75,7 +75,7 @@ class ProjectResultView(private val request: AnalysisRequest, private val result
     }
 
     this.result.cyclicDependencies.forEach {
-      val text = it.joinToString(" -> ") + " -> " + it.first()
+      val text = it.path.joinToString(" -> ") + " -> " + it.path.first()
       cyclicDepPanel.add(createCell(text))
     }
 
