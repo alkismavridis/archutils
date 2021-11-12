@@ -24,10 +24,8 @@ class ProjectResultView(private val request: AnalysisRequest, private val result
     this.add(createConfigLabel("Path: ${this.request.projectRelativePath}", 4))
     this.add(createConfigLabel("Dependency rules: ${this.request.rules.name}", 40))
 
-    if (this.result.illegalDependencies.isNotEmpty()) {
-      this.add(createLabel("Illegal Dependencies").also { it.foreground = Color.RED })
-      this.add(createIllegalDependenciesTable())
-    }
+    this.add(createLabel("Illegal Dependencies", error = this.result.illegalDependencies.isNotEmpty()))
+    this.add(createIllegalDependenciesTable())
 
     this.add(createLabel("File Statistics"))
     this.add(createFileDataTable(this.result))
@@ -43,9 +41,14 @@ class ProjectResultView(private val request: AnalysisRequest, private val result
     table.layout = GridLayout(result.illegalDependencies.size + 1, 2, 24, 8)
     table.border = EmptyBorder(0, 0, 40, 0)
 
+    if (this.result.illegalDependencies.isEmpty()) {
+      val okMessage = JLabel("None", SwingUtilities.LEFT)
+      table.add(okMessage)
+      return table
+    }
+
     table.add(createBoldCell("From"))
     table.add(createBoldCell("To"))
-
     this.result.illegalDependencies.forEach {
       table.add(createCell(it.moduleFrom))
       table.add(createCell(it.moduleTo))
@@ -164,11 +167,15 @@ class ProjectResultView(private val request: AnalysisRequest, private val result
     createSelectableText((nominator.toDouble() / denominator).toString(1))
   }
 
-  private fun createLabel(text: String): JComponent {
+  private fun createLabel(text: String, error: Boolean = false): JComponent {
     return createSelectableText(text).also {
       it.font = Font(it.font.fontName, Font.BOLD, 16)
       it.alignmentX = LEFT_ALIGNMENT
       it.border = EmptyBorder(0, 0, 8, 0)
+
+      if (error) {
+        it.foreground = Color.RED
+      }
     }
   }
 

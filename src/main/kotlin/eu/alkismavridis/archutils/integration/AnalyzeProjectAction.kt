@@ -25,12 +25,12 @@ class AnalyzeProjectAction: AnAction() {
     val root = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
     val projectRelativePath = relativizeToProjectRoot(root.path, project)
 
-
     val configuration = this.getConfiguration(project)
     val rules = configuration.rules.find { it.path == projectRelativePath } ?: DependencyRules.allowAll()
     val analysisService = DependencyAnalysisService()
     val analysisRequest = AnalysisRequest(projectRelativePath, rules)
     val task = ProjectAnalysisTask(project, analysisRequest, root, analysisService)
+
     ProgressManager.getInstance().run(task)
   }
 
