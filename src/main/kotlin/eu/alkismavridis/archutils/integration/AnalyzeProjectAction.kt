@@ -14,6 +14,7 @@ import eu.alkismavridis.archutils.analysis.model.AnalysisConfiguration
 import eu.alkismavridis.archutils.analysis.model.AnalysisRequest
 import eu.alkismavridis.archutils.analysis.model.DependencyRules
 import eu.alkismavridis.archutils.analysis.DependencyAnalysisService
+import eu.alkismavridis.archutils.cycles.CyclicDependencyService
 import java.lang.IllegalArgumentException
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -27,9 +28,11 @@ class AnalyzeProjectAction: AnAction() {
 
     val configuration = this.getConfiguration(project)
     val rules = configuration.rules.find { it.path == projectRelativePath } ?: DependencyRules.allowAll()
-    val analysisService = DependencyAnalysisService()
     val analysisRequest = AnalysisRequest(projectRelativePath, rules)
-    val task = ProjectAnalysisTask(project, analysisRequest, root, analysisService)
+
+    val analysisService = DependencyAnalysisService()
+    val cyclicDependencyService = CyclicDependencyService()
+    val task = ProjectAnalysisTask(project, analysisRequest, root, analysisService, cyclicDependencyService)
 
     ProgressManager.getInstance().run(task)
   }

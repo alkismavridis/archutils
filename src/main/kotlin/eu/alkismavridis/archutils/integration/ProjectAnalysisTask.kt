@@ -14,6 +14,7 @@ import eu.alkismavridis.archutils.analysis.*
 import eu.alkismavridis.archutils.analysis.model.AnalysisRequest
 import eu.alkismavridis.archutils.analysis.model.AnalysisResult
 import eu.alkismavridis.archutils.analysis.model.ModuleStats
+import eu.alkismavridis.archutils.cycles.CyclicDependencyService
 import eu.alkismavridis.archutils.integration.ui.ProjectResultView
 import java.awt.Dimension
 import java.io.FileNotFoundException
@@ -23,6 +24,7 @@ class ProjectAnalysisTask(
   private val request: AnalysisRequest,
   private val rootDirectory: VirtualFile,
   private val analysisService: DependencyAnalysisService,
+  private val cyclicDependencyService: CyclicDependencyService,
 ) : Task.Modal(project, "Analyzing Dependencies", true) {
   private var result: AnalysisResult? = null
 
@@ -36,7 +38,9 @@ class ProjectAnalysisTask(
       this.title = "Analysing dependencies..."
       val illegalDependencies = this.analysisService.findIllegalDependencies(request, moduleData)
 
-      this.result = AnalysisResult(moduleData, illegalDependencies)
+      this.title = "Searching for cyclic dependencies..."
+      val cyclicDependencies = this.cyclicDependencyService.detectCycles(moduleData)
+      this.result = AnalysisResult(moduleData, illegalDependencies, cyclicDependencies)
     }
   }
 

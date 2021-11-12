@@ -21,11 +21,15 @@ class ProjectResultView(private val request: AnalysisRequest, private val result
   private fun renderModules() {
     this.removeAll()
 
+    this.add(createLabel("Analysis config"))
     this.add(createConfigLabel("Path: ${this.request.projectRelativePath}", 4))
     this.add(createConfigLabel("Dependency rules: ${this.request.rules.name}", 40))
 
     this.add(createLabel("Illegal Dependencies", error = this.result.illegalDependencies.isNotEmpty()))
     this.add(createIllegalDependenciesTable())
+
+    this.add(createLabel("Cyclic Dependencies", error = this.result.cyclicDependencies.isNotEmpty()))
+    this.add(createCyclicDependenciesTable())
 
     this.add(createLabel("File Statistics"))
     this.add(createFileDataTable(this.result))
@@ -56,6 +60,27 @@ class ProjectResultView(private val request: AnalysisRequest, private val result
 
     table.maximumSize = table.preferredSize
     return table
+  }
+
+  private fun createCyclicDependenciesTable(): JComponent {
+    val cyclicDepPanel = JPanel()
+    cyclicDepPanel.alignmentX = LEFT_ALIGNMENT
+    cyclicDepPanel.layout = BoxLayout(cyclicDepPanel, BoxLayout.PAGE_AXIS)
+    cyclicDepPanel.border = EmptyBorder(0, 0, 40, 0)
+
+    if (this.result.cyclicDependencies.isEmpty()) {
+      val okMessage = JLabel("None", SwingUtilities.LEFT)
+      cyclicDepPanel.add(okMessage)
+      return cyclicDepPanel
+    }
+
+    this.result.cyclicDependencies.forEach {
+      val text = it.joinToString(" -> ") + " -> " + it.first()
+      cyclicDepPanel.add(createCell(text))
+    }
+
+    cyclicDepPanel.maximumSize = cyclicDepPanel.preferredSize
+    return cyclicDepPanel
   }
 
   private fun createFileDataTable(result: AnalysisResult) : JPanel {

@@ -60,6 +60,20 @@ class CyclicDependencyServiceTest {
     assertThat(result[1]).containsExactly("isolated1", "isolated2")
   }
 
+
+  @Test
+  fun `should not detect same cycle twice`() {
+    val modules = listOf(
+      DummyModuleStats("module1", usesModules = setOf("module2")),
+      DummyModuleStats("module2", usesModules = setOf("module1")),
+      DummyModuleStats("module3", usesModules = setOf("module1", "module2")),
+    )
+
+    val result = createService().detectCycles(modules)
+    assertThat(result).hasSize(1)
+    assertThat(result).anyMatch { it.toSet() == setOf("module1", "module2") }
+  }
+
   @Test
   fun `should handle large graph`() {
     val modules = listOf(
