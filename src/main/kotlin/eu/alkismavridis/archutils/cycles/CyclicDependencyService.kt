@@ -18,18 +18,17 @@ class CyclicDependencyService {
     return ctx.getResult()
   }
 
-  private fun visit(module: ModuleStats, ctx: DependencyCycleContext): Boolean {
+  private fun visit(module: ModuleStats, ctx: DependencyCycleContext) {
     ctx.pushToStack(module)
-    this.visitDependencies(module, ctx)
 
-    val isCyclic = ctx.isPathCyclic()
-    if (isCyclic) {
+    if (ctx.isPathCyclic()) {
       ctx.markPathAsCyclic()
+    } else {
+      this.visitDependencies(module, ctx)
     }
 
     ctx.popFromStack()
     ctx.markAsVisited(module)
-    return isCyclic
   }
 
   private fun visitDependencies(module: ModuleStats, ctx: DependencyCycleContext) {
@@ -56,8 +55,7 @@ class CyclicDependencyService {
     fun getModule(name: String) = moduleMap[name]
 
     fun isPathCyclic(): Boolean {
-      return this.currentPath.size > 1 &&
-        this.currentPath.firstElement() == this.currentPath.lastElement()
+      return this.firstIndexOfTail() != this.currentPath.lastIndex
     }
 
     fun pushToStack(module: ModuleStats): String = this.currentPath.push(module.name)
@@ -65,8 +63,14 @@ class CyclicDependencyService {
     fun markAsVisited(module: ModuleStats): Boolean = this.visitedNames.add(module.name)
 
     fun markPathAsCyclic() {
-      val cycle = currentPath.toList()
+      val cycleStart = this.firstIndexOfTail()
+      val cycle = currentPath.slice(cycleStart until currentPath.lastIndex)
       this.cycles.add(cycle)
+    }
+
+    private fun firstIndexOfTail() : Int {
+      val lastElement = this.currentPath.lastElement()
+      return this.currentPath.indexOf(lastElement)
     }
   }
 }
