@@ -14,14 +14,15 @@ class ProjectAnalysisService(
   private val cyclicDependencyService: CyclicDependencyService,
 ) {
   fun analyseProject(
-    projectPath: String,
+    projectRelativePath: String,
+    projectAbsolutePath: String,
     dependencyProvider: Consumer<ModuleStatsBuilder>,
     presenter: Consumer<String>
   ): AnalysisResult {
-    val pathConfig = this.findConfigForPath(projectPath)
+    val pathConfig = this.findConfigForPath(projectRelativePath)
 
     presenter.accept("Collecting dependencies...")
-    val moduleData = this.getModuleData(projectPath, pathConfig, dependencyProvider)
+    val moduleData = this.getModuleData(projectAbsolutePath, pathConfig, dependencyProvider)
 
     presenter.accept("Analysing dependencies...")
     val illegalDependencies = this.validationService.findIllegalDependencies(moduleData, pathConfig.allowedDependencies)
@@ -33,7 +34,7 @@ class ProjectAnalysisService(
   }
 
   private fun findConfigForPath(projectPath: String): PathConfiguration {
-    return this.config.rules.find { it.name == projectPath }
+    return this.config.rules.find { it.path == projectPath }
       ?: PathConfiguration.allowAll()
   }
 

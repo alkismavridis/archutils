@@ -1,4 +1,4 @@
-package eu.alkismavridis.archutils.integration
+package eu.alkismavridis.archutils.integration.psi
 
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor

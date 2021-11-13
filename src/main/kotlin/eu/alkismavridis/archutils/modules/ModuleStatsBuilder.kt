@@ -2,8 +2,8 @@ package eu.alkismavridis.archutils.modules
 
 import com.intellij.openapi.diagnostic.thisLogger
 
-class ModuleStatsBuilder(rootPackage: String, private val whitelistedSuffixes: Set<String>) {
-  private val rootPath = rootPackage
+class ModuleStatsBuilder(absRootPackage: String, private val whitelistedSuffixes: Set<String>) {
+  private val rootPath = absRootPackage
     .replace("\\", "/")
     .let { if(it.endsWith("/")) it else "$it/" }
 
@@ -18,14 +18,14 @@ class ModuleStatsBuilder(rootPackage: String, private val whitelistedSuffixes: S
       this.whitelistedSuffixes.any { fileName.endsWith(it) }
   }
 
-  fun addFile(currentFile: String, filesUsingCurrent: Collection<String>): ModuleStatsBuilder {
-    val moduleName = this.getModuleOf(currentFile) ?: return this
+  fun addFile(currentFileAbs: String, filesUsingCurrent: Collection<String>): ModuleStatsBuilder {
+    val moduleName = this.getModuleOf(currentFileAbs) ?: return this
     val module = getOrCreateModuleData(moduleName)
 
     var hasExternalDependencies = false
     var hasInternalDependencies = false
     for (fileUsingCurrent in filesUsingCurrent) {
-      val nameOfModuleUsingCurrent = this.getUsingModule(currentFile, fileUsingCurrent, moduleName) ?: continue
+      val nameOfModuleUsingCurrent = this.getUsingModule(currentFileAbs, fileUsingCurrent, moduleName) ?: continue
       val moduleUsingCurrent = getOrCreateModuleData(nameOfModuleUsingCurrent)
       addDependencyForModules(module, moduleUsingCurrent)
 
