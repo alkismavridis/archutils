@@ -10,53 +10,40 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.GlobalSearchScopesCore
 import com.intellij.ui.components.JBScrollPane
-import eu.alkismavridis.archutils.analysis.*
-import eu.alkismavridis.archutils.analysis.model.AnalysisRequest
-import eu.alkismavridis.archutils.analysis.model.AnalysisResult
-import eu.alkismavridis.archutils.analysis.model.ModuleStats
-import eu.alkismavridis.archutils.cycles.CyclicDependencyService
+import eu.alkismavridis.archutils.analysis.AnalysisResult
+import eu.alkismavridis.archutils.analysis.ProjectAnalysisService
 import eu.alkismavridis.archutils.integration.ui.ProjectResultView
+import eu.alkismavridis.archutils.modules.ModuleStatsBuilder
 import java.awt.Dimension
 import java.io.FileNotFoundException
 
 class ProjectAnalysisTask(
   project: Project,
-  private val request: AnalysisRequest,
   private val rootDirectory: VirtualFile,
-  private val analysisService: DependencyAnalysisService,
-  private val cyclicDependencyService: CyclicDependencyService,
+  private val analysisService: ProjectAnalysisService
 ) : Task.Modal(project, "Analyzing Dependencies", true) {
   private var result: AnalysisResult? = null
 
   override fun run(indicator: ProgressIndicator) {
     thisLogger().info("Analysis starts for ${rootDirectory.path}")
-
     ApplicationManager.getApplication().runReadAction {
-      this.title = "Collecting dependencies..."
-      val moduleData = this.getModuleData()
-
-      this.title = "Analysing dependencies..."
-      val illegalDependencies = this.analysisService.findIllegalDependencies(request, moduleData)
-
-      this.title = "Searching for cyclic dependencies..."
-      val cyclicDependencies = this.cyclicDependencyService.detectCycles(moduleData)
-      this.result = AnalysisResult(moduleData, illegalDependencies, cyclicDependencies)
+      this.result = analysisService.analyseProject(rootDirectory.path, ::buildDependencies) {
+        this.title = it
+      }
     }
   }
 
-  private fun getModuleData(): List<ModuleStats> {
-    val rootPsi = PsiManager.getInstance(project).findDirectory(rootDirectory) ?: throw FileNotFoundException("Directory $rootDirectory not found")
+  private fun buildDependencies(builder: ModuleStatsBuilder) {
+    val rootPsi = PsiManager.getInstance(project).findDirectory(rootDirectory)
+      ?: throw FileNotFoundException("Directory ${rootDirectory.path} not found")
+
     val searchScope = GlobalSearchScopesCore.DirectoryScope(project, rootDirectory, true)
-
-    val builder = ModuleStatsBuilder(rootDirectory.path)
-    rootPsi.accept(ProjectAnalysingPsiVisitor(builder, request.rules.includedSuffixes, searchScope))
-
-    return builder.build()
+    rootPsi.accept(ProjectAnalysingPsiVisitor(builder, searchScope))
   }
 
   override fun onSuccess() {
     val result = this.result ?: return
-    val view = ProjectResultView(this.request, result)
+    val view = ProjectResultView(result)
     val scrollBar = JBScrollPane(view)
 
     JBPopupFactory.getInstance()

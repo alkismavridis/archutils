@@ -1,9 +1,8 @@
-package eu.alkismavridis.archutils.analysis
+package eu.alkismavridis.archutils.modules
 
 import com.intellij.openapi.diagnostic.thisLogger
-import eu.alkismavridis.archutils.analysis.model.ModuleStats
 
-class ModuleStatsBuilder(rootPackage: String) {
+class ModuleStatsBuilder(rootPackage: String, private val whitelistedSuffixes: Set<String>) {
   private val rootPath = rootPackage
     .replace("\\", "/")
     .let { if(it.endsWith("/")) it else "$it/" }
@@ -12,6 +11,11 @@ class ModuleStatsBuilder(rootPackage: String) {
 
   fun build(): List<ModuleStats> {
     return this.moduleMap.values.sortedBy { it.name }
+  }
+
+  fun accepts(fileName: String) : Boolean {
+    return this.whitelistedSuffixes.contains("*") ||
+      this.whitelistedSuffixes.any { fileName.endsWith(it) }
   }
 
   fun addFile(currentFile: String, filesUsingCurrent: Collection<String>): ModuleStatsBuilder {

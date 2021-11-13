@@ -1,4 +1,4 @@
-package eu.alkismavridis.archutils.cycles
+package eu.alkismavridis.archutils.validation
 
 class CyclicDependency(val path: List<String>) {
   private val sortedByName = path.sorted()

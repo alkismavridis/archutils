@@ -1,6 +1,6 @@
-package eu.alkismavridis.archutils.cycles
+package eu.alkismavridis.archutils.validation
 
-import eu.alkismavridis.archutils.analysis.model.ModuleStats
+import eu.alkismavridis.archutils.modules.ModuleStats
 import java.util.*
 
 

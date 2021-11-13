@@ -1,7 +1,7 @@
-package eu.alkismavridis.archutils.cycles
+package eu.alkismavridis.archutils.validation
 
-import eu.alkismavridis.archutils.analysis.model.ModuleStats
-import eu.alkismavridis.archutils.analysis.testutils.DummyModuleStats
+import eu.alkismavridis.archutils.modules.ModuleStats
+import eu.alkismavridis.archutils.testutils.DummyModuleStats
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

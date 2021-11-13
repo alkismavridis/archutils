@@ -1,4 +1,4 @@
-package eu.alkismavridis.archutils.integration
+package eu.alkismavridis.archutils.garbage.integration
 
 import com.intellij.openapi.project.Project
 import java.nio.file.Path

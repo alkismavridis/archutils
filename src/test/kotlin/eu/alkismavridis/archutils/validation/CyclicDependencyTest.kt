@@ -1,5 +1,6 @@
-package eu.alkismavridis.archutils.cycles
+package eu.alkismavridis.archutils.validation
 
+import eu.alkismavridis.archutils.validation.CyclicDependency
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

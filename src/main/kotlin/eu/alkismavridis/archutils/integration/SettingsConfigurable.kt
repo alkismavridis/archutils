@@ -7,6 +7,7 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import eu.alkismavridis.archutils.garbage.integration.relativizeToProjectRoot
 import java.awt.Dimension
 import javax.swing.*
 import javax.swing.BoxLayout.PAGE_AXIS
@@ -55,6 +56,6 @@ class SettingsConfigurable(private val project: Project): Configurable {
 
 
   companion object {
-    const val STORAGE_KEY = "eu.alkismavridis.archutils.integration.CONFIG_FILE_PATH"
+    const val STORAGE_KEY = "eu.alkismavridis.archutils.garbage.integration.CONFIG_FILE_PATH"
   }
 }

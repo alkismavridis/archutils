@@ -10,39 +10,41 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
-import eu.alkismavridis.archutils.analysis.model.AnalysisConfiguration
-import eu.alkismavridis.archutils.analysis.model.AnalysisRequest
-import eu.alkismavridis.archutils.analysis.model.DependencyRules
-import eu.alkismavridis.archutils.analysis.DependencyAnalysisService
-import eu.alkismavridis.archutils.cycles.CyclicDependencyService
-import java.lang.IllegalArgumentException
+import eu.alkismavridis.archutils.analysis.ProjectAnalysisService
+import eu.alkismavridis.archutils.analysis.config.ArchutilsConfiguration
+import eu.alkismavridis.archutils.analysis.config.PathConfiguration
+import eu.alkismavridis.archutils.garbage.integration.getAbsolutePath
+import eu.alkismavridis.archutils.garbage.integration.relativizeToProjectRoot
+import eu.alkismavridis.archutils.validation.DependencyValidationService
+import eu.alkismavridis.archutils.validation.CyclicDependencyService
 import java.nio.file.Files
-import java.nio.file.Paths
 
 class AnalyzeProjectAction: AnAction() {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.project ?: return
-    val root = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
-    val projectRelativePath = relativizeToProjectRoot(root.path, project)
+    val rootDir = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
 
     val configuration = this.getConfiguration(project)
-    val rules = configuration.rules.find { it.path == projectRelativePath } ?: DependencyRules.allowAll()
-    val analysisRequest = AnalysisRequest(projectRelativePath, rules)
-
-    val analysisService = DependencyAnalysisService()
-    val cyclicDependencyService = CyclicDependencyService()
-    val task = ProjectAnalysisTask(project, analysisRequest, root, analysisService, cyclicDependencyService)
+    val analysisService = createAnalysisService(configuration)
+    val task = ProjectAnalysisTask(project, rootDir, analysisService)
 
     ProgressManager.getInstance().run(task)
   }
 
-  private fun getConfiguration(project: Project): AnalysisConfiguration {
+
+  private fun createAnalysisService(configuration: ArchutilsConfiguration): ProjectAnalysisService {
+    val validationService = DependencyValidationService()
+    val cyclicDependencyService = CyclicDependencyService()
+    return ProjectAnalysisService(configuration, validationService, cyclicDependencyService)
+  }
+
+  private fun getConfiguration(project: Project): ArchutilsConfiguration {
     val pathString = PropertiesComponent
       .getInstance(project)
       .getValue(SettingsConfigurable.STORAGE_KEY)
       ?.ifEmpty { null }
-      ?: return AnalysisConfiguration()
+      ?: return ArchutilsConfiguration()
 
     try {
       val path = getAbsolutePath(pathString, project)
@@ -51,7 +53,7 @@ class AnalyzeProjectAction: AnAction() {
         .readValue(Files.newInputStream(path))
     } catch (e: Exception) {
       Messages.showMessageDialog(project, e.message, "Invalid Archutils Configuration ", Messages.getWarningIcon())
-      return AnalysisConfiguration()
+      return ArchutilsConfiguration()
     }
   }
 }

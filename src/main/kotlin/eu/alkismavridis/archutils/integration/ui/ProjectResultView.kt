@@ -1,7 +1,6 @@
 package eu.alkismavridis.archutils.integration.ui
 
-import eu.alkismavridis.archutils.analysis.model.AnalysisRequest
-import eu.alkismavridis.archutils.analysis.model.AnalysisResult
+import eu.alkismavridis.archutils.analysis.AnalysisResult
 import org.jetbrains.projector.common.misc.toString
 import java.awt.Color
 import java.awt.Font
@@ -9,7 +8,7 @@ import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
-class ProjectResultView(private val request: AnalysisRequest, private val result: AnalysisResult): JPanel() {
+class ProjectResultView(private val result: AnalysisResult): JPanel() {
 
   init {
     this.border = EmptyBorder(16, 16, 16, 16)
@@ -22,9 +21,9 @@ class ProjectResultView(private val request: AnalysisRequest, private val result
     this.removeAll()
 
     this.add(createLabel("Analysis config"))
-    this.add(createConfigLabel("Path: ${this.request.projectRelativePath}", 4))
-    this.add(createConfigLabel("Dependency rules: ${this.request.rules.name}", 4))
-    this.add(createConfigLabel("Included suffixes: ${this.request.rules.includedSuffixes.joinToString(" ")}", 40))
+    this.add(createConfigLabel("Path: ${this.result.config.path}", 4))
+    this.add(createConfigLabel("Dependency rules: ${this.result.config.name}", 4))
+    this.add(createConfigLabel("Included suffixes: ${this.result.config.includedSuffixes.joinToString(" ")}", 40))
 
     this.add(createLabel("Illegal Dependencies", error = this.result.illegalDependencies.isNotEmpty()))
     this.add(createIllegalDependenciesTable())

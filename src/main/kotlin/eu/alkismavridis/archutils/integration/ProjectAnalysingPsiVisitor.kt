@@ -4,28 +4,22 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor
 import com.intellij.psi.search.SearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
-import eu.alkismavridis.archutils.analysis.ModuleStatsBuilder
+import eu.alkismavridis.archutils.modules.ModuleStatsBuilder
 
 class ProjectAnalysingPsiVisitor(
-  private val result: ModuleStatsBuilder,
-  private val whitelistedSuffixes: Set<String>,
+  private val builder: ModuleStatsBuilder,
   private val searchScope: SearchScope
 ): PsiRecursiveElementWalkingVisitor() {
   override fun visitFile(file: PsiFile) {
-    if (this.isWhiteListed(file)) {
+    if (this.builder.accepts(file.name)) {
       this.addFileToResult(file)
     }
-  }
-
-  private fun isWhiteListed(file: PsiFile) : Boolean {
-    return this.whitelistedSuffixes.contains("*") ||
-      this.whitelistedSuffixes.any { file.name.endsWith(it) }
   }
 
   private fun addFileToResult(file: PsiFile) {
     val usages = getFilesUsing(file)
     val filePath = file.virtualFile.path
-    result.addFile(filePath, usages)
+    builder.addFile(filePath, usages)
   }
 
   private fun getFilesUsing(file: PsiFile) : Set<String> {

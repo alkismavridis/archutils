@@ -1,6 +1,6 @@
-package eu.alkismavridis.archutils.analysis.testutils
+package eu.alkismavridis.archutils.testutils
 
-import eu.alkismavridis.archutils.analysis.model.ModuleStats
+import eu.alkismavridis.archutils.modules.ModuleStats
 
 class DummyModuleStats(
   override val name: String,
