@@ -45,7 +45,7 @@ internal class DependencyAnalysisServiceTest {
 
   @Test
   fun `should mark all dependencies of a module that explicitly declares zero dependencies`() {
-    val rules = DependencyRules("", "", mapOf(
+    val rules = DependencyRules(allowedDependencies = mapOf(
       "model" to emptyList(),
       "*" to listOf("*")
     ))
@@ -65,7 +65,7 @@ internal class DependencyAnalysisServiceTest {
 
   @Test
   fun `should allow explicitly stated dependency`() {
-    val rules = DependencyRules("", "", mapOf(
+    val rules = DependencyRules(allowedDependencies = mapOf(
       "services" to listOf("model"),
       "*" to listOf("*")
     ))
@@ -84,7 +84,7 @@ internal class DependencyAnalysisServiceTest {
 
   @Test
   fun `should allow everything to a module that explicitly states that everything is allowed`() {
-    val rules = DependencyRules("", "", mapOf(
+    val rules = DependencyRules(allowedDependencies =  mapOf(
       "api" to listOf("*"),
       "*" to emptyList()
     ))
@@ -103,7 +103,7 @@ internal class DependencyAnalysisServiceTest {
 
   @Test
   fun `should allow everything in an allow-all configuration`() {
-    val rules = DependencyRules("", "", mapOf(
+    val rules = DependencyRules(allowedDependencies = mapOf(
       "*" to listOf("*")
     ))
 
@@ -121,7 +121,7 @@ internal class DependencyAnalysisServiceTest {
 
   @Test
   fun `should forbid everything in an allow-nothing configuration`() {
-    val rules = DependencyRules("", "", mapOf())
+    val rules = DependencyRules(allowedDependencies =  mapOf())
 
     val modules = listOf(
       DummyModuleStats(name = "api", usesModules = setOf("model", "utils")),
@@ -140,6 +140,6 @@ internal class DependencyAnalysisServiceTest {
 
 
   companion object {
-    val FORBID_ALL_RULE_BY_WILDCARD = DependencyRules("", "", mapOf("*" to emptyList()))
+    val FORBID_ALL_RULE_BY_WILDCARD = DependencyRules(allowedDependencies = mapOf("*" to emptyList()))
   }
 }
