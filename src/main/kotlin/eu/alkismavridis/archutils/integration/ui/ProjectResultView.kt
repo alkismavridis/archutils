@@ -23,7 +23,8 @@ class ProjectResultView(private val request: AnalysisRequest, private val result
 
     this.add(createLabel("Analysis config"))
     this.add(createConfigLabel("Path: ${this.request.projectRelativePath}", 4))
-    this.add(createConfigLabel("Dependency rules: ${this.request.rules.name}", 40))
+    this.add(createConfigLabel("Dependency rules: ${this.request.rules.name}", 4))
+    this.add(createConfigLabel("Included suffixes: ${this.request.rules.includedSuffixes.joinToString(" ")}", 40))
 
     this.add(createLabel("Illegal Dependencies", error = this.result.illegalDependencies.isNotEmpty()))
     this.add(createIllegalDependenciesTable())

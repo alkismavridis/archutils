@@ -49,7 +49,7 @@ class ProjectAnalysisTask(
     val searchScope = GlobalSearchScopesCore.DirectoryScope(project, rootDirectory, true)
 
     val builder = ModuleStatsBuilder(rootDirectory.path)
-    rootPsi.accept(ProjectAnalysingPsiVisitor(builder, searchScope))
+    rootPsi.accept(ProjectAnalysingPsiVisitor(builder, request.rules.includedSuffixes, searchScope))
 
     return builder.build()
   }

@@ -8,29 +8,35 @@ import eu.alkismavridis.archutils.analysis.ModuleStatsBuilder
 
 class ProjectAnalysingPsiVisitor(
   private val result: ModuleStatsBuilder,
+  private val whitelistedSuffixes: Set<String>,
   private val searchScope: SearchScope
 ): PsiRecursiveElementWalkingVisitor() {
   override fun visitFile(file: PsiFile) {
-    if (file.language.id in INCLUDED_LANGUAGE_IDS) {
+    if (this.isWhiteListed(file)) {
       this.addFileToResult(file)
     }
   }
 
-  private fun addFileToResult(file: PsiFile) {
-    val filePath = file.virtualFile.path
-    val usagePaths = mutableSetOf<String>()
-
-    file.children.forEach { decl ->
-      ReferencesSearch.search(decl, this.searchScope)
-        .asSequence()
-        .map { ref -> ref.element.containingFile.virtualFile.path }
-        .forEach { usagePaths.add(it) }
-    }
-
-    result.addFile(filePath, usagePaths)
+  private fun isWhiteListed(file: PsiFile) : Boolean {
+    return this.whitelistedSuffixes.contains("*") ||
+      this.whitelistedSuffixes.any { file.name.endsWith(it) }
   }
 
-  companion object {
-    private val INCLUDED_LANGUAGE_IDS = listOf("JAVA", "kotlin")
+  private fun addFileToResult(file: PsiFile) {
+    val usages = getFilesUsing(file)
+    val filePath = file.virtualFile.path
+    result.addFile(filePath, usages)
+  }
+
+  private fun getFilesUsing(file: PsiFile) : Set<String> {
+    val referencesToFile = ReferencesSearch.search(file, this.searchScope).asSequence()
+    val referencesToDeclarationsOfFile = file.children
+      .asSequence()
+      .flatMap { ReferencesSearch.search(it, this.searchScope) }
+    val allReferences = referencesToFile + referencesToDeclarationsOfFile
+
+    return allReferences
+      .map{ it.element.containingFile.virtualFile.path }
+      .toSet()
   }
 }
