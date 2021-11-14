@@ -8,5 +8,6 @@ class AnalysisResult(
   val moduleStats: List<ModuleStats>,
   val illegalDependencies: List<IllegalModuleDependency>,
   val cyclicDependencies: Set<List<String>>,
+  val projectRelativePath: String,
   val config: PathConfiguration
 )

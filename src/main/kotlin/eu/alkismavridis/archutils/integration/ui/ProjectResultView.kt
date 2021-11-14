@@ -23,12 +23,12 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
     this.add(createIllegalDependenciesTable())
     this.add(H2("Cyclic Dependencies", error = this.result.cyclicDependencies.isNotEmpty(), marginBottom = 8))
     this.add(createCyclicDependenciesTable())
+    this.add(H2("Module Statistics", marginBottom = 8))
+    this.add(createModuleDependencyDataTable(this.result))
     this.add(H2("File Statistics", marginBottom = 8))
     this.add(createFileDataTable(this.result))
-    this.add(H2("File Dependency Statistics", marginBottom = 8))
+    this.add(H2("Dependency Statistics", marginBottom = 8))
     this.add(createFileDependencyDataTable(this.result))
-    this.add(H2("Module Dependency Statistics", marginBottom = 8))
-    this.add(createModuleDependencyDataTable(this.result))
   }
 
   private fun createConfigurationTable(): JComponent {
@@ -38,7 +38,7 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
     table.border = EmptyBorder(0, 0, 40, 0)
 
     table.add(SimpleCell("Path:", bold = true))
-    table.add(SimpleCell(this.result.config.path))
+    table.add(SimpleCell(this.result.projectRelativePath))
 
     table.add(SimpleCell("Rules:", bold = true))
     table.add(SimpleCell(this.result.config.name))
@@ -119,13 +119,12 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
   private fun createFileDependencyDataTable(result: AnalysisResult) : JPanel {
     val dependencyTable = JPanel()
     dependencyTable.alignmentX = LEFT_ALIGNMENT
-    dependencyTable.border = EmptyBorder(0, 0, 40, 0)
     dependencyTable.layout = GridLayout(result.moduleStats.size + 1, 7, 8, 8)
 
     dependencyTable.add(SimpleCell("Module", bold = true))
-    dependencyTable.add(SimpleCell("All Dep.", bold = true))
-    dependencyTable.add(SimpleCell("Internal Dep.", bold = true))
-    dependencyTable.add(SimpleCell("External Dep.", bold = true))
+    dependencyTable.add(SimpleCell("Internal Dependencies", bold = true))
+    dependencyTable.add(SimpleCell("External Dependencies", bold = true))
+    dependencyTable.add(SimpleCell("Total", bold = true))
     dependencyTable.add(SimpleCell("External Usages", tooltip = "Number of Dependencies from the outside to the inside", bold = true))
     dependencyTable.add(SimpleCell("External Traffic", tooltip = "External Dependencies + External Usages", bold = true))
     dependencyTable.add(SimpleCell("Instability Factor", tooltip = "External Dependencies / External Traffic", bold = true))
@@ -135,9 +134,9 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
       val externalTraffic = it.dependenciesGoingOut + it.dependenciesComingIn
 
       dependencyTable.add(SimpleCell(it.name))
-      dependencyTable.add(SimpleCell(dependencyCount.toString()))
       dependencyTable.add(ValueWithPercentCell(it.internalDependencies, dependencyCount))
       dependencyTable.add(ValueWithPercentCell(it.dependenciesComingIn, dependencyCount))
+      dependencyTable.add(SimpleCell(dependencyCount.toString()))
       dependencyTable.add(SimpleCell(it.dependenciesGoingOut.toString()))
       dependencyTable.add(SimpleCell(externalTraffic.toString()))
       dependencyTable.add(RatioCell(it.dependenciesComingIn, externalTraffic))
@@ -150,6 +149,7 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
   private fun createModuleDependencyDataTable(result: AnalysisResult) : JPanel {
     val dependencyTable = JPanel()
     dependencyTable.alignmentX = LEFT_ALIGNMENT
+    dependencyTable.border = EmptyBorder(0, 0, 40, 0)
     dependencyTable.layout = GridLayout(result.moduleStats.size + 1, 4, 8, 8)
 
     dependencyTable.add(SimpleCell("Module", bold = true))

@@ -30,7 +30,7 @@ class ProjectAnalysisService(
     presenter.accept("Searching for cyclic dependencies...")
     val cyclicDependencies = this.cyclicDependencyService.detectCycles(moduleData)
 
-    return AnalysisResult(moduleData, illegalDependencies, cyclicDependencies, pathConfig)
+    return AnalysisResult(moduleData, illegalDependencies, cyclicDependencies, projectRelativePath, pathConfig)
   }
 
   private fun findConfigForPath(projectPath: String): PathConfiguration {
