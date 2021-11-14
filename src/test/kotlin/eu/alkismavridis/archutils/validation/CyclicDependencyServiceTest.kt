@@ -25,7 +25,7 @@ class CyclicDependencyServiceTest {
 
     val result = createService().detectCycles(modules)
     assertThat(result).containsExactlyInAnyOrder(
-      CyclicDependency(listOf("module1", "module2"))
+      listOf("module1", "module2").rotateMinimumToStart()
     )
   }
 
@@ -40,7 +40,7 @@ class CyclicDependencyServiceTest {
 
     val result = createService().detectCycles(modules)
     assertThat(result).containsExactlyInAnyOrder(
-      CyclicDependency(listOf("module1", "module2", "module3", "module4"))
+      listOf("module1", "module2", "module3", "module4").rotateMinimumToStart()
     )
   }
 
@@ -58,8 +58,8 @@ class CyclicDependencyServiceTest {
 
     val result = createService().detectCycles(modules)
     assertThat(result).containsExactlyInAnyOrder(
-      CyclicDependency(listOf("module1", "module2", "module3", "module4")),
-      CyclicDependency(listOf("isolated1", "isolated2"))
+      listOf("module1", "module2", "module3", "module4").rotateMinimumToStart(),
+      listOf("isolated1", "isolated2").rotateMinimumToStart()
     )
   }
 
@@ -74,7 +74,7 @@ class CyclicDependencyServiceTest {
 
     val result = createService().detectCycles(modules)
     assertThat(result).containsExactlyInAnyOrder(
-      CyclicDependency(listOf("module1", "module2"))
+      listOf("module1", "module2").rotateMinimumToStart()
     )
   }
 
@@ -96,9 +96,9 @@ class CyclicDependencyServiceTest {
 
     val result = createService().detectCycles(modules)
     assertThat(result).containsExactlyInAnyOrder(
-      CyclicDependency(listOf("module1", "module7", "module8")),
-      CyclicDependency(listOf("module4", "module5")),
-      CyclicDependency(listOf("module2", "module7", "module8"))
+      listOf("module1", "module7", "module8").rotateMinimumToStart(),
+      listOf("module4", "module5").rotateMinimumToStart(),
+      listOf("module2", "module7", "module8").rotateMinimumToStart()
     )
   }
 

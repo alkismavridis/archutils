@@ -6,7 +6,7 @@ import java.util.*
 
 class CyclicDependencyService {
 
-  fun detectCycles(modules: List<ModuleStats>): Set<CyclicDependency> {
+  fun detectCycles(modules: List<ModuleStats>): Set<List<String>> {
     val ctx = DependencyCycleContext(modules)
     while (true) {
       val notVisited = this.getNextUnvisited(ctx) ?: break
@@ -46,9 +46,9 @@ class CyclicDependencyService {
     private val moduleMap = this.modules.associateBy { it.name }
     private val visitedNames = mutableSetOf<String>()
     private val currentPath = Stack<String>()
-    private val cycles = mutableSetOf<CyclicDependency>()
+    private val cycles = mutableSetOf<List<String>>()
 
-    fun getResult(): Set<CyclicDependency> = this.cycles
+    fun getResult(): Set<List<String>> = this.cycles
     fun getVisitedNames(): Set<String> = this.visitedNames
     fun getModule(name: String) = moduleMap[name]
 
@@ -63,7 +63,7 @@ class CyclicDependencyService {
     fun markPathAsCyclic() {
       val cycleStart = this.firstIndexOfTail()
       val cyclicSlice = currentPath.slice(cycleStart until currentPath.lastIndex)
-      this.cycles.add(CyclicDependency(cyclicSlice))
+      this.cycles.add(cyclicSlice.rotateMinimumToStart())
     }
 
     private fun firstIndexOfTail() : Int {
