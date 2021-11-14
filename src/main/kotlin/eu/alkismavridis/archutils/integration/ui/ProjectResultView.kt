@@ -63,9 +63,9 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
 
     table.add(SimpleCell("From", bold = true))
     table.add(SimpleCell("To", bold = true))
-    this.result.illegalDependencies.forEach {
-      table.add(SimpleCell(it.moduleFrom))
-      table.add(SimpleCell(it.moduleTo))
+    this.result.illegalDependencies.forEach { dep ->
+      table.add(SimpleCell(dep.moduleFrom))
+      table.add(SimpleCell(dep.moduleTo))
     }
 
     table.maximumSize = table.preferredSize
@@ -83,8 +83,8 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
       return cyclicDepPanel
     }
 
-    this.result.cyclicDependencies.forEach {
-      val text = it.joinToString(" -> ") + " -> " + it.first()
+    this.result.cyclicDependencies.forEach { path ->
+      val text = path.joinToString(" -> ") + " -> " + path.first()
       cyclicDepPanel.add(SimpleCell(text))
     }
 
@@ -104,12 +104,12 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
     fileTable.add(SimpleCell("Private Files", tooltip = "Files used only inside the module", bold = true))
     fileTable.add(SimpleCell("Internally used Files", tooltip = "Files used inside the module", bold = true))
 
-    result.moduleStats.forEach{
-      fileTable.add(SimpleCell(it.name))
-      fileTable.add(SimpleCell(it.files.toString()))
-      fileTable.add(ValueWithPercentCell(it.externallyUsedFiles, it.files))
-      fileTable.add(ValueWithPercentCell(it.files - it.externallyUsedFiles, it.files))
-      fileTable.add(ValueWithPercentCell(it.internallyUsedFiles, it.files))
+    result.moduleStats.forEach{ mod ->
+      fileTable.add(SimpleCell(mod.name))
+      fileTable.add(SimpleCell(mod.files.toString()))
+      fileTable.add(ValueWithPercentCell(mod.externallyUsedFiles, mod.files))
+      fileTable.add(ValueWithPercentCell(mod.files - mod.externallyUsedFiles, mod.files))
+      fileTable.add(ValueWithPercentCell(mod.internallyUsedFiles, mod.files))
     }
 
     fileTable.maximumSize = fileTable.preferredSize
@@ -129,17 +129,17 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
     dependencyTable.add(SimpleCell("External Traffic", tooltip = "External Dependencies + External Usages", bold = true))
     dependencyTable.add(SimpleCell("Instability Factor", tooltip = "External Dependencies / External Traffic", bold = true))
 
-    result.moduleStats.forEach{
-      val dependencyCount = it.internalDependencies + it.dependenciesComingIn
-      val externalTraffic = it.dependenciesGoingOut + it.dependenciesComingIn
+    result.moduleStats.forEach{ mod ->
+      val dependencyCount = mod.internalDependencies + mod.dependenciesComingIn
+      val externalTraffic = mod.dependenciesGoingOut + mod.dependenciesComingIn
 
-      dependencyTable.add(SimpleCell(it.name))
-      dependencyTable.add(ValueWithPercentCell(it.internalDependencies, dependencyCount))
-      dependencyTable.add(ValueWithPercentCell(it.dependenciesComingIn, dependencyCount))
+      dependencyTable.add(SimpleCell(mod.name))
+      dependencyTable.add(ValueWithPercentCell(mod.internalDependencies, dependencyCount))
+      dependencyTable.add(ValueWithPercentCell(mod.dependenciesComingIn, dependencyCount))
       dependencyTable.add(SimpleCell(dependencyCount.toString()))
-      dependencyTable.add(SimpleCell(it.dependenciesGoingOut.toString()))
+      dependencyTable.add(SimpleCell(mod.dependenciesGoingOut.toString()))
       dependencyTable.add(SimpleCell(externalTraffic.toString()))
-      dependencyTable.add(RatioCell(it.dependenciesComingIn, externalTraffic))
+      dependencyTable.add(RatioCell(mod.dependenciesComingIn, externalTraffic))
     }
 
     dependencyTable.maximumSize = dependencyTable.preferredSize
@@ -157,12 +157,14 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
     dependencyTable.add(SimpleCell("Uses Modules", bold = true))
     dependencyTable.add(SimpleCell("Total", bold = true))
 
-    result.moduleStats.forEach{
-      val allDependencies = it.usedByModules.size + it.usesModules.size
+    result.moduleStats.forEach{ mod ->
+      val allDependencies = mod.usedByModules.size + mod.usesModules.size
+      val usedByTooltip = mod.usedByModules.joinToString(", ")
+      val usesTooltip = mod.usesModules.joinToString(", ")
 
-      dependencyTable.add(SimpleCell(it.name, bold = true))
-      dependencyTable.add(ValueWithPercentCell(it.usedByModules.size, allDependencies, it.usedByModules.joinToString(", ")))
-      dependencyTable.add(ValueWithPercentCell(it.usesModules.size, allDependencies, it.usesModules.joinToString(", ")))
+      dependencyTable.add(SimpleCell(mod.name, bold = true))
+      dependencyTable.add(ValueWithPercentCell(mod.usedByModules.size, allDependencies, usedByTooltip))
+      dependencyTable.add(ValueWithPercentCell(mod.usesModules.size, allDependencies, usesTooltip))
       dependencyTable.add(SimpleCell(allDependencies.toString()))
     }
 
