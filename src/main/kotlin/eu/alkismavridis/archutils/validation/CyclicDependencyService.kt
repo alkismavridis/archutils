@@ -1,14 +1,15 @@
 package eu.alkismavridis.archutils.validation
 
+import com.intellij.openapi.diagnostic.thisLogger
 import eu.alkismavridis.archutils.modules.ModuleStats
 import java.util.*
 
 
 class CyclicDependencyService {
 
-  fun detectCycles(modules: List<ModuleStats>): Set<List<String>> {
-    val ctx = DependencyCycleContext(modules)
-    while (true) {
+  fun detectCycles(modules: List<ModuleStats>, limit: Int = 100): Set<List<String>> {
+    val ctx = DependencyCycleContext(modules, limit)
+    while (!ctx.isFull()) {
       val notVisited = this.getNextUnvisited(ctx) ?: break
       this.visit(notVisited, ctx)
     }
@@ -17,8 +18,9 @@ class CyclicDependencyService {
   }
 
   private fun visit(module: ModuleStats, ctx: DependencyCycleContext) {
-    ctx.pushToStack(module)
+    if (ctx.isFull()) return
 
+    ctx.pushToStack(module)
     if (ctx.isPathCyclic()) {
       ctx.markPathAsCyclic()
     } else {
@@ -42,12 +44,13 @@ class CyclicDependencyService {
   }
 
 
-  private class DependencyCycleContext(val modules: List<ModuleStats>) {
+  private class DependencyCycleContext(val modules: List<ModuleStats>, private val limit: Int) {
     private val moduleMap = this.modules.associateBy { it.name }
     private val visitedNames = mutableSetOf<String>()
     private val currentPath = Stack<String>()
     private val cycles = mutableSetOf<List<String>>()
 
+    fun isFull(): Boolean = this.cycles.size >= this.limit
     fun getResult(): Set<List<String>> = this.cycles
     fun getVisitedNames(): Set<String> = this.visitedNames
     fun getModule(name: String) = moduleMap[name]
@@ -63,6 +66,8 @@ class CyclicDependencyService {
     fun markPathAsCyclic() {
       val cycleStart = this.firstIndexOfTail()
       val cyclicSlice = currentPath.slice(cycleStart until currentPath.lastIndex)
+      thisLogger().info("Cyclic dep no. ${this.cycles.size}. Path size: ${this.currentPath.size} ")
+
       this.cycles.add(cyclicSlice.rotateMinimumToStart())
     }
 

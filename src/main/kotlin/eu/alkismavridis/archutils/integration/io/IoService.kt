@@ -8,9 +8,12 @@ import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import eu.alkismavridis.archutils.analysis.config.ArchutilsConfiguration
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
 
 class IoService(private val project: Project) {
   fun getConfigPath(): String {
@@ -23,10 +26,8 @@ class IoService(private val project: Project) {
   }
 
   fun loadConfiguration(): ArchutilsConfiguration {
-    val pathString = PropertiesComponent
-      .getInstance(this.project)
-      .getValue(STORAGE_KEY)
-      ?.ifEmpty { null }
+    val pathString = this.getConfigPath()
+      .ifEmpty { null }
       ?: return ArchutilsConfiguration()
 
     try {
@@ -40,16 +41,29 @@ class IoService(private val project: Project) {
     }
   }
 
+  fun writeToFile(filePath: String, contents: String) {
+    val path = this.getAbsolutePath(filePath)
+    Files.write(
+      path,
+      contents.toByteArray(StandardCharsets.UTF_8),
+    )
+  }
+
   fun relativizeToProjectRoot(pathString: String): String {
     if (pathString.isEmpty()) return ""
     val path = Paths.get(pathString).toAbsolutePath().normalize()
-    val projectRoot = this.project.workspaceFile?.toNioPath()?.parent?.parent?.toAbsolutePath()?.normalize()
+    val projectRoot = this.getProjectRoot()
 
     return if (projectRoot == null || !path.startsWith(projectRoot)) {
       path.toAbsolutePath().normalize().toString()
     } else {
       projectRoot.relativize(path).toString()
     }
+  }
+
+
+  private fun getProjectRoot(): Path? {
+    return this.project.workspaceFile?.toNioPath()?.parent?.parent?.toAbsolutePath()?.normalize()
   }
 
   private fun getAbsolutePath(projectRelativePath: String): Path {

@@ -20,7 +20,7 @@ class AnalyzeProjectAction: AnAction() {
     val configuration = ioService.loadConfiguration()
     val analysisService = createAnalysisService(configuration)
     val projectRelativePath = ioService.relativizeToProjectRoot(rootDir.path)
-    val task = ProjectAnalysisTask(project, rootDir, projectRelativePath, analysisService)
+    val task = ProjectAnalysisTask(project, rootDir, projectRelativePath, analysisService, ioService, configuration)
 
     ProgressManager.getInstance().run(task)
   }

@@ -63,7 +63,6 @@ class CyclicDependencyServiceTest {
     )
   }
 
-
   @Test
   fun `should not detect same cycle twice`() {
     val modules = listOf(
@@ -80,7 +79,26 @@ class CyclicDependencyServiceTest {
 
   @Test
   fun `should handle large graph`() {
-    val modules = listOf(
+    val result = createService().detectCycles(BIG_PROJECT)
+    assertThat(result).containsExactlyInAnyOrder(
+      listOf("module1", "module7", "module8").rotateMinimumToStart(),
+      listOf("module4", "module5").rotateMinimumToStart(),
+      listOf("module2", "module7", "module8").rotateMinimumToStart()
+    )
+  }
+
+  @Test
+  fun `should limit result size`() {
+    val result = createService().detectCycles(BIG_PROJECT, limit = 2)
+    assertThat(result).hasSize(2)
+  }
+
+
+  private fun createService() = CyclicDependencyService()
+
+  companion object {
+
+    private val BIG_PROJECT = listOf(
       DummyModuleStats("module1", usesModules = setOf("module7")),
       DummyModuleStats("module2", usesModules = setOf("module4", "module7", "module9")),
       DummyModuleStats("module3", usesModules = emptySet()),
@@ -93,15 +111,5 @@ class CyclicDependencyServiceTest {
       DummyModuleStats("module10", usesModules = setOf("module6")),
       DummyModuleStats("module11", usesModules = setOf("module3")),
     )
-
-    val result = createService().detectCycles(modules)
-    assertThat(result).containsExactlyInAnyOrder(
-      listOf("module1", "module7", "module8").rotateMinimumToStart(),
-      listOf("module4", "module5").rotateMinimumToStart(),
-      listOf("module2", "module7", "module8").rotateMinimumToStart()
-    )
   }
-
-
-  private fun createService() = CyclicDependencyService()
 }

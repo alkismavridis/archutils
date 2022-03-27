@@ -28,7 +28,7 @@ class ProjectAnalysisService(
     val illegalDependencies = this.validationService.findIllegalDependencies(moduleData, pathConfig.allowedDependencies)
 
     presenter.accept("Searching for cyclic dependencies...")
-    val cyclicDependencies = this.cyclicDependencyService.detectCycles(moduleData)
+    val cyclicDependencies = this.cyclicDependencyService.detectCycles(moduleData, limit = MAX_CYCLIC_DEPENDENCIES)
 
     return AnalysisResult(moduleData, illegalDependencies, cyclicDependencies, projectRelativePath, pathConfig)
   }
@@ -42,5 +42,9 @@ class ProjectAnalysisService(
     val builder = ModuleStatsBuilder(projectPath, pathConfig.includedSuffixes)
     dependencyProvider.accept(builder)
     return builder.build()
+  }
+
+  companion object {
+    private const val MAX_CYCLIC_DEPENDENCIES = 32
   }
 }

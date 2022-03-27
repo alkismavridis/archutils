@@ -1,5 +1,7 @@
 package eu.alkismavridis.archutils.integration
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.progress.ProgressIndicator
@@ -12,6 +14,8 @@ import com.intellij.psi.search.GlobalSearchScopesCore
 import com.intellij.ui.components.JBScrollPane
 import eu.alkismavridis.archutils.analysis.AnalysisResult
 import eu.alkismavridis.archutils.analysis.ProjectAnalysisService
+import eu.alkismavridis.archutils.analysis.config.ArchutilsConfiguration
+import eu.alkismavridis.archutils.integration.io.IoService
 import eu.alkismavridis.archutils.integration.psi.ProjectAnalysingPsiVisitor
 import eu.alkismavridis.archutils.integration.ui.ProjectResultView
 import eu.alkismavridis.archutils.modules.ModuleStatsBuilder
@@ -22,7 +26,9 @@ class ProjectAnalysisTask(
   project: Project,
   private val rootDirectory: VirtualFile,
   private val projectRelativePath: String,
-  private val analysisService: ProjectAnalysisService
+  private val analysisService: ProjectAnalysisService,
+  private val ioService: IoService,
+  private val configuration: ArchutilsConfiguration,
 ) : Task.Modal(project, "Analyzing Dependencies", true) {
   private var result: AnalysisResult? = null
 
@@ -45,6 +51,7 @@ class ProjectAnalysisTask(
 
   override fun onSuccess() {
     val result = this.result ?: return
+    this.outputToFile(result)
     val view = ProjectResultView(result)
     val scrollBar = JBScrollPane(view)
 
@@ -60,5 +67,16 @@ class ProjectAnalysisTask(
       .setMinSize(Dimension(500, 200))
       .createPopup()
       .showInFocusCenter()
+  }
+
+  private fun outputToFile(result: AnalysisResult) {
+    if (configuration.outputFile.isNotEmpty()) {
+      val contents = MAPPER.writeValueAsString(result)
+      this.ioService.writeToFile(configuration.outputFile, contents)
+    }
+  }
+
+  companion object {
+    private val MAPPER = ObjectMapper().registerKotlinModule()
   }
 }
