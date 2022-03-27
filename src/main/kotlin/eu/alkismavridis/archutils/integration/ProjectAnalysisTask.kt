@@ -29,7 +29,7 @@ class ProjectAnalysisTask(
   private val analysisService: ProjectAnalysisService,
   private val ioService: IoService,
   private val configuration: ArchutilsConfiguration,
-) : Task.Modal(project, "Analyzing Dependencies", true) {
+): Task.Modal(project, "Analyzing Dependencies", true) {
   private var result: AnalysisResult? = null
 
   override fun run(indicator: ProgressIndicator) {
@@ -52,21 +52,7 @@ class ProjectAnalysisTask(
   override fun onSuccess() {
     val result = this.result ?: return
     this.outputToFile(result)
-    val view = ProjectResultView(result)
-    val scrollBar = JBScrollPane(view)
-
-    JBPopupFactory.getInstance()
-      .createComponentPopupBuilder(scrollBar, null)
-      .setTitle("Project Analysis")
-      .setNormalWindowLevel(true)
-      .setCancelOnWindowDeactivation(false)
-      .setFocusable(true)
-      .setRequestFocus(true)
-      .setResizable(true)
-      .setMovable(true)
-      .setMinSize(Dimension(500, 200))
-      .createPopup()
-      .showInFocusCenter()
+    ProjectResultView(result).showInWindow()
   }
 
   private fun outputToFile(result: AnalysisResult) {

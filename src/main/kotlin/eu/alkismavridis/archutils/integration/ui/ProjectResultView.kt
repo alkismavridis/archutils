@@ -1,6 +1,9 @@
 package eu.alkismavridis.archutils.integration.ui
 
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.ui.components.JBScrollPane
 import eu.alkismavridis.archutils.analysis.AnalysisResult
+import java.awt.Dimension
 import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.border.EmptyBorder
@@ -12,6 +15,23 @@ class ProjectResultView(private val result: AnalysisResult): JPanel() {
     this.layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
     this.alignmentX = LEFT_ALIGNMENT
     this.renderModules()
+  }
+
+  fun showInWindow() {
+    val scrollBar = JBScrollPane(this)
+
+    JBPopupFactory.getInstance()
+      .createComponentPopupBuilder(scrollBar, null)
+      .setTitle("Project Analysis")
+      .setNormalWindowLevel(true)
+      .setCancelOnWindowDeactivation(false)
+      .setFocusable(true)
+      .setRequestFocus(true)
+      .setResizable(true)
+      .setMovable(true)
+      .setMinSize(Dimension(500, 200))
+      .createPopup()
+      .showInFocusCenter()
   }
 
   private fun renderModules() {
